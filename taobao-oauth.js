@@ -51,6 +51,7 @@ OAuth2.prototype.obtainingAuthorization = function(req, res, params) {
 
 OAuth2.prototype.redirectCallback = function(req, res, code) {
     var that = this;
+    var deferred = getDefer();
     var params = {};
     var post_data;
 
@@ -64,13 +65,20 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
         params['client_secret'] = "f74cb82dafd6ee17b54bf0be707a5116";
 
         that._request(this.conf["tokenEndpoint"], params, null, function(error, data) {
-            // self._accessTokenCallback(req, res, error, data);
+            var result;
+
+            try {
+                result = JSON.parse(data);
+                deferred.resolve(true);
+            } catch(e) {
+                deferred.resolve(false);
+            }
         });
     }
+    return deferred.promise;
 };
 
 OAuth2.prototype._request = function(url, params, access_token, callback) {
-    var deferred = getDefer();
     var that = this;
     var parsed = require('url').parse(url, true);
     var headers = {};
@@ -94,7 +102,6 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
     };
 
     that._executeRequest(https, options, str, callback);
-    return deferred.promise;
 };
 
 OAuth2.prototype._executeRequest = function(library, options, post_body, callback) {
