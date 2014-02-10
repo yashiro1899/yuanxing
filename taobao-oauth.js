@@ -65,10 +65,9 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
         params['client_secret'] = "f74cb82dafd6ee17b54bf0be707a5116";
 
         that._request(this.conf["tokenEndpoint"], params, null, function(error, data) {
-            var result;
-
             try {
-                result = JSON.parse(data);
+                var result = JSON.parse(data);
+                that._storeAccessToken(req, res, result);
                 deferred.resolve(true);
             } catch(e) {
                 deferred.resolve(false);
@@ -135,5 +134,41 @@ OAuth2.prototype._executeRequest = function(library, options, post_body, callbac
     request.write(post_body);
     request.end();
 };
+
+OAuth2.prototype._storeAccessToken = function(req, res, result) {
+    var now = +(new Date());
+    var data = {
+        "taobao_user_id": result["taobao_user_id"],
+        "taobao_user_nick": result["taobao_user_nick"],
+        "access_token": result["access_token"]
+    };
+    data = querystring.stringify(data);
+    data = rot13(data);
+    data = cookie.serialize("access_token.taobao", data, {
+        path: "/",
+        expires: (new Date(result["expires_in"] * 1000 + now))
+    });
+
+    res.setHeader("Set-Cookie", data);
+};
+
+function rot13(s) {
+    var i;
+    var rotated = '';
+    s = s || "";
+    for (i = 0; i < s.length; i++) {
+        var ch = s.charCodeAt(i);
+        // a-z -> n-m
+        if (97 <= ch && ch <= 122) {
+            rotated += String.fromCharCode((ch - 97 + 13) % 26 + 97);
+            // A-Z -> N-M
+        } else if (65 <= ch && ch <= 90) {
+            rotated += String.fromCharCode((ch - 65 + 13) % 26 + 65);
+        } else {
+            rotated += s[i];
+        }
+    }
+    return rotated;
+}
 
 module.exports = new OAuth2();

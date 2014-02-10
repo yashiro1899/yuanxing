@@ -6,12 +6,12 @@ var oauth = require("../../../../taobao-oauth");
 module.exports = Controller(function() {
     return {
         callbackAction: function() {
+            var that = this;
             var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
 
-            promise.then(function(result) {
-                console.log(result);
+            return promise.then(function(result) {
+                that.redirect("/");
             });
-            this.end(this.get("code"));
         }
     }
 });
