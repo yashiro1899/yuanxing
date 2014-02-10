@@ -1,0 +1,28 @@
+{
+  "name": "yuanxing",
+  "version": "0.0.0",
+  "description": "taobao app",
+  "main": "www/index.js",
+  "dependencies": {
+    "thinkjs": "~0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yashiro1899/yuanxing.git"
+  },
+  "keywords": [
+    "taobao",
+    "oauth",
+    "hotel"
+  ],
+  "author": "Ice White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yashiro1899/yuanxing/issues"
+  },
+  "homepage": "https://github.com/yashiro1899/yuanxing"
+}
