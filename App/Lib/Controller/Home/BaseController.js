@@ -2,7 +2,7 @@
  * 后台controller基类
  * @return {[type]} [description]
  */
-var oauth = require("oauth");
+var oauth = require("../../../../taobao-oauth");
 module.exports = Controller(function() {
     return {
         userInfo: {},
@@ -10,7 +10,8 @@ module.exports = Controller(function() {
             this.super_("init", http);
 
             var that = this;
-            return oauth.getUserInfo(this.http.req, this.http.res).then(function(u) {
+            return ( new oauth() ).getUserInfo(this.http.req, this.http.res).then(function(u) {
+                console.log(u);
                 that.userInfo = u;
                 that.assign("userInfo", that.userInfo);
             });

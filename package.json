@@ -4,7 +4,8 @@
   "description": "taobao app",
   "main": "www/index.js",
   "dependencies": {
-    "thinkjs": "~0.4.0"
+    "thinkjs": "~0.4.0",
+    "cookie": "~0.1.0"
   },
   "devDependencies": {},
   "scripts": {
