@@ -10,8 +10,7 @@ module.exports = Controller(function() {
             this.super_("init", http);
 
             var that = this;
-            return ( new oauth() ).getUserInfo(this.http.req, this.http.res).then(function(u) {
-                console.log(u);
+            return oauth.getUserInfo(this.http.req, this.http.res).then(function(u) {
                 that.userInfo = u;
                 that.assign("userInfo", that.userInfo);
             });

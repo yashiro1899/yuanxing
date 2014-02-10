@@ -1,4 +1,5 @@
 var cookie = require("cookie");
+var querystring = require('querystring');
 
 var defaultOAuth2Conf = {
     appKey: '',
@@ -21,15 +22,40 @@ function OAuth2(conf) {
     for (k in defaultOAuth2Conf) {
         this.conf[k] = defaultOAuth2Conf[k];
     }
+
+    if (!conf) conf = require('./taobao.conf');
     for (k in conf) {
         this.conf[k] = conf[k];
     }
 }
 
+OAuth2.getUserInfo = function(req, res) {
+    return (new OAuth2()).getUserInfo(req, res);
+};
+
 OAuth2.prototype.getUserInfo = function(req, res) {
-    var _cookie = cookie.parse(req.headers.cookie || "");
-    console.log(_cookie);
-    return getPromise({});
+    var info = cookie.parse(req.headers.cookie || "");
+
+    if (Object.keys(info).length > 0) return getPromise(info);
+
+    this.obtainingAuthorization(req, res);
+    return getDefer().promise;
+};
+
+OAuth2.prototype.obtainingAuthorization = function(req, res, params) {
+    var url = this.conf["authorizationEndpoint"];
+    var params = params || {
+        'client_id': this.conf.appKey,
+        'redirect_uri': this.conf.redirectUri
+    };
+
+    params['response_type'] = 'code';
+    url += "?";
+    url += querystring.stringify(params);
+
+    res.statusCode = 302;
+    res.setHeader("Location", url);
+    res.end();
 };
 
 module.exports = OAuth2;
