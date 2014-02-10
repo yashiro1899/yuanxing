@@ -1,12 +1,11 @@
 /**
  * controller
- * @return 
+ * @return
  */
-module.exports = Controller(function(){
+module.exports = Controller("Home/BaseController", function() {
     return {
-        indexAction: function(){
-        	//render View/Home/index_index.html file
-            this.display(); 
+        indexAction: function() {
+            this.display();
         }
     }
 });
