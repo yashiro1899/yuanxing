@@ -54,312 +54,93 @@
                                     </form>
                                 </div>
                             </div>
-<div class="results">
-<table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
-    <thead>
-    <tr>
-        <th scope="col" class="action-checkbox-column">
-            <div class="text"><span><input type="checkbox" id="action-toggle" /></span></div>
-        </th>
-        <th scope="col" class="name-column sortable">
-            <div class="text">
-                名称
-            </div>
-        </th>
-        <th scope="col" class="country-column sortable sorted ascending">
-            <div class="text">
-                房型
-            </div>
-        </th>
-        <th scope="col" class="capital-column sortable">
-            <div class="text">
-                发布时间
-            </div>
-        </th>
-        <th scope="col" class="continent-column ">
-            <div class="text">
-                操作
-            </div>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-            <tr class="row1">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="7" /></td><th><a href="/admin/examples/city/7/">Paris</a></th><td class="nowrap">France</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Europe</td></tr>
-
-
-            <tr class="row2">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="3" /></td><th><a href="/admin/examples/city/3/">Tokyo</a></th><td class="nowrap">Japan</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Asia</td></tr>
-
-
-            <tr class="row1">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="4" /></td><th><a href="/admin/examples/city/4/">Birmingham</a></th><td class="nowrap">United Kingdom</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>Europe</td></tr>
-
-
-            <tr class="row2">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="1" /></td><th><a href="/admin/examples/city/1/">London</a></th><td class="nowrap">United Kingdom</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Europe</td></tr>
-
-
-            <tr class="row1">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="6" /></td><th><a href="/admin/examples/city/6/">Los Angeles</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>North America</td></tr>
-
-
-            <tr class="row2">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="5" /></td><th><a href="/admin/examples/city/5/">New York</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>North America</td></tr>
-
-
-            <tr class="row1">
-                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="2" /></td><th><a href="/admin/examples/city/2/">Washington, D.C.</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>North America</td></tr>
-
-    </tbody>
-</table>
-</div>
-
-
-
-
-
-
-<div class="actions">
-
-
-                        <label><span class="action-label">Action:</span>
-
-                <select name="action">
-<option value="" selected="selected">---------</option>
-<option value="delete_selected">Delete selected Cities (django-select2)</option>
-</select>
-
-                        </label>
-
-
-
-                <input class="select-across" name="select_across" type="hidden" value="0" />
-
-
-&nbsp;
-        <button type="submit" class="btn" title="Run the selected action" name="index" value="0">Go</button>
-        &nbsp;
-
-                <script type="text/javascript">var _actions_icnt = "7";</script>
-                <span class="action-counter">0 of 7 selected</span>
-
-
-</div>
-
-
-
-
-
-
-
-                                <div class="below-actions">
-
-
-
-
-
-<div class="pagination-block">
-
-
-
-    <div class="pagination-info muted">
-        1 - 7
-        &nbsp; / &nbsp;
-        7
-
-            Cities (django-select2)
-
-    </div>
-</div>
-
-
-                                </div>
-
-
-
-            </div>
-        </div>
-    </div>
-
-
-
-
+                            <div class="results">
+                            <table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="action-checkbox-column">
+                                        <div class="text"><span><input type="checkbox" id="action-toggle" /></span></div>
+                                    </th>
+                                    <th scope="col" class="name-column sortable">
+                                        <div class="text">
+                                            名称
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="country-column sortable sorted ascending">
+                                        <div class="text">
+                                            房型
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="capital-column sortable">
+                                        <div class="text">
+                                            发布时间
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="continent-column ">
+                                        <div class="text">
+                                            操作
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% list.forEach(function(v, i) { %>
+                                <% if (i % 2 === 0) { %><tr class="row1"><% } else { %><tr class="row1"><% } %>
+                                    <td class="action-checkbox">
+                                        <input class="action-select" name="_selected_action" type="checkbox" value="<%=v.cid%>" />
+                                    </td>
+                                    <td>
+                                        <%=v.title%>
+                                    </td>
+                                    <td>
+                                        <%=v.price%>
+                                    </td>
+                                    <td>
+                                        <%=v.list_time%>
+                                    </td>
+                                    <td>
+                                        <img src="/static/img/icon-yes.gif" alt="True" />
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                            </div>
                         </div>
-                        <!-- END Content -->
                     </div>
-
-
-
-
-
-                        <div id="suit-left" class="suit-column">
-
-
-
-                                        <form class="form-search nav-quick-search" autocomplete="off" action="/admin/examples/country/" method="GET">
-                                            <input type="text" name="q" class="input-medium search-query" id="quick-search">
-                                            <i class="input-icon icon-search"></i>
-                                            <input type="submit" class="submit" value="">
-                                        </form>
-
-
-
-
-
-
-
-
-<div class="left-nav" id="left-nav">
-    <ul>
-
-
-            <li>
-                <a href="/admin/"><i class="icon-home"></i>Home
-                </a>
-            </li>
-
-
-
-
-
-
-                    <li>
-                        <a href="/admin/examples/country/"><i class="icon-leaf"></i>Examples
-                        </a>
-
-                            <ul>
-
-                                    <li>
-                                        <a href="/admin/examples/country/">Countries</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/continent/">Continents</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/kitchensink/">Kitchen sinks</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-                    <li class=active>
-                        <a href="/admin/examples/city/"><i class="icon-globe"></i>Integrations
-                        </a>
-
-                            <ul>
-
-                                    <li class=active>
-                                        <a href="/admin/examples/city/">Cities (django-select2)</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/category/">Categories (django-mptt)</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/wysiwygeditor/">Wysiwyg editors</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/reversioneditem/">Reversioned items</a></li>
-
-                                    <li>
-                                        <a href="/admin/examples/importexportitem/">Import export items</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-                    <li>
-                        <a href="/admin/cms/page/"><i class="icon-file"></i>Django CMS
-                        </a>
-
-                            <ul>
-
-                                    <li>
-                                        <a href="/admin/cms/page/">Pages</a></li>
-
-                                    <li>
-                                        <a href="/admin/snippet/snippet/">Snippets</a></li>
-
-                                    <li>
-                                        <a href="/admin/cmsplugin_filer_image/thumbnailoption/">Thumbnail options</a></li>
-
-                                    <li>
-                                        <a href="/admin/sites/site/">Sites</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-                    <li>
-                        <a href="/admin/filer/folder/"><i class="icon-picture"></i>Filer
-                        </a>
-
-                            <ul>
-
-                                    <li>
-                                        <a href="/admin/filer/folder/">Browse files</a></li>
-
-                                    <li>
-                                        <a href="/admin/filer/folderpermission/">Permissions</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-                    <li>
-                        <a href="/admin/auth/user/"><i class="icon-lock"></i>Auth
-                        </a>
-
-                            <ul>
-
-                                    <li>
-                                        <a href="/admin/auth/user/">Users</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-                    <li>
-                        <a href="/admin/custom/"><i class="icon-cog"></i>Custom view
-                        </a>
-
-                            <ul>
-
-                                    <li>
-                                        <a href="/admin/custom/">Custom link</a></li>
-
-                                    <li>
-                                        <a href="/admin/non-existant/">Check out error 404</a></li>
-
-                            </ul>
-
-                    </li>
-
-
-
-    </ul>
-</div>
-
-
-                        </div>
-
-
-
+                </div>
+            </div>
+            <!-- END Content -->
+            </div>
+
+            <div id="suit-left" class="suit-column">
+                <form class="form-search nav-quick-search" autocomplete="off" action="" method="GET">
+                    <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                    <i class="input-icon icon-search"></i>
+                    <input type="submit" class="submit" value="">
+                </form>
+                <div class="left-nav" id="left-nav">
+                    <ul>
+                        <li>
+                            <a href=""><i class="icon-home"></i>首页</a>
+                        </li>
+                        <li class="active" style="line-height:18px;">
+                            <a href=""><i class="icon-leaf"></i>已发布酒店</a>
+                        </li>
+                        <li>
+                            <a href=""><i class="icon-leaf"></i>已关联酒店</a>
+                        </li>
+                        <li>
+                            <a href=""><i class="icon-leaf"></i>发布</a>
+                        </li>
+                        <li>
+                            <a href=""><i class="icon-leaf"></i>关联</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-
-
-
+    </div>
     <!-- Sticky footer push -->
     <div id="push"></div>
 </div>
@@ -374,6 +155,5 @@
             </div>
         </div>
     </div>
-    <script src="/static/js/suit.js"></script>
 </body>
 </html>
