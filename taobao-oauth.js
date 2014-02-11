@@ -78,6 +78,22 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
     return deferred.promise;
 };
 
+OAuth2.prototype.accessProtectedResource = function(req, res, params) {
+    var token = this._getAccessToken(req);
+    var deferred = getDefer();
+
+    token = token["access_token"];
+    this._request("https://eco.taobao.com/router/rest", params, token, function(error, data) {
+        try {
+            var result = JSON.parse(data);
+            deferred.resolve(result);
+        } catch(e) {
+            deferred.resolve(null);
+        }
+    });
+    return deferred.promise;
+};
+
 OAuth2.prototype._request = function(url, params, access_token, callback) {
     var that = this;
     var parsed = require('url').parse(url, true);
