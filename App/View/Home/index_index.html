@@ -12,138 +12,138 @@
 
 <body class="change-list">
 <!-- Sticky footer wrap -->
-<div id="wrap">
-    <!-- Container -->
-    <div id="container">
-        <!-- Header -->
-        <div id="header" class="header">
-            <div id="branding">
-                <a href=""><h1 id="site-name">逐冰之旅</h1></a>
+    <div id="wrap">
+        <!-- Container -->
+        <div id="container">
+            <!-- Header -->
+            <div id="header" class="header">
+                <div id="branding">
+                    <a href=""><h1 id="site-name">逐冰之旅</h1></a>
+                </div>
+                <div id="user-tools">
+                    欢迎，
+                    <strong><%=userInfo.taobao_user_nick%></strong>.
+                    <span class="user-links">
+                    <span class="separator">|</span>
+                    <a href="/oauth/logout/">退出</a>
+                    </span>
+                </div>
             </div>
-            <div id="user-tools">
-                欢迎，
-                <strong><%=userInfo.taobao_user_nick%></strong>.
-                <span class="user-links">
-                <span class="separator">|</span>
-                <a href="/oauth/logout/">退出</a>
-                </span>
-            </div>
-        </div>
-        <!-- END Header -->
-        <div class="suit-columns two-columns">
-            <div id="suit-center" class="suit-column">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="">首页</a>
-                    <span class="divider">&raquo;</span>
-                </li>
-                <li class="active">酒店</li>
-            </ul>
-            <!-- Content -->
-            <div id="content" class="flex row-fluid">
-                <div id="content-main">
-                    <div class="inner-center-column">
-                        <div class="module filtered" id="changelist">
-                            <div class="toolbar-content clearfix">
-                                <div id="toolbar" class="clearfix">
-                                    <form id="changelist-search" action="" method="get" class="form-inline">
-                                        <div class="search-container">
-                                            <input type="text" size="40" name="q" value="" id="searchbar" placeholder="搜索"/>&nbsp;
-                                            <input type="submit" value="Search" class="btn btn-info"/>&nbsp;
-                                        </div>
-                                    </form>
+            <!-- END Header -->
+            <div class="suit-columns two-columns">
+                <div id="suit-center" class="suit-column">
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="">首页</a>
+                        <span class="divider">&raquo;</span>
+                    </li>
+                    <li class="active">酒店</li>
+                </ul>
+                <!-- Content -->
+                <div id="content" class="flex row-fluid">
+                    <div id="content-main">
+                        <div class="inner-center-column">
+                            <div class="module filtered" id="changelist">
+                                <div class="toolbar-content clearfix">
+                                    <div id="toolbar" class="clearfix">
+                                        <form id="changelist-search" action="" method="get" class="form-inline">
+                                            <div class="search-container">
+                                                <input type="text" size="40" name="q" value="" id="searchbar" placeholder="搜索"/>&nbsp;
+                                                <input type="submit" value="Search" class="btn btn-info"/>&nbsp;
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="results">
-                            <table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
-                                <thead>
-                                <tr>
-                                    <th scope="col" class="action-checkbox-column">
-                                        <div class="text"><span><input type="checkbox" id="action-toggle" /></span></div>
-                                    </th>
-                                    <th scope="col" class="name-column sortable">
-                                        <div class="text">
-                                            名称
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="country-column sortable sorted ascending">
-                                        <div class="text">
-                                            房型
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="capital-column sortable">
-                                        <div class="text">
-                                            发布时间
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="continent-column ">
-                                        <div class="text">
-                                            操作
-                                        </div>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <% list.forEach(function(v, i) { %>
-                                <% if (i % 2 === 0) { %><tr class="row1"><% } else { %><tr class="row1"><% } %>
-                                    <td class="action-checkbox">
-                                        <input class="action-select" name="_selected_action" type="checkbox" value="<%=v.cid%>" />
-                                    </td>
-                                    <td>
-                                        <%=v.title%>
-                                    </td>
-                                    <td>
-                                        <%=v.price%>
-                                    </td>
-                                    <td>
-                                        <%=v.list_time%>
-                                    </td>
-                                    <td>
-                                        <img src="/static/img/icon-yes.gif" alt="True" />
-                                    </td>
-                                </tr>
-                                <% }); %>
-                                </tbody>
-                            </table>
+                                <div class="results">
+                                <table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" class="action-checkbox-column">
+                                            <div class="text"><span><input type="checkbox" id="action-toggle" /></span></div>
+                                        </th>
+                                        <th scope="col" class="name-column sortable">
+                                            <div class="text">
+                                                名称
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="country-column sortable">
+                                            <div class="text">
+                                                房型
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="capital-column sortable">
+                                            <div class="text">
+                                                发布时间
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="continent-column ">
+                                            <div class="text">
+                                                操作
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% list.forEach(function(v, i) { %>
+                                    <% if (i % 2 === 0) { %><tr class="row1"><% } else { %><tr class="row1"><% } %>
+                                        <td class="action-checkbox">
+                                            <input class="action-select" name="_selected_action" type="checkbox" value="<%=v.cid%>" />
+                                        </td>
+                                        <td>
+                                            <%=v.title%>
+                                        </td>
+                                        <td>
+                                            <%=v.price%>
+                                        </td>
+                                        <td>
+                                            <%=v.list_time%>
+                                        </td>
+                                        <td>
+                                            <img src="/static/img/icon-yes.gif" alt="True" />
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                    </tbody>
+                                </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- END Content -->
-            </div>
+                <!-- END Content -->
+                </div>
 
-            <div id="suit-left" class="suit-column">
-                <form class="form-search nav-quick-search" autocomplete="off" action="" method="GET">
-                    <input type="text" name="q" class="input-medium search-query" id="quick-search">
-                    <i class="input-icon icon-search"></i>
-                    <input type="submit" class="submit" value="">
-                </form>
-                <div class="left-nav" id="left-nav">
-                    <ul>
-                        <li>
-                            <a href=""><i class="icon-home"></i>首页</a>
-                        </li>
-                        <li class="active" style="line-height:18px;">
-                            <a href=""><i class="icon-leaf"></i>已发布酒店</a>
-                        </li>
-                        <li>
-                            <a href=""><i class="icon-leaf"></i>已关联酒店</a>
-                        </li>
-                        <li>
-                            <a href=""><i class="icon-leaf"></i>发布</a>
-                        </li>
-                        <li>
-                            <a href=""><i class="icon-leaf"></i>关联</a>
-                        </li>
-                    </ul>
+                <div id="suit-left" class="suit-column">
+                    <form class="form-search nav-quick-search" autocomplete="off" action="" method="GET">
+                        <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                        <i class="input-icon icon-search"></i>
+                        <input type="submit" class="submit" value="">
+                    </form>
+                    <div class="left-nav" id="left-nav">
+                        <ul>
+                            <li>
+                                <a href=""><i class="icon-home"></i>首页</a>
+                            </li>
+                            <li class="active" style="line-height:18px;">
+                                <a href=""><i class="icon-leaf"></i>已发布酒店</a>
+                            </li>
+                            <li>
+                                <a href=""><i class="icon-leaf"></i>已关联酒店</a>
+                            </li>
+                            <li>
+                                <a href=""><i class="icon-leaf"></i>发布</a>
+                            </li>
+                            <li>
+                                <a href=""><i class="icon-leaf"></i>关联</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- Sticky footer push -->
+        <div id="push"></div>
     </div>
-    <!-- Sticky footer push -->
-    <div id="push"></div>
-</div>
 
     <div id="footer" class="footer">
         <div class="content">
