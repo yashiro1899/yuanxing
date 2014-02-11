@@ -25,7 +25,7 @@ function OAuth2(conf) {
 }
 
 OAuth2.prototype.getUserInfo = function(req, res) {
-    var info = cookie.parse(req.headers.cookie || "");
+    var info = this._getAccessToken(req);
 
     if (Object.keys(info).length > 0) return getPromise(info);
 
@@ -56,7 +56,8 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
     var post_data;
 
     if (!code) {
-        return getDefer().promise;
+        deferred.resolve(false);
+        return deferred.promise;
     } else {
         params['grant_type'] = 'authorization_code';
         params['code'] = code;
@@ -150,6 +151,15 @@ OAuth2.prototype._storeAccessToken = function(req, res, result) {
     });
 
     res.setHeader("Set-Cookie", data);
+};
+
+OAuth2.prototype._getAccessToken = function(req) {
+    var info = cookie.parse(req.headers.cookie || "");
+
+    info = info["access_token.taobao"];
+    info = rot13(info);
+    info = querystring.parse(info);
+    return info;
 };
 
 function rot13(s) {
