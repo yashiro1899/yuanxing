@@ -13,7 +13,12 @@ module.exports = Controller("Home/BaseController", function() {
                 method: "taobao.items.onsale.get",
                 v: "2.0"
             }).then(function(result) {
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+                if (result && result["items_onsale_get_response"] && result["items_onsale_get_response"]["total_results"] !== 0)
+                    result = result["items_onsale_get_response"]["items"]["item"];
+                else
+                    result = [];
+                that.assign("list", result);
+                that.display();
             });
 
             return promise;

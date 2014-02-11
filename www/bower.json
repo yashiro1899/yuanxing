@@ -1,0 +1,27 @@
+{
+  "name": "yuanxing",
+  "main": "index.js",
+  "version": "0.0.0",
+  "homepage": "gymnot.us",
+  "authors": [
+    "Ice White <yashiro1899@gmail.com>"
+  ],
+  "description": "taobao api",
+  "keywords": [
+    "taobao",
+    "hotel"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+      "bootstrap": "2.3.1",
+      "jquery": "1.8.3"
+  }
+}

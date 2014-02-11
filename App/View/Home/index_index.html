@@ -1,1 +1,626 @@
-hello, thinkjs!
+
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <title>Select city to change | Django Suit</title>
+  <link rel="stylesheet" type="text/css" href=""/>
+  <link rel="stylesheet" type="text/css" href="/static/suit/bootstrap/css/bootstrap.min.css" media="all"/>
+  <link rel="stylesheet" type="text/css" href="/static/suit/css/suit.css" media="all">
+  
+  
+    <link rel="stylesheet" type="text/css" href="/static/css/examples.css" media="all">
+
+  
+  
+  
+    
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+  
+  
+  
+
+  
+  <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
+  <script src="/static/suit/js/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
+  <script src="/static/suit/bootstrap/js/bootstrap.min.js"></script>
+  
+  <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
+  
+  
+  
+    
+
+    <!-- GA
+    ================================================== -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-121366-19']);
+        _gaq.push(['_setCustomVar', 1, 'app', 'demo', 1]);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+
+
+  <script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/admin/js/actions.min.js"></script>
+  
+    <script type="text/javascript">
+      (function ($) {
+        $(document).ready(function ($) {
+          $("tr input.action-select").actions();
+        });
+      })(django.jQuery);
+    </script>
+  
+
+  
+    <meta name="robots" content="NONE,NOARCHIVE"/>
+</head>
+
+
+<body class="change-list">
+
+<!-- Sticky footer wrap -->
+<div id="wrap">
+
+  <!-- Container -->
+  
+    <div id="container">
+
+      
+        
+          <!-- Header -->
+          <div id="header" class="header">
+            <div id="branding">
+              <a href="/admin/"><h1 id="site-name">Django Suit</h1></a>
+            </div>
+
+            
+            <div class="header-content header-content-first">
+              <div class="header-column icon">
+                <i class="icon-time"></i>
+              </div>
+              <div class="header-column">
+                <span class="date"> Tuesday, 11th February 2014</span><br>
+                <span class="time" id="clock">08:56</span>
+              </div>
+            </div>
+            
+
+            
+    
+              <!--<div class="header-content">
+                <div class="header-column icon">
+                  <i class="icon-comment"></i>
+                </div>
+                <div class="header-column">
+                  <a href="" class="grey"><b>2</b> new messages</a>
+                </div>
+              </div>-->
+            
+    <div class="header-content">
+        <div class="header-column icon">
+            <i class="icon-home"></i><br>
+            <i class="icon-comment"></i>
+        </div>
+        <div class="header-column">
+            <a href="/" class="grey">DjangoSuit.com</a><br>
+            <span class="grey">Demo data will reset every 15 minutes</span>
+        </div>
+    </div>
+
+
+            
+              <div id="user-tools">
+                Welcome,
+                <strong>
+                  
+                    Demo</strong>.
+                <span class="user-links">
+                
+                  
+                  
+                  <a href="/admin/password_change/">Change password</a>
+                  <span class="separator">|</span>
+                  <a href="/admin/logout/">Log out</a>
+                  </span>
+                
+              </div>
+            
+            
+          </div>
+        
+        <!-- END Header -->
+      
+
+
+      <div class="suit-columns two-columns">
+
+        
+          <div id="suit-center" class="suit-column">
+
+            
+              
+    <ul class="breadcrumb">
+      <li><a href="/admin/">Home</a>
+        <span class="divider">&raquo;</span></li>
+      <li>
+        <a href="/admin/examples/">Examples</a>
+        <span class="divider">&raquo;</span></li>
+      <li class="active">Cities (django-select2)</li>
+    </ul>
+  
+            
+
+            
+              
+            
+
+            <!-- Content -->
+            <div id="content" class="flex row-fluid">
+              
+              
+                <h2 class="content-title">Select city to change</h2>
+              
+              
+
+  <div id="content-main">
+
+    <div class="inner-center-column">
+      <div class="module filtered" id="changelist">
+
+        <div class="toolbar-content clearfix">
+          
+            
+              <div class="object-tools">
+                
+                  <a href="/admin/examples/city/add/" class="btn btn-success">
+                    <i class="icon-plus-sign icon-white"></i>&nbsp;
+                    Add city
+                  </a>
+                
+              </div>
+            
+          
+
+          
+  
+
+  <div id="toolbar" class="clearfix">
+    <form id="changelist-search" action="" method="get" class="form-inline">
+      <div class="search-container">
+        
+          <input type="text" size="40" name="q" value="" id="searchbar" placeholder="Keyword"/>&nbsp;
+          <script type="text/javascript">document.getElementById("searchbar").focus();</script>
+        
+        <span class="search-filters"><select data-name="country" class="auto-width search-filter" style="max-width: 200px"><option value="">Country</option><option value="">---</option><option data-name="country" value="104" >France</option><option data-name="country" value="234" >United Kingdom</option><option data-name="country" value="235" >United States</option><option data-name="country" value="68" >Japan</option></select>
+
+                  &nbsp;
+                
+                  
+<select data-name="capital" class="auto-width search-filter" style="max-width: 200px"><option value="">Capital</option><option value="">---</option><option data-name="capital__exact" value="1" >Yes</option><option data-name="capital__exact" value="0" >No</option></select>
+
+                  &nbsp;
+                
+                </span>
+
+        <input type="submit" value="Search" class="btn btn-info"/>
+        &nbsp;
+        
+      </div>
+
+      
+
+    </form>
+  </div>
+
+
+  <div class="disclaimer breadcrumb">
+    This is an example of <a href="https://github.com/applegrew/django-select2" target="_blank">django-select2</a> package integration. Go to change form and you'll see AJAX Select2 widget for Country field.
+  </div>
+
+        </div>
+
+        
+          
+        
+
+        
+
+        <form id="changelist-form" action="" method="post"
+             class="form-inline"><input type='hidden' name='csrfmiddlewaretoken' value='O8zkcNNpxHcpwMVLVkxtLgd8rt7irZF9' />
+          
+
+          
+            
+              
+              
+
+
+    <div class="results">
+        <table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                
+                    <th scope="col"  class="action-checkbox-column">
+                        
+                        <div class="text"><span><input type="checkbox" id="action-toggle" /></span>
+                        </div>
+                    </th>
+                    <th scope="col"  class="name-column sortable">
+                        
+                            
+                        
+                        <div class="text">
+                            <a href="?o=1.2">Name</a>
+                        </div>
+                    </th>
+                    <th scope="col"  class="country-column sortable sorted ascending">
+                        
+                            
+                                <div class="relative-wrapper">
+                                    <div class="sortoptions">
+                                        
+                                        <a href="?o=-2" class="toggle ascending" title="Toggle sorting"></a>
+                                        <a class="sortremove" href="?o="
+                                           title="Remove from sorting"></a>
+                                    </div>
+                                </div>
+                            
+                        
+                        <div class="text">
+                            <a href="?o=-2">Country</a>
+                        </div>
+                    </th>
+                    <th scope="col"  class="capital-column sortable">
+                        
+                            
+                        
+                        <div class="text">
+                            <a href="?o=3.2">Capital</a>
+                        </div>
+                    </th>
+                    <th scope="col"  class="continent-column ">
+                        
+                        <div class="text"><span>Continent</span>
+                        </div>
+                    </th>
+            </tr>
+            </thead>
+            <tbody>
+            
+                
+                <tr class="row1">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="7" /></td><th><a href="/admin/examples/city/7/">Paris</a></th><td class="nowrap">France</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Europe</td></tr>
+            
+                
+                <tr class="row2">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="3" /></td><th><a href="/admin/examples/city/3/">Tokyo</a></th><td class="nowrap">Japan</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Asia</td></tr>
+            
+                
+                <tr class="row1">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="4" /></td><th><a href="/admin/examples/city/4/">Birmingham</a></th><td class="nowrap">United Kingdom</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>Europe</td></tr>
+            
+                
+                <tr class="row2">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="1" /></td><th><a href="/admin/examples/city/1/">London</a></th><td class="nowrap">United Kingdom</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>Europe</td></tr>
+            
+                
+                <tr class="row1">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="6" /></td><th><a href="/admin/examples/city/6/">Los Angeles</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>North America</td></tr>
+            
+                
+                <tr class="row2">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="5" /></td><th><a href="/admin/examples/city/5/">New York</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-no.gif" alt="False" /></td><td>North America</td></tr>
+            
+                
+                <tr class="row1">
+                    <td class="action-checkbox"><input class="action-select" name="_selected_action" type="checkbox" value="2" /></td><th><a href="/admin/examples/city/2/">Washington, D.C.</a></th><td class="nowrap">United States</td><td><img src="/static/admin/img/icon-yes.gif" alt="True" /></td><td>North America</td></tr>
+            
+            </tbody>
+        </table>
+    </div>
+
+
+
+              
+                
+
+<div class="actions">
+    
+        
+            <label><span class="action-label">Action:</span>
+        
+        <select name="action">
+<option value="" selected="selected">---------</option>
+<option value="delete_selected">Delete selected Cities (django-select2)</option>
+</select>
+        
+            </label>
+        
+    
+        
+        <input class="select-across" name="select_across" type="hidden" value="0" />
+        
+    
+&nbsp;
+    <button type="submit" class="btn" title="Run the selected action" name="index" value="0">Go</button>
+    &nbsp;
+    
+        <script type="text/javascript">var _actions_icnt = "7";</script>
+        <span class="action-counter">0 of 7 selected</span>
+        
+    
+</div>
+
+            
+          
+
+          
+            
+              
+                <div class="below-actions">
+              
+              
+
+
+
+<div class="pagination-block">
+
+  
+
+  <div class="pagination-info muted">
+    1 - 7
+    &nbsp; / &nbsp;
+    7
+    
+      Cities (django-select2)
+    
+  </div>
+</div>
+
+              
+                </div>
+              
+            
+          
+        </form>
+      </div>
+    </div>
+  </div>
+
+              
+                
+              
+            </div>
+            <!-- END Content -->
+          </div>
+        
+
+
+        
+          
+            <div id="suit-left" class="suit-column">
+              
+                
+                  
+                    <form class="form-search nav-quick-search" autocomplete="off" action="/admin/examples/country/" method="GET">
+                      <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                      <i class="input-icon icon-search"></i>
+                      <input type="submit" class="submit" value="">
+                    </form>
+                  
+                
+              
+
+              
+
+
+
+<div class="left-nav" id="left-nav">
+  <ul>
+    
+      
+      <li>
+        <a href="/admin/"><i class="icon-home"></i>Home
+        </a>
+      </li>
+    
+
+    
+    
+      
+        
+          <li>
+            <a href="/admin/examples/country/"><i class="icon-leaf"></i>Examples
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="/admin/examples/country/">Countries</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/continent/">Continents</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/kitchensink/">Kitchen sinks</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+        
+          <li class=active>
+            <a href="/admin/examples/city/"><i class="icon-globe"></i>Integrations
+            </a>
+            
+              <ul>
+                
+                  <li class=active>
+                    <a href="/admin/examples/city/">Cities (django-select2)</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/category/">Categories (django-mptt)</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/wysiwygeditor/">Wysiwyg editors</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/reversioneditem/">Reversioned items</a></li>
+                
+                  <li>
+                    <a href="/admin/examples/importexportitem/">Import export items</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+        
+          <li>
+            <a href="/admin/cms/page/"><i class="icon-file"></i>Django CMS
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="/admin/cms/page/">Pages</a></li>
+                
+                  <li>
+                    <a href="/admin/snippet/snippet/">Snippets</a></li>
+                
+                  <li>
+                    <a href="/admin/cmsplugin_filer_image/thumbnailoption/">Thumbnail options</a></li>
+                
+                  <li>
+                    <a href="/admin/sites/site/">Sites</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+        
+          <li>
+            <a href="/admin/filer/folder/"><i class="icon-picture"></i>Filer
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="/admin/filer/folder/">Browse files</a></li>
+                
+                  <li>
+                    <a href="/admin/filer/folderpermission/">Permissions</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+        
+          <li>
+            <a href="/admin/auth/user/"><i class="icon-lock"></i>Auth
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="/admin/auth/user/">Users</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+        
+          <li>
+            <a href="/admin/custom/"><i class="icon-cog"></i>Custom view
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="/admin/custom/">Custom link</a></li>
+                
+                  <li>
+                    <a href="/admin/non-existant/">Check out error 404</a></li>
+                
+              </ul>
+            
+          </li>
+        
+      
+    
+  </ul>
+</div>
+
+
+            </div>
+          
+        
+
+      </div>
+    </div>
+  
+
+  
+  <!-- Sticky footer push -->
+  <div id="push"></div>
+  
+
+</div>
+
+
+  
+  <div id="footer" class="footer">
+    <div class="content">
+      <div class="tools">
+        
+          <a href="http://djangosuit.com/support/" target="_blank" class="icon"><i class="icon-question-sign"></i>Support</a>
+          <a href="http://djangosuit.com/pricing/" target="_blank" class="icon"><i class="icon-bookmark"></i>Licence</a>
+          <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon"><i class="icon-comment"></i>Report a bug</a>
+        
+      </div>
+
+      <div class="copyright">
+        
+          Copyright &copy; 2013 DjangoSuit.com<br>Developed by <a href="http://djangosuit.com" target="_blank">DjangoSuit.com</a>
+        
+      </div>
+
+      <div class="branding">
+        
+          Django Suit
+          
+            v0.2.5
+          
+        
+      </div>
+    </div>
+  </div>
+  
+
+
+  <script src="/static/suit/js/suit.js"></script>
+  
+
+</body>
+</html>
