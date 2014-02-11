@@ -13,75 +13,23 @@
 <body class="change-list">
 <!-- Sticky footer wrap -->
 <div id="wrap">
-
     <!-- Container -->
-
-        <div id="container">
-
-
-
-                    <!-- Header -->
-                    <div id="header" class="header">
-                        <div id="branding">
-                            <a href="/admin/"><h1 id="site-name">Django Suit</h1></a>
-                        </div>
-
-
-                        <div class="header-content header-content-first">
-                            <div class="header-column icon">
-                                <i class="icon-time"></i>
-                            </div>
-                            <div class="header-column">
-                                <span class="date"> Tuesday, 11th February 2014</span><br>
-                                <span class="time" id="clock">08:56</span>
-                            </div>
-                        </div>
-
-
-
-
-                            <!--<div class="header-content">
-                                <div class="header-column icon">
-                                    <i class="icon-comment"></i>
-                                </div>
-                                <div class="header-column">
-                                    <a href="" class="grey"><b>2</b> new messages</a>
-                                </div>
-                            </div>-->
-
-        <div class="header-content">
-                <div class="header-column icon">
-                        <i class="icon-home"></i><br>
-                        <i class="icon-comment"></i>
-                </div>
-                <div class="header-column">
-                        <a href="/" class="grey">DjangoSuit.com</a><br>
-                        <span class="grey">Demo data will reset every 15 minutes</span>
-                </div>
+    <div id="container">
+        <!-- Header -->
+        <div id="header" class="header">
+            <div id="branding">
+                <a href=""><h1 id="site-name">逐冰之旅</h1></a>
+            </div>
+            <div id="user-tools">
+                Welcome,
+                <strong><%=userInfo.taobao_user_nick%></strong>.
+                <span class="user-links">
+                <span class="separator">|</span>
+                <a href="/oauth/logout/">退出</a>
+                </span>
+            </div>
         </div>
-
-
-
-                            <div id="user-tools">
-                                Welcome,
-                                <strong>
-
-                                        Demo</strong>.
-                                <span class="user-links">
-
-
-
-                                    <a href="/admin/password_change/">Change password</a>
-                                    <span class="separator">|</span>
-                                    <a href="/admin/logout/">Log out</a>
-                                    </span>
-
-                            </div>
-
-
-                    </div>
-
-                <!-- END Header -->
+        <!-- END Header -->
 
 
 
@@ -112,9 +60,6 @@
 
 
                                 <h2 class="content-title">Select city to change</h2>
-
-
-
     <div id="content-main">
 
         <div class="inner-center-column">
@@ -520,43 +465,18 @@
 
     <!-- Sticky footer push -->
     <div id="push"></div>
-
-
 </div>
-
-
 
     <div id="footer" class="footer">
         <div class="content">
-            <div class="tools">
-
-                    <a href="http://djangosuit.com/support/" target="_blank" class="icon"><i class="icon-question-sign"></i>Support</a>
-                    <a href="http://djangosuit.com/pricing/" target="_blank" class="icon"><i class="icon-bookmark"></i>Licence</a>
-                    <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon"><i class="icon-comment"></i>Report a bug</a>
-
-            </div>
-
             <div class="copyright">
-
-                    Copyright &copy; 2013 DjangoSuit.com<br>Developed by <a href="http://djangosuit.com" target="_blank">DjangoSuit.com</a>
-
+                Copyright &copy; 2014 gymnot.com<br>Developed by <a href="http://icewhite.us/" target="_blank">Ice White</a>
             </div>
-
             <div class="branding">
-
-                    Django Suit
-
-                        v0.2.5
-
-
+                逐冰之旅
             </div>
         </div>
     </div>
-
-
-
-    <script src="/static/suit/js/suit.js"></script>
-
-
+    <script src="/static/js/suit.js"></script>
 </body>
 </html>
