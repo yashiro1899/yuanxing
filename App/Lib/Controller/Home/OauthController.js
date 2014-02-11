@@ -11,7 +11,8 @@ module.exports = Controller(function() {
             var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
 
             return promise.then(function(result) {
-                that.redirect("/");
+                if (result) that.redirect("/");
+                else that.end(that.get("error_description") || "登录失败！");
             });
         },
         logoutAction: function() {
