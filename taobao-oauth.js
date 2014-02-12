@@ -7,6 +7,7 @@ var defaultOAuth2Conf = {
     appSecret: '',
     authorizationEndpoint: 'https://oauth.taobao.com/authorize',
     tokenEndpoint: 'https://oauth.taobao.com/token',
+    apiEndpoint: "https://eco.taobao.com/router/rest",
     redirectUri: ''
 };
 
@@ -62,8 +63,8 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
         params['grant_type'] = 'authorization_code';
         params['code'] = code;
         params['redirect_uri'] = this.conf["redirectUri"];
-        params['client_id'] = "21695917";
-        params['client_secret'] = "f74cb82dafd6ee17b54bf0be707a5116";
+        params['client_id'] = this.conf["appKey"];
+        params['client_secret'] = this.conf["appSecret"];
 
         that._request(this.conf["tokenEndpoint"], params, null, function(error, data) {
             try {
@@ -83,7 +84,7 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params) {
     var deferred = getDefer();
 
     token = token["access_token"];
-    this._request("https://eco.taobao.com/router/rest", params, token, function(error, data) {
+    this._request(this.conf["apiEndpoint"], params, token, function(error, data) {
         try {
             var result = JSON.parse(data);
             deferred.resolve(result);
