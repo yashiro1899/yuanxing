@@ -1,6 +1,9 @@
 var cookie = require("cookie");
-var querystring = require('querystring');
+var fs = require("fs");
 var https = require('https');
+var path = require('path');
+var querystring = require('querystring');
+var util = require("util");
 
 var defaultOAuth2Conf = {
     appKey: '',
@@ -67,6 +70,11 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
         params['client_secret'] = this.conf["appSecret"];
 
         that._request(this.conf["tokenEndpoint"], params, null, function(error, data) {
+            if (error) {
+                deferred.resolve(false);
+                return false;
+            }
+
             try {
                 var result = JSON.parse(data);
                 that._storeAccessToken(req, res, result);
@@ -83,8 +91,14 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params) {
     var token = this._getAccessToken(req);
     var deferred = getDefer();
 
+    params["v"] = "2.0";
     token = token["access_token"];
     this._request(this.conf["apiEndpoint"], params, token, function(error, data) {
+        if (error) {
+            deferred.resolve(null);
+            return false;
+        }
+
         try {
             var result = JSON.parse(data);
             deferred.resolve(result);
@@ -99,26 +113,36 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
     var that = this;
     var parsed = require('url').parse(url, true);
     var headers = {};
+    var getMimeType = require('simple-mime')('application/octect-stream');
+    var boundary = "----webkitformboundary";
+    var body = "";
+    boundary += (+(new Date())).toString(16);
 
+    if (params.pic) {
+        body += util.format('\r\n--%s\r\n', boundary);
+        body += util.format('Content-Disposition: form-data; name="pic"; filename="%s"\r\n', params.pic);
+        body += util.format('Content-Type: %s\r\n\r\n', getMimeType(params.pic));
+        body += fs.readFileSync(params.pic);
+        body += util.format('\r\n--%s--', boundary);
+        delete params.pic;
+    }
     if (access_token) params["access_token"] = access_token;
-    var str = querystring.stringify(params);
 
     headers['Host'] = parsed.host;
-    headers['Content-Length'] = params ? Buffer.byteLength(str) : 0;
+    headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
     if (headers['Content-Length'] > 0) {
-        headers['Content-Type'] = "application/x-www-form-urlencoded";
+        headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary + '';
     }
 
-    str = parsed.pathname + "?" + str;
     var options = {
         host: parsed.hostname,
         port: parsed.port,
-        path: str,
+        path: parsed.pathname + "?" + querystring.stringify(params),
         method: "POST",
         headers: headers
     };
 
-    that._executeRequest(https, options, str, callback);
+    that._executeRequest(https, options, body, callback);
 };
 
 OAuth2.prototype._executeRequest = function(library, options, post_body, callback) {
@@ -146,7 +170,7 @@ OAuth2.prototype._executeRequest = function(library, options, post_body, callbac
     });
     request.on('error', function(e) {
         callbackCalled = true;
-        callback(e, {});
+        callback(e, null);
     });
 
     request.write(post_body);

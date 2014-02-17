@@ -5,7 +5,8 @@
   "main": "www/index.js",
   "dependencies": {
     "thinkjs": "~0.4.0",
-    "cookie": "~0.1.0"
+    "cookie": "~0.1.0",
+    "simple-mime": "0.0.8"
   },
   "devDependencies": {},
   "scripts": {
