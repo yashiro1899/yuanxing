@@ -14,7 +14,7 @@ module.exports = Controller("Home/BaseController", function() {
             var promise = oauth.accessProtectedResource(req, res, {
                 "fields": "num_iid,list_time",
                 "method": "taobao.items.onsale.get",
-                "page_no": 3,
+                "page_no": this.get("p"),
                 "page_size": 20
             }).then(function(result) {
                 var total = 0;
