@@ -92,6 +92,7 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params) {
     var deferred = getDefer();
 
     params["v"] = "2.0";
+    params["format"] = "json";
     token = token["access_token"];
     this._request(this.conf["apiEndpoint"], params, token, function(error, data) {
         if (error) {
