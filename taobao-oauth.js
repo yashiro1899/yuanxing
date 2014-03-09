@@ -155,7 +155,7 @@ OAuth2.prototype._executeRequest = function(library, options, post_body, callbac
         response.on("data", function(chunk) {
             result += chunk;
         });
-        response.addListener("end", function() {
+        response.on("end", function() {
             if (!callbackCalled) {
                 callbackCalled = true;
                 if (response.statusCode != 200 && (response.statusCode != 301) && (response.statusCode != 302)) {
