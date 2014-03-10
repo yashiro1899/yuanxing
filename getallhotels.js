@@ -18,9 +18,10 @@ data.reduce(function(sequence, ids) {
         if (!result) return false;
 
         result.data.forEach(function(hotel) {
-            if (hotel.namechn == "香港万怡酒店") {
+            if (hotel.namechn == "深圳阳光酒店") {
                 var roomtypeids = [];
-                hotel.rooms.forEach(function(room) {
+                hotel.rooms.forEach(function(room, index) {
+                    if (index > 15) return false;
                     roomtypeids.push(room.roomtypeid);
                 });
 
@@ -30,7 +31,7 @@ data.reduce(function(sequence, ids) {
                     "checkInDate": "2014-03-11",
                     "checkOutDate": "2014-03-14"
                 }).then(function(price) {
-                    price = JSON.stringify(price);
+                    price = JSON.stringify(price, null, 4);
                     console.log(price)
                 });
             }
