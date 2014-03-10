@@ -3,11 +3,14 @@ var headers = {};
 var data = {
     'Usercd': 'SZ2747',
     'Authno': '123456',
-    'QueryType': 'hotelpriceall',
-    'hotelIds': '1/2/3',
-    'checkInDate': '2014-03-04',
-    'checkOutDate': '2014-03-08'
+    'QueryType': 'hotelinfo',
+    'hotelIds': '1'
+    // 'QueryType': 'hotelpriceall',
+    // 'roomtypeids': '1/2/3',
+    // 'checkInDate': '2014-03-11',
+    // 'checkOutDate': '2014-03-13'
 };
+// max hotelid: 10110
 
 data = JSON.stringify(data);
 data = new Buffer(data, 'utf8');
@@ -33,6 +36,7 @@ var request = http.request(options, function(response) {
         try {
             result = '(' + result + ')';
             result = eval(result);
+            result = JSON.stringify(result);
             console.log(result);
         } catch(e) {
             console.log(e);
