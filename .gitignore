@@ -7,3 +7,4 @@ supervisord
 www/bower_components/
 sftp-config.json
 taobao.conf
+jielv.conf
