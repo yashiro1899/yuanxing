@@ -4,6 +4,17 @@ var https = require('https');
 var path = require('path');
 var querystring = require('querystring');
 var util = require("util");
+var Promise = require('es6-promise').Promise;
+
+var getDefer = function() {
+    var deferred = {};
+    deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+    return deferred;
+};
+
 
 var defaultOAuth2Conf = {
     appKey: '',
@@ -31,7 +42,7 @@ function OAuth2(conf) {
 OAuth2.prototype.getUserInfo = function(req, res) {
     var info = this._getAccessToken(req);
 
-    if (Object.keys(info).length > 0) return getPromise(info);
+    if (Object.keys(info).length > 0) return Promise.resolve(info);
 
     this.obtainingAuthorization(req, res);
     return getDefer().promise;

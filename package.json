@@ -6,7 +6,8 @@
   "dependencies": {
     "thinkjs": "~0.4.0",
     "cookie": "~0.1.0",
-    "simple-mime": "0.0.8"
+    "simple-mime": "0.0.8",
+    "es6-promise": "^0.1.1"
   },
   "devDependencies": {},
   "scripts": {
