@@ -6,19 +6,28 @@ var config = require("./auth.conf").mysql;
 var insert = function(values) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "\
-        INSERT INTO `think_hotel` (hotelid,hotelcd,namechn,nameeng,country,state,city,website)\
-        SELECT * FROM (SELECT " + values.join(",") + ") as temp\
-        WHERE NOT EXISTS (\
-            SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` = " + values[0] + "\
-        ) LIMIT 1";
+        var querystring = "SELECT `namechn` FROM `think_hotel` WHERE `hotelid` = " + values[0];
+
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
-            if (err) resolve(null);
+            if (!err && rows.length > 0) {
+                console.log(values[0], "exists!");
+                resolve(null);
+                return false;
+            }
 
-            resolve(rows);
+            connection.query(querystring, function(err, rows, fields) {
+                if (err) {
+                    console.log(values[0], "error!");
+                    resolve(null);
+                    return false;
+                }
+
+                console.log(values[0], "success!");
+                resolve(null);
+            });
+            connection.end();
         });
-        connection.end();
     });
 };
 
@@ -32,7 +41,7 @@ for (; i < 505; i += 1) {
 }
 
 var total = 0;
-console.log(total, + (new Date()));
+console.log("total:", total, ", time:", + (new Date()));
 data.reduce(function(sequence, ids) {
     return sequence.then(function() {
         return jielvapi({
@@ -43,7 +52,7 @@ data.reduce(function(sequence, ids) {
         if (!result) return false;
 
         total += result.data.length;
-        console.log(total, + (new Date()));
+        console.log("total:", total, ",time:", + (new Date()));
         result.data.reduce(function(s, h) {
             return s.then(function() {
                 var values = [];
@@ -57,8 +66,6 @@ data.reduce(function(sequence, ids) {
                 values.push(JSON.stringify(h.website));
 
                 return insert(values);
-            }).then(function(result) {
-                if (!result) console.log(h.hotelid);
             });
         }, Promise.resolve());
     });
