@@ -33,7 +33,7 @@ function OAuth2(conf) {
         this.conf[k] = defaultOAuth2Conf[k];
     }
 
-    if (!conf) conf = require('./taobao.conf');
+    if (!conf) conf = require('./auth.conf').taobao;
     for (k in conf) {
         this.conf[k] = conf[k];
     }
@@ -98,13 +98,12 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
     return deferred.promise;
 };
 
-OAuth2.prototype.accessProtectedResource = function(req, res, params) {
-    var token = this._getAccessToken(req);
-    var deferred = getDefer();
+OAuth2.prototype.accessProtectedResource = function(req, res, params, token) {
+    token = token || this._getAccessToken(req)["access_token"];
 
+    var deferred = getDefer();
     params["v"] = "2.0";
     params["format"] = "json";
-    token = token["access_token"];
     this._request(this.conf["apiEndpoint"], params, token, function(error, data) {
         if (error) {
             deferred.resolve(null);

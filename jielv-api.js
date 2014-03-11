@@ -9,7 +9,7 @@ var getDefer = function() {
     });
     return deferred;
 };
-var conf = require('./jielv.conf');
+var conf = require('./auth.conf').jielv;
 
 module.exports = function(data) {
     if (!data) return getDefer().promise;
