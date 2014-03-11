@@ -1,40 +1,58 @@
 var jielvapi = require("./jielv-api.js");
 var Promise = require('es6-promise').Promise;
+var mysql = require('mysql');
+var config = require("./auth.conf").mysql;
+
+var insert = function(values) {
+    return new Promise(function(resolve, reject) {
+        var connection = mysql.createConnection(config);
+        var querystring = 'INSERT INTO `think_hotel` VALUES (' + values + ')';
+        connection.connect();
+        connection.query(querystring, function(err, rows, fields) {
+            if (err) resolve(null);
+
+            resolve(rows);
+        });
+        connection.end();
+    });
+};
 
 var data = [];
 var i = 0, j, hotelIds;
-for (; i < 5; i += 1) {
+for (; i < 505; i += 1) {
     hotelIds = [];
     for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) hotelIds.push(j);
-    hotelIds = hotelIds.join("/")
+    hotelIds = hotelIds.join("/");
     data.push(hotelIds);
 }
 
 data.reduce(function(sequence, ids) {
-    return jielvapi({
-        "QueryType": "hotelinfo",
-        "hotelIds": ids
+    return sequence.then(function() {
+        return jielvapi({
+            "QueryType": "hotelinfo",
+            "hotelIds": ids
+        });
     }).then(function(result) {
         if (!result) return false;
 
-        result.data.forEach(function(hotel) {
-            if (hotel.namechn == "深圳阳光酒店") {
-                var roomtypeids = [];
-                hotel.rooms.forEach(function(room, index) {
-                    if (index > 15) return false;
-                    roomtypeids.push(room.roomtypeid);
-                });
+        result.data.reduce(function(s, h) {
+            return s.then(function() {
+                var values = [];
+                values.push(h.hotelid);
+                values.push(JSON.stringify(h.hotelcd));
+                values.push(JSON.stringify(h.namechn));
+                values.push(JSON.stringify(h.nameeng));
+                values.push(h.country);
+                values.push(h.state);
+                values.push(h.city);
+                values.push(JSON.stringify(h.website));
+                values.push(0);
 
-                jielvapi({
-                    "QueryType": "hotelpriceall",
-                    "roomtypeids": roomtypeids.join("/"),
-                    "checkInDate": "2014-03-11",
-                    "checkOutDate": "2014-03-14"
-                }).then(function(price) {
-                    price = JSON.stringify(price, null, 4);
-                    console.log(price)
-                });
-            }
-        });
+                return insert(values.join(","));
+            }).then(function(result) {
+                if (!result) return false;
+                console.log(h.hotelid, h.namechn);
+            });
+        }, Promise.resolve());
     });
 }, Promise.resolve());
