@@ -6,7 +6,12 @@ var config = require("./auth.conf").mysql;
 var insert = function(values) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = 'INSERT INTO `think_hotel` VALUES (' + values + ')';
+        var querystring = "\
+        INSERT INTO `think_hotel` (hotelid,hotelcd,namechn,nameeng,country,state,city,website)\
+        SELECT * FROM (SELECT " + values.join(",") + ") as temp\
+        WHERE NOT EXISTS (\
+            SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` = " + values[0] + "\
+        ) LIMIT 1";
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
             if (err) resolve(null);
@@ -50,13 +55,21 @@ data.reduce(function(sequence, ids) {
                 values.push(h.state);
                 values.push(h.city);
                 values.push(JSON.stringify(h.website));
-                values.push(0);
 
-                return insert(values.join(","));
+                return insert(values);
             }).then(function(result) {
-                if (!result) return false;
-                console.log(h.hotelid, h.namechn);
+                if (!result) console.log(h.hotelid);
             });
         }, Promise.resolve());
     });
 }, Promise.resolve());
+//
+//5
+//down vote
+//You can use SQL_CALC_FOUND_ROWS like this
+//
+//SELECT SQL_CALC_FOUND_ROWS * FROM users limit 0,5;
+//It gets the row count before applying any LIMIT clause. It does need another query to fetch the results but that query can simply be
+//
+//SELECT FOUND_ROWS()
+//and hence you don't have to repeat your complicated query.'
