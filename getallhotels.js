@@ -35,6 +35,7 @@ data.reduce(function(sequence, ids) {
     }).then(function(result) {
         if (!result) return false;
 
+        console.log(result.data.length);
         result.data.reduce(function(s, h) {
             return s.then(function() {
                 var values = [];
