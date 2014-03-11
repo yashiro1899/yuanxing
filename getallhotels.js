@@ -3,31 +3,36 @@ var Promise = require('es6-promise').Promise;
 var mysql = require('mysql');
 var config = require("./auth.conf").mysql;
 
-var insert = function(values) {
+var select = function(id) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "SELECT `namechn` FROM `think_hotel` WHERE `hotelid` = " + values[0];
+        var querystring = "SELECT `namechn` FROM `think_hotel` WHERE `hotelid` = " + id;
 
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
             if (!err && rows.length > 0) {
-                console.log(values[0], "exists!");
-                resolve(null);
-                return false;
+                resolve(true);
+            } else {
+                resolve(false);
             }
-
-            connection.query(querystring, function(err, rows, fields) {
-                if (err) {
-                    console.log(values[0], "error!");
-                    resolve(null);
-                    return false;
-                }
-
-                console.log(values[0], "success!");
-                resolve(null);
-            });
-            connection.end();
         });
+        connection.end();
+    });
+};
+var insert = function(values) {
+    return new Promise(function(resolve, reject) {
+        var connection = mysql.createConnection(config);
+        var querystring = "INSERT INTO `think_hotel` VALUES (" + values.join(',') + ")";
+
+        connection.connect();
+        connection.query(querystring, function(err, rows, fields) {
+            if (err) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+        connection.end();
     });
 };
 
@@ -55,17 +60,26 @@ data.reduce(function(sequence, ids) {
         console.log("total:", total, ",time:", + (new Date()));
         result.data.reduce(function(s, h) {
             return s.then(function() {
-                var values = [];
-                values.push(h.hotelid);
-                values.push(JSON.stringify(h.hotelcd));
-                values.push(JSON.stringify(h.namechn));
-                values.push(JSON.stringify(h.nameeng));
-                values.push(h.country);
-                values.push(h.state);
-                values.push(h.city);
-                values.push(JSON.stringify(h.website));
-
-                return insert(values);
+                return select(h.hotelid);
+            }).then(function(exists) {
+                if (exists) {
+                    console.log(h.hotelid, "exists");
+                    return Promise.resolve(null);
+                } else {
+                    var values = [];
+                    values.push(h.hotelid);
+                    values.push(JSON.stringify(h.hotelcd));
+                    values.push(JSON.stringify(h.namechn));
+                    values.push(JSON.stringify(h.nameeng));
+                    values.push(h.country);
+                    values.push(h.state);
+                    values.push(h.city);
+                    values.push(JSON.stringify(h.website));
+                    values.push(0);
+                    return select(values.join(","));
+                }
+            }).then(function(success) {
+                if (success !== null) console.log(h.hotelid, success ? "success" : "error");
             });
         }, Promise.resolve());
     });
