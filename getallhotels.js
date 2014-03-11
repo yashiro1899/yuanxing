@@ -26,6 +26,8 @@ for (; i < 505; i += 1) {
     data.push(hotelIds);
 }
 
+var total = 0;
+console.log(total, + (new Date()));
 data.reduce(function(sequence, ids) {
     return sequence.then(function() {
         return jielvapi({
@@ -35,7 +37,8 @@ data.reduce(function(sequence, ids) {
     }).then(function(result) {
         if (!result) return false;
 
-        console.log(result.data.length);
+        total += result.data.length;
+        console.log(total, + (new Date()));
         result.data.reduce(function(s, h) {
             return s.then(function() {
                 var values = [];
