@@ -1,6 +1,7 @@
 .DS_Store
+App/Conf/
 Runtime/
+auth.conf
 logs/
 node_modules/
 www/bower_components/
-auth.conf
