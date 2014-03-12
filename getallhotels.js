@@ -98,13 +98,5 @@ data.reduce(function(sequence, ids) {
         console.log("total:", total, ",time:", now - start, "milliseconds");
     });
 }, Promise.resolve());
-//
-//5
-//down vote
-//You can use SQL_CALC_FOUND_ROWS like this
-//
-//SELECT SQL_CALC_FOUND_ROWS * FROM users limit 0,5;
-//It gets the row count before applying any LIMIT clause. It does need another query to fetch the results but that query can simply be
-//
-//SELECT FOUND_ROWS()
-//and hence you don't have to repeat your complicated query.'
+// SELECT SQL_CALC_FOUND_ROWS * FROM users limit 0,5;
+// SELECT FOUND_ROWS()
