@@ -1,20 +1,17 @@
-var jielvapi = require("./jielv-api.js");
-var Promise = require('es6-promise').Promise;
-var mysql = require('mysql');
 var config = require("./auth.conf").mysql;
+var jielvapi = require("./jielv-api.js");
+var mysql = require('mysql');
+var Promise = require('es6-promise').Promise;
 
-var select = function(id) {
+var select = function(ids) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "SELECT `namechn` FROM `think_hotel` WHERE `hotelid` = " + id;
+        var querystring = "SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")";
 
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
-            if (!err && rows.length > 0) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+            if (err) rows = [];
+            resolve(rows);
         });
         connection.end();
     });
@@ -22,7 +19,7 @@ var select = function(id) {
 var insert = function(values) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "INSERT INTO `think_hotel` VALUES (" + values.join(',') + ")";
+        var querystring = "INSERT INTO `think_hotel` VALUES " + values;
 
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
@@ -46,42 +43,57 @@ for (; i < 505; i += 1) {
 }
 
 var total = 0;
-console.log("total:", total, ", time:", + (new Date()));
+var start = +(new Date());
 data.reduce(function(sequence, ids) {
+    var values = [];
+
     return sequence.then(function() {
         return jielvapi({
             "QueryType": "hotelinfo",
             "hotelIds": ids
         });
     }).then(function(result) {
-        if (!result) return false;
+        if (!result) {
+            result = {
+                data: []
+            };
+        }
 
         total += result.data.length;
-        console.log("total:", total, ",time:", + (new Date()));
-        result.data.reduce(function(s, h) {
-            return s.then(function() {
-                return select(h.hotelid);
-            }).then(function(exists) {
-                if (exists) {
-                    console.log(h.hotelid, "exists");
-                    return Promise.resolve(null);
-                } else {
-                    var values = [];
-                    values.push(h.hotelid);
-                    values.push(JSON.stringify(h.hotelcd));
-                    values.push(JSON.stringify(h.namechn));
-                    values.push(JSON.stringify(h.nameeng));
-                    values.push(h.country);
-                    values.push(h.state);
-                    values.push(h.city);
-                    values.push(JSON.stringify(h.website));
-                    values.push(0);
-                    return select(values.join(","));
-                }
-            }).then(function(success) {
-                if (success !== null) console.log(h.hotelid, success ? "success" : "error");
-            });
-        }, Promise.resolve());
+        result.data.forEach(function(h) {
+            var v = [];
+            v.push(h.hotelid);
+            v.push(JSON.stringify(h.hotelcd));
+            v.push(JSON.stringify(h.namechn));
+            v.push(JSON.stringify(h.nameeng));
+            v.push(h.country);
+            v.push(h.state);
+            v.push(h.city);
+            v.push(JSON.stringify(h.website));
+            v.push(0);
+            values.push(v);
+        });
+        var ids = values.map(function(h) {
+            return h[0];
+        });
+        return select(ids.join(","));
+    }).then(function(result) {
+        result = result.map(function(h) {
+            return h.hotelid;
+        });
+        values = values.filter(function(h) {
+            return result.indexOf(h[0]) == -1;
+        });
+        return insert(values.map(function(h) {
+            return "(" + h.join(",") + ")";
+        }).join(','));
+    }).then(function(result) {
+        values.forEach(function(h) {
+            console.log(h[0], "error");
+        });
+
+        var now = +(new Date());
+        console.log("total:", total, ",time:", now - start, "milliseconds");
     });
 }, Promise.resolve());
 //
