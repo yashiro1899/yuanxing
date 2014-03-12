@@ -27,6 +27,7 @@ module.exports = Controller("Home/BaseController", function() {
                 if (result && result.success == 1) data = result.data;
 
                 that.assign("list", data);
+                that.display();
                 return D("Hotel").count();
             }).then(function(result) {
                 console.log(result);
