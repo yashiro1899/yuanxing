@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <title>逐冰之旅</title>
+    <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/docs/assets/css/bootstrap.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/suit.css" media="all">
+    <script src="/bower_components/jquery/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/docs/assets/js/bootstrap.min.js"></script>
+</head>
+<body class="change-list">
+    <div id="wrap">
+        <div id="container">
+            <div id="header" class="header">
+                <div id="branding">
+                    <a href="/"><h1 id="site-name">逐冰之旅</h1></a>
+                </div>
+                <div id="user-tools">
+                    欢迎，
+                    <strong><%=userInfo.taobao_user_nick%></strong>.
+                    <span class="user-links"><span class="separator">|</span>
+                    <a href="/oauth/logout/">退出</a></span>
+                </div>
+            </div>
