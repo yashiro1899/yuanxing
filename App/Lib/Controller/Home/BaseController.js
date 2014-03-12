@@ -8,6 +8,8 @@ module.exports = Controller(function() {
         userInfo: {},
         init: function(http) {
             this.super_("init", http);
+            this.assign("title", this.title || "");
+            this.assign("navType", this.navType || "");
 
             var that = this;
             return oauth.getUserInfo(this.http.req, this.http.res).then(function(u) {

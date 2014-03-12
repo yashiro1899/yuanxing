@@ -225,7 +225,7 @@ h3{font-weight:bold;font-size:16px;line-height:36px;text-shadow:0 1px rgba(255,2
 .login #content-main form{margin:15px 15px 0}.login #content-main form input[type=text],.login #content-main form input[type=password]{width:90%}
 .login #content-main .submit-row{background:#f6f7f8;margin:10px -15px 0;padding:10px 15px;border-top:1px solid #eee;box-shadow:inset 1px 1px 0 #fff;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box;-webkit-border-bottom-left-radius:4px;-moz-border-radius-bottomleft:4px;border-bottom-left-radius:4px;-webkit-border-bottom-right-radius:4px;-moz-border-radius-bottomright:4px;border-bottom-right-radius:4px}
 .login #content-main .control-group{border:0}
-.left-nav{margin-top:10px}.left-nav>ul{list-style:none;margin:0;padding:5px 0}.left-nav>ul>li>a{border-bottom:1px solid #ededed;display:block;padding:5px 10px 5px 13px;color:#666;text-decoration:none;position:relative}.left-nav>ul>li>a i{margin-right:10px;opacity:.8}
+.left-nav{margin-top:30px}.left-nav>ul{list-style:none;margin:0;padding:5px 0}.left-nav>ul>li>a{border-bottom:1px solid #ededed;display:block;padding:5px 10px 5px 13px;color:#666;text-decoration:none;position:relative}.left-nav>ul>li>a i{margin-right:10px;opacity:.8}
 .left-nav>ul>li.active{line-height:18px}
 .left-nav>ul>li>a em{float:right;font-style:normal;font-size:11px;margin:0;position:absolute;right:10px}
 .left-nav>ul>li:last-child>a{border:0}
