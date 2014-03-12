@@ -23,11 +23,7 @@
         </thead>
         <tbody>
         <% list.forEach(function(v, i) { %>
-        <% if (i % 2 === 0) { %>
-            <tr class="row1">
-        <% } else { %>
-            <tr class="row2">
-        <% } %>
+            <tr>
                 <td rowspan="<%=v.rooms.length%>" style="vertical-align:middle">
                 <% if (v.website.length > 0) { %>
                     <a href="//<%=v.website%>"><%=v.namechn%></a>
@@ -40,7 +36,7 @@
                 </td>
         <% v.rooms.forEach(function(r, j) { %>
         <% if (j !== 0) { %>
-            <tr class="row1">
+            <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
                 <td>
