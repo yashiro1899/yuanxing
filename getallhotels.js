@@ -88,9 +88,11 @@ data.reduce(function(sequence, ids) {
             return "(" + h.join(",") + ")";
         }).join(','));
     }).then(function(result) {
-        values.forEach(function(h) {
-            console.log(h[0], "error");
-        });
+        if (!result) {
+            values.forEach(function(h) {
+                console.log(h[0], "error");
+            });
+        }
 
         var now = +(new Date());
         console.log("total:", total, ",time:", now - start, "milliseconds");
