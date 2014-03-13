@@ -26,6 +26,12 @@ module.exports = Controller("Home/BaseController", function() {
                 var data = [];
                 if (result && result.success == 1) data = result.data;
 
+                data = data.map(function(h) {
+                    var website = h.website.trim();
+                    if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
+                    h.website = website;
+                    return h;
+                });
                 that.assign("list", data);
                 that.display();
                 return D("Hotel").count();

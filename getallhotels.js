@@ -53,15 +53,15 @@ data.reduce(function(sequence, ids) {
             "hotelIds": ids
         });
     }).then(function(result) {
-        if (!result) {
-            result = {
-                data: []
-            };
-        }
+        var data = [];
+        if (result && result.success == 1) data = result.data;
 
-        total += result.data.length;
-        result.data.forEach(function(h) {
+        total += data.length;
+        data.forEach(function(h) {
             var v = [];
+            var website = h.website.trim();
+            if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
+
             v.push(h.hotelid);
             v.push(JSON.stringify(h.hotelcd));
             v.push(JSON.stringify(h.namechn));
@@ -69,7 +69,7 @@ data.reduce(function(sequence, ids) {
             v.push(h.country);
             v.push(h.state);
             v.push(h.city);
-            v.push(JSON.stringify(h.website));
+            v.push(JSON.stringify(website));
             v.push(0);
             values.push(v);
         });
