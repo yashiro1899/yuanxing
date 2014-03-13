@@ -24,14 +24,14 @@
         <tbody>
         <% list.forEach(function(v, i) { %>
             <tr>
-                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>" <% } %>style="vertical-align:middle">
+                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>"<% } %>>
                 <% if (v.website.length > 0) { %>
                     <a href="<%=v.website%>" target="_blank"><%=v.namechn%></a>
                 <% } else { %>
                     <%=v.namechn%>
                 <% } %>
                 </td>
-                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>" <% } %>style="vertical-align:middle">
+                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>"<% } %>>
                     <%=v.addresschn%>
                 </td>
         <% if (v.rooms.length > 0) { %>
