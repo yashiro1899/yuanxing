@@ -16,7 +16,8 @@ module.exports = Controller("Home/BaseController", function() {
             var page = parseInt(this.param("p"), 10) || 1;
             var pagination = {
                 required: false,
-                current: page
+                current: page,
+                item: "Hotels"
             };
             var promise = D("Hotel").field("hotelid").order("hotelid").page(page).select();
 
