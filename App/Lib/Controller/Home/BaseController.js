@@ -55,6 +55,7 @@ module.exports = Controller(function() {
                     }
                 }
                 pagination["list"] = list;
+                pagination["querystring"] = "";
                 if (querystring) pagination["querystring"] = "&" + querystring;
             }
             return pagination;
