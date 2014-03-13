@@ -4,6 +4,7 @@
  */
 var oauth = require("../../../../taobao-oauth");
 var jielvapi = require("../../../../jielv-api");
+var querystring = require('querystring');
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
@@ -15,8 +16,16 @@ module.exports = Controller("Home/BaseController", function() {
 
             var page = parseInt(this.param("p"), 10) || 1;
             var range = 0;
-            var promise = D("Hotel").field("hotelid").order("hotelid").page(page).select();
+            var query = this.param("q");
+            var formdata = {};
+            var model = D("Hotel");
+            if (query.length > 0) {
+                formdata["q"] = query;
+                model = model.where("namechn like '%" + query + "%'");
+            }
+            this.assign("formdata", formdata);
 
+            var promise = model.field("hotelid").order("hotelid").page(page).select();
             promise = promise.then(function(result) {
                 var ids = result.map(function(h) {
                     return h.hotelid;
@@ -37,10 +46,14 @@ module.exports = Controller("Home/BaseController", function() {
                     return h;
                 });
                 that.assign("list", data);
-                return D("Hotel").count();
+
+                model = D("Hotel");
+                if (query.length > 0) model = model.where("namechn like '%" + query + "%'");
+                return model.count();
             }).then(function(result) {
                 var total = result || 0;
-                var pagination = that.pagination(total, range, page);
+                var qs = querystring.stringify(formdata);
+                var pagination = that.pagination(total, range, page, qs);
 
                 that.assign('pagination', pagination);
                 that.display();

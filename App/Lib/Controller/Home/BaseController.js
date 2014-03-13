@@ -17,7 +17,7 @@ module.exports = Controller(function() {
                 that.assign("userInfo", that.userInfo);
             });
         },
-        pagination: function(total, range, current) {
+        pagination: function(total, range, current, querystring) {
             var ON_EACH_SIDE = 3;
             var ON_ENDS = 2;
             var pagination = {
@@ -30,6 +30,7 @@ module.exports = Controller(function() {
                 pagination["required"] = true;
                 pagination["total"] = total;
                 pagination["range"] = range;
+                pagination["current"] = current;
                 pagination["num_pages"] = num_pages;
                 pagination["item"] = "Hotels";
 
@@ -54,6 +55,7 @@ module.exports = Controller(function() {
                     }
                 }
                 pagination["list"] = list;
+                if (querystring) pagination["querystring"] = "&" + querystring;
             }
             return pagination;
         }

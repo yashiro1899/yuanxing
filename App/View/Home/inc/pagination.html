@@ -8,9 +8,9 @@
         <% } else if (i == pagination.current) { %>
             <li class="active"><a href=""><%=pagination.current%></a></li>
         <% } else if (i == pagination.num_pages) { %>
-            <li><a href="?p=<%=i%>" class="end"><%=i%></a></li>
+            <li><a href="?p=<%=i%><%=pagination.querystring%>" class="end"><%=i%></a></li>
         <% } else { %>
-            <li><a href="?p=<%=i%>"><%=i%></a></li>
+            <li><a href="?p=<%=i%><%=pagination.querystring%>"><%=i%></a></li>
         <% } %>
         <% }); %>
         </ul>
