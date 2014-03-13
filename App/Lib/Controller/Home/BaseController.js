@@ -25,14 +25,14 @@ module.exports = Controller(function() {
             };
             var list, num_pages, i;
 
+            pagination["total"] = total;
+            pagination["range"] = range;
+            pagination["item"] = "Hotels";
             if (total > 0 && range > 0 && total > range) {
                 num_pages = Math.ceil(total / 20);
                 pagination["required"] = true;
-                pagination["total"] = total;
-                pagination["range"] = range;
                 pagination["current"] = current;
                 pagination["num_pages"] = num_pages;
-                pagination["item"] = "Hotels";
 
                 list = [];
                 if (num_pages <= 8) {
@@ -49,7 +49,7 @@ module.exports = Controller(function() {
                     if (current < (num_pages - ON_EACH_SIDE - ON_ENDS)) {
                         for (i = current + 1; i <= current + ON_EACH_SIDE; i += 1) list.push(i);
                         list.push(".");
-                        for (i = num_pages - ON_ENDS; i <= num_pages; i += 1) list.push(i);
+                        for (i = num_pages - ON_ENDS + 1; i <= num_pages; i += 1) list.push(i);
                     } else {
                         for (i = current + 1; i <= num_pages; i += 1) list.push(i);
                     }

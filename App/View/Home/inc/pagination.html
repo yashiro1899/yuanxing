@@ -1,5 +1,5 @@
-<% if (pagination.required) { %>
 <div class="pagination-block">
+    <% if (pagination.required) { %>
     <div class="pagination">
         <ul>
         <% pagination.list.forEach(function(i) { %>
@@ -15,10 +15,10 @@
         <% }); %>
         </ul>
     </div>
+    <% } %>
     <div class="pagination-info muted">
         <%=pagination.range%>
         &nbsp; / &nbsp;
         <%=pagination.total%> <%=pagination.item%>
     </div>
 </div>
-<% } %>
