@@ -24,16 +24,17 @@
         <tbody>
         <% list.forEach(function(v, i) { %>
             <tr>
-                <td rowspan="<%=v.rooms.length%>" style="vertical-align:middle">
+                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>" <% } %>style="vertical-align:middle">
                 <% if (v.website.length > 0) { %>
                     <a href="<%=v.website%>" target="_blank"><%=v.namechn%></a>
                 <% } else { %>
                     <%=v.namechn%>
                 <% } %>
                 </td>
-                <td rowspan="<%=v.rooms.length%>" style="vertical-align:middle">
+                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>" <% } %>style="vertical-align:middle">
                     <%=v.addresschn%>
                 </td>
+        <% if (v.rooms.length > 0) { %>
         <% v.rooms.forEach(function(r, j) { %>
         <% if (j !== 0) { %>
             <tr>
@@ -44,6 +45,11 @@
                 </td>
             </tr>
         <% }); %>
+        <% } else { %>
+                <td></td>
+                <td></td>
+            </tr>
+        <% } %>
         <% }); %>
         </tbody>
     </table>
