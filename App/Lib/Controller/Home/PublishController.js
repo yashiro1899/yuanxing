@@ -40,7 +40,6 @@ module.exports = Controller("Home/BaseController", function() {
                     return h;
                 });
                 that.assign("list", data);
-                that.display();
                 return D("Hotel").count();
             }).then(function(result) {
                 var total = result || 0;
@@ -78,6 +77,7 @@ module.exports = Controller("Home/BaseController", function() {
                     pagination["list"] = list;
                 }
                 that.assign('pagination', pagination);
+                that.display();
             });
             return promise;
         }
