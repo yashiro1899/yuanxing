@@ -15,7 +15,6 @@ var getDefer = function() {
     return deferred;
 };
 
-
 var defaultOAuth2Conf = {
     appKey: '',
     appSecret: '',
@@ -82,16 +81,16 @@ OAuth2.prototype.redirectCallback = function(req, res, code) {
 
         that._request(this.conf["tokenEndpoint"], params, null, function(error, data) {
             if (error) {
-                deferred.resolve(false);
+                deferred.resolve(null);
                 return false;
             }
 
             try {
                 var result = JSON.parse(data);
                 that._storeAccessToken(req, res, result);
-                deferred.resolve(true);
+                deferred.resolve(result);
             } catch(e) {
-                deferred.resolve(false);
+                deferred.resolve(null);
             }
         });
     }
