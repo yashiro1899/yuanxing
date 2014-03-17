@@ -36,25 +36,21 @@ module.exports = Controller("Home/BaseController", function() {
                 var ids = result.map(function(h) {
                     return h.hotelid;
                 });
-                data = result;
-                data.forEach(function(h) {
-                    h.rooms = [];
+                return jielvapi({
+                    "QueryType": "hotelinfo",
+                    "hotelIds": ids.join("/")
                 });
-                // return jielvapi({
-                //     "QueryType": "hotelinfo",
-                //     "hotelIds": ids.join("/")
-                // });
-            // }).then(function(result) {
-                // var data = [];
-                // if (result && result.success == 1) data = result.data;
+            }).then(function(result) {
+                var data = [];
+                if (result && result.success == 1) data = result.data;
 
                 range = data.length;
-                // data = data.map(function(h) {
-                //     var website = h.website.trim();
-                //     if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
-                //     h.website = website;
-                //     return h;
-                // });
+                data = data.map(function(h) {
+                    var website = h.website.trim();
+                    if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
+                    h.website = website;
+                    return h;
+                });
                 that.assign("list", data);
 
                 model = D("Hotel");
