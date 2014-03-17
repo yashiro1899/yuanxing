@@ -62,19 +62,18 @@ module.exports = Controller("Home/BaseController", function() {
             return promise;
         },
         testAction: function() {
-                // that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
-                // return;
+            // that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+            // return;
             var that = this;
             var promise = oauth.accessProtectedResource(this.http.req, this.http.res, {
-                "item_ids": "10525763364,36401576288,20948335784",
-                "method": "taobao.hotel.rooms.search",
-                need_hotel: true,
-                need_room_type: true
+                "method": "taobao.hotel.get",
+                "hid": 12345
             });
 
             return promise.then(function(result) {
                 that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             });
+            // 50016161
         }
     };
 });
