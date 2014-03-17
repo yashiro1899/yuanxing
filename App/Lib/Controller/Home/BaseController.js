@@ -60,7 +60,7 @@ module.exports = Controller(function() {
                 that.assign("userInfo", that.userInfo);
             });
         },
-        pagination: function(total, range, current, querystring) {
+        pagination: function(total, range, current, querystring, limit) {
             var ON_EACH_SIDE = 3;
             var ON_ENDS = 2;
             var pagination = {
@@ -73,6 +73,7 @@ module.exports = Controller(function() {
             pagination["item"] = "Hotels";
             if (total > 0 && range > 0 && total > range) {
                 num_pages = Math.ceil(total / 20);
+                num_pages = num_pages > limit ? limit : num_pages;
                 pagination["required"] = true;
                 pagination["current"] = current;
                 pagination["num_pages"] = num_pages;

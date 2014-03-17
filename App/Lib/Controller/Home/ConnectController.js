@@ -44,16 +44,6 @@ module.exports = Controller("Home/BaseController", function() {
                     result = [];
                 }
 
-                if (result.length === 0) {
-                    range = result.length;
-                    var qs = querystring.stringify(formdata);
-                    var pagination = that.pagination(total, range, page, qs);
-
-                    that.assign("list", result);
-                    that.assign('pagination', pagination);
-                    that.display();
-                    return getDefer().promise;
-                }
                 return oauth.accessProtectedResource(req, res, {
                     "item_ids": result.join(','),
                     "method": "taobao.hotel.rooms.search",
@@ -115,16 +105,6 @@ module.exports = Controller("Home/BaseController", function() {
                     result = [];
                 }
 
-                if (result.length === 0) {
-                    range = result.length;
-                    var qs = querystring.stringify(formdata);
-                    var pagination = that.pagination(total, range, page, qs);
-
-                    that.assign("list", result);
-                    that.assign('pagination', pagination);
-                    that.display("connect:index");
-                    return getDefer().promise;
-                }
                 return oauth.accessProtectedResource(req, res, {
                     "item_ids": result.join(','),
                     "method": "taobao.hotel.rooms.search",
@@ -141,7 +121,7 @@ module.exports = Controller("Home/BaseController", function() {
                 range = result.length;
 
                 var qs = querystring.stringify(formdata);
-                var pagination = that.pagination(total, range, page, qs);
+                var pagination = that.pagination(total, range, page, qs, 101);
 
                 that.assign("list", result);
                 that.assign('pagination', pagination);
