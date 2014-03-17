@@ -9,8 +9,26 @@
             <div class="search-container">
                 <input type="text" size="40" name="q" value="<% if (formdata.q) { %><%=formdata.q%><% } %>" placeholder="酒店名称" />&nbsp;
                 <input type="submit" value="搜索" class="btn btn-info" />&nbsp;</div>
+                <% if (formdata.c) { %>
+                <input type="hidden" name="c" value="<%=formdata.c%>" />
+                <% } %>
         </form>
     </div>
+</div>
+<div class="xfull">
+    <ul class="toplinks breadcrumb">
+        <% if (formdata.c) { %>
+        <li class="date-back">
+            <a href="?">« All cities</a>
+            <span class="divider">|</span>
+        </li>
+        <li><%=hotcities[formdata.c] || "其他"%>&nbsp;&nbsp;</li>
+        <% } else { %>
+        <% for (var k in hotcities) { %>
+        <li><a href="?c=<%=k%>"><%=hotcities[k]%></a>&nbsp;</li>
+        <% } %>
+        <% } %>
+    </ul>
 </div>
 <div class="results">
     <table id="result_list" class="table table-striped table-bordered table-condensed">
