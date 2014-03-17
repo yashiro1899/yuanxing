@@ -40,11 +40,11 @@
         <tbody>
         <% list.forEach(function(v, i) { %>
             <tr>
-                <td>
-                    <a href="http://kezhan.trip.taobao.com/item.htm?item_id=<%=v.iid%>" target="_blank"><%=v.hotel.name%></a>
-                </td>
+                <td><%=v.hotel.name%></td>
                 <td><%=v.hotel.address%></td>
-                <td><%=v.room_type.name%></td>
+                <td>
+                    <a href="http://kezhan.trip.taobao.com/item.htm?item_id=<%=v.iid%>" target="_blank"><%=v.room_type.name%></a>
+                </td>
                 <td></td>
                 <td>
                     <a href="http://kezhan.trip.taobao.com/publish.htm?item_num_id=<%=v.iid%>&auto=false" target="_blank">编辑</a>
