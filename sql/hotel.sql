@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `think_hotel` (
     `state`      INT(11) UNSIGNED NOT NULL,
     `city`       INT(11) UNSIGNED NOT NULL,
     `website`    VARCHAR(128) DEFAULT "",
-    `taobao_hid` INT(11) UNSIGNED DEFAULT 0,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`hotelid`),
     KEY country (`country`),
     KEY state (`state`),

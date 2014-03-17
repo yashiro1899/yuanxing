@@ -19,7 +19,7 @@ var select = function(ids) {
 var insert = function(values) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "INSERT INTO `think_hotel` VALUES " + values;
+        var querystring = "INSERT INTO `think_hotel` (`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`) VALUES " + values;
 
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
@@ -70,7 +70,6 @@ data.reduce(function(sequence, ids) {
             v.push(h.state);
             v.push(h.city);
             v.push(JSON.stringify(website));
-            v.push(0);
             values.push(v);
         });
         var ids = values.map(function(h) {
