@@ -1,2 +1,23 @@
 <% include inc/header.html %>
+<div id="content" class="flex row-fluid">
+    <div id="content-main">
+        <div class="inner-center-column">
+            <div class="module filtered" id="changelist">
+<ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
+    <li<% if (tab == "onsale") { %> class="active"<% } %>><a href="/connect/">出售中</a></li>
+    <li<% if (tab == "inventory") { %> class="active"<% } %>><a href="/connect/inventory/">仓库中</a></li>
+</ul>
+<div class="toolbar-content clearfix">
+    <div id="toolbar" class="clearfix">
+        <form id="changelist-search" action="" method="get" class="form-inline">
+            <div class="search-container">
+                <input type="text" size="40" name="q" value="<% if (formdata.q) { %><%=formdata.q%><% } %>" placeholder="酒店名称" />&nbsp;
+                <input type="submit" value="搜索" class="btn btn-info" />&nbsp;</div>
+        </form>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
 <% include inc/footer.html %>
