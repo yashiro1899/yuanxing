@@ -18,6 +18,7 @@ module.exports = Controller("Home/BaseController", function() {
             var query = this.param("q").trim();
             var formdata = {};
             var params = {
+                "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.onsale.get",
                 "page_no": page,
@@ -44,7 +45,12 @@ module.exports = Controller("Home/BaseController", function() {
                 }
 
                 if (result.length === 0) {
+                    range = result.length;
+                    var qs = querystring.stringify(formdata);
+                    var pagination = that.pagination(total, range, page, qs);
+
                     that.assign("list", result);
+                    that.assign('pagination', pagination);
                     that.display();
                     return getDefer().promise;
                 }
@@ -83,6 +89,7 @@ module.exports = Controller("Home/BaseController", function() {
             var query = this.param("q").trim();
             var formdata = {};
             var params = {
+                "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.inventory.get",
                 "page_no": page,
@@ -93,13 +100,13 @@ module.exports = Controller("Home/BaseController", function() {
                 params["q"] = query;
             }
             this.assign("formdata", formdata);
-            this.assign("tab", "onsale");
+            this.assign("tab", "inventory");
 
             var promise = oauth.accessProtectedResource(req, res, params);
             promise.then(function(result) {
-                if (result && result["items_onsale_get_response"]) {
-                    total = result["items_onsale_get_response"]["total_results"];
-                    result = result["items_onsale_get_response"]["items"];
+                if (result && result["items_inventory_get_response"]) {
+                    total = result["items_inventory_get_response"]["total_results"];
+                    result = result["items_inventory_get_response"]["items"];
                     result = result ? result["item"] : [];
                     result = result.map(function(h) {
                         return h.num_iid;
@@ -109,8 +116,13 @@ module.exports = Controller("Home/BaseController", function() {
                 }
 
                 if (result.length === 0) {
+                    range = result.length;
+                    var qs = querystring.stringify(formdata);
+                    var pagination = that.pagination(total, range, page, qs);
+
                     that.assign("list", result);
-                    that.display();
+                    that.assign('pagination', pagination);
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
                 return oauth.accessProtectedResource(req, res, {
@@ -133,8 +145,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 that.assign("list", result);
                 that.assign('pagination', pagination);
-                console.log(VIEW_PATH + "/Home/connect_index.html");
-                that.end("k");
+                that.display("connect:index");
             });
 
             return promise;
