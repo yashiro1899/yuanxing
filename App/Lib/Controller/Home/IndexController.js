@@ -5,6 +5,8 @@
 var oauth = require("../../../../taobao-oauth");
 module.exports = Controller("Home/BaseController", function() {
     return {
+        navType: "tasks",
+        title: "已关联",
         indexAction: function() {
             var that = this;
             var req = this.http.req;

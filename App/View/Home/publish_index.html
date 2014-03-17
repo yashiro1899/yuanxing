@@ -43,6 +43,9 @@
                 <th scope="col" class="capital-column" width="240">
                     <div class="text">房型</div>
                 </th>
+                <th scope="col" class="capital-column" width="100">
+                    <div class="text">状态</div>
+                </th>
                 <th scope="col" class="continent-column" width="100">
                     <div class="text">操作</div>
                 </th>
@@ -67,12 +70,14 @@
             <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
+                <td></td>
                 <td>
                     <a href="javascript:void(0)">发布</a>
                 </td>
             </tr>
         <% }); %>
         <% } else { %>
+                <td></td>
                 <td></td>
                 <td></td>
             </tr>
