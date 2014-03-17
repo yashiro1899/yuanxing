@@ -14,8 +14,8 @@ module.exports = Controller("Home/BaseController", function() {
             var req = this.http.req;
             var res = this.http.res;
 
-            var page = parseInt(this.param("p"), 10) || 1;
             var range = 0;
+            var page = parseInt(this.param("p"), 10) || 1;
             var query = this.param("q").trim();
             var city = this.param("c").trim();
             var formdata = {};
