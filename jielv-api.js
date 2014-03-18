@@ -36,10 +36,10 @@ module.exports = function(data) {
     options["headers"] = headers;
 
     var deferred = getDefer();
-    var result = "";
+    var result = new Buffer('');
     var request = http.request(options, function(response) {
         response.on('data', function(chunk) {
-            result += chunk;
+            result = Buffer.concat([result, chunk]);
         });
         response.on('end', function() {
             try {

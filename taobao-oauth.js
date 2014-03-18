@@ -158,11 +158,11 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
 OAuth2.prototype._executeRequest = function(library, options, post_body, callback) {
     var that = this;
     var callbackCalled = false;
-    var result = "";
+    var result = new Buffer('');
 
     var request = library.request(options, function(response) {
         response.on("data", function(chunk) {
-            result += chunk;
+            result = Buffer.concat([result, chunk]);
         });
         response.on("end", function() {
             if (!callbackCalled) {
