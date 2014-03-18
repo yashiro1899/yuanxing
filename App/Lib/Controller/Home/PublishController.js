@@ -124,7 +124,8 @@ module.exports = Controller("Home/BaseController", function() {
             var promise = oauth.accessProtectedResource(req, res, {
                 "domestic": domestic,
                 "method": "taobao.hotel.name.get",
-                "name": hname
+                "name": hname,
+                "province": 440000
             });
             promise = promise.then(function(result) {
                 that.end(result);
