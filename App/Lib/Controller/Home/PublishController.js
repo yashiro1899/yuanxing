@@ -5,6 +5,7 @@
 var oauth = require("../../../../taobao-oauth");
 var jielvapi = require("../../../../jielv-api");
 var querystring = require('querystring');
+var areacode = require("../../../../areacode.conf");
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
@@ -17,18 +18,23 @@ module.exports = Controller("Home/BaseController", function() {
             var range = 0;
             var page = parseInt(this.param("p"), 10) || 1;
             var query = this.param("q").trim();
-            var city = this.param("c").trim();
+            var country = this.param("c").trim();
+            var province = this.param("s").trim();
             var formdata = {};
             var model = D("Hotel");
             if (query.length > 0) {
                 formdata["q"] = query;
                 model = model.where("namechn like '%" + query + "%'");
             }
-            if (city.length > 0) {
-                formdata["c"] = city;
-                model = model.where({city: city});
+            if (country.length > 0) {
+                formdata["c"] = country;
+                model = model.where({country: country});
+            } else if (province.length > 0) {
+                formdata["s"] = province;
+                model = model.where({state: province});
             }
-            this.assign("hotcities", this.hotcities);
+            this.assign("countries", areacode.country);
+            this.assign("provinces", areacode.province);
             this.assign("formdata", formdata);
 
             var promise = model.order("hotelid").page(page).select();
@@ -55,7 +61,11 @@ module.exports = Controller("Home/BaseController", function() {
 
                 model = D("Hotel");
                 if (query.length > 0) model = model.where("namechn like '%" + query + "%'");
-                if (city.length > 0) model = model.where({city: city});
+                if (country.length > 0) {
+                    model = model.where({country: country});
+                } else if (province.length > 0) {
+                    model = model.where({state: province});
+                }
                 return model.count();
             }).then(function(result) {
                 var total = result || 0;

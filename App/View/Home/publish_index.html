@@ -17,15 +17,24 @@
 </div>
 <div class="xfull">
     <ul class="toplinks breadcrumb">
-        <% if (formdata.c) { %>
+        <% if (formdata.c || formdata.s) { %>
         <li class="date-back">
             <a href="?">« 全部</a>
             <span class="divider">|</span>
         </li>
-        <li><%=hotcities[formdata.c] || "其他"%>&nbsp;&nbsp;</li>
+        <li>
+        <% if (formdata.c) { %>
+            <%=(countries[formdata.c] && countries[formdata.c][0]) || "其他"%>&nbsp;&nbsp;
+        <% } else if (formdata.s) { %>
+            <%=(provinces[formdata.s] && provinces[formdata.s][0]) || "其他"%>&nbsp;&nbsp;
+        <% } %>
+        </li>
         <% } else { %>
-        <% for (var k in hotcities) { %>
-        <li><a href="?c=<%=k%>"><%=hotcities[k]%></a>&nbsp;</li>
+        <% for (var k in provinces) { %>
+        <li><a href="?s=<%=k%>"><%=provinces[k][0]%></a>&nbsp;</li>
+        <% } %>
+        <% for (var k in countries) { %>
+        <li><a href="?c=<%=k%>"><%=countries[k][0]%></a>&nbsp;</li>
         <% } %>
         <% } %>
     </ul>
