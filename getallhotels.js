@@ -64,8 +64,6 @@ data.reduce(function(sequence, ids) {
         var ids = data.map(function(h) {return h.hotelid;});
         if (result.length) console.log("HOTEL_ERROR", ids.join(","));
 
-//         var now = +(new Date());
-//         console.log("total:", total1, ",time:", now - start, "milliseconds");
         ids = data.map(function(h) {
             var rids = h.rooms.map(function(r) {return r.roomtypeid;});
             total2 += h.rooms.length;
