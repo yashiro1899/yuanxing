@@ -66,6 +66,27 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
             return promise;
+        },
+        confirmAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var hid = this.param("hid");
+            var rid = this.param("rid");
+            var hname = this.param("hname");
+            var rname = this.param("rname");
+            var domestic = this.param("domestic") == "true";
+
+            var promise = oauth.accessProtectedResource(req, res, {
+                "domestic": domestic,
+                "method": "taobao.hotel.name.get",
+                "name": hname
+            });
+            promise = promise.then(function(result) {
+                that.end(result);
+            });
+            return promise;
         }
     };
 });

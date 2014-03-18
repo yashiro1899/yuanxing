@@ -32,7 +32,7 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("tab", "onsale");
 
             var promise = oauth.accessProtectedResource(req, res, params);
-            promise.then(function(result) {
+            promise = promise.then(function(result) {
                 if (result && result["items_onsale_get_response"]) {
                     total = result["items_onsale_get_response"]["total_results"];
                     result = result["items_onsale_get_response"]["items"];
@@ -93,7 +93,7 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("tab", "inventory");
 
             var promise = oauth.accessProtectedResource(req, res, params);
-            promise.then(function(result) {
+            promise = promise.then(function(result) {
                 if (result && result["items_inventory_get_response"]) {
                     total = result["items_inventory_get_response"]["total_results"];
                     result = result["items_inventory_get_response"]["items"];
