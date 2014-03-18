@@ -89,10 +89,10 @@ module.exports = Controller("Home/BaseController", function() {
             var domestic = this.param("domestic") == "true";
 
             var promise = oauth.accessProtectedResource(req, res, {
-                "domestic": domestic,
-                "method": "taobao.hotel.name.get",
-                "name": hname,
-                "province": 440000
+                "domestic": false,
+                "method": "taobao.hotels.search",
+                "name": "濠景",
+                "country": "Singapore"
             });
             promise = promise.then(function(result) {
                 that.end(result);

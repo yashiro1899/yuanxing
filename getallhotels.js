@@ -92,5 +92,7 @@ data.reduce(function(sequence, ids) {
         if (result.length) console.log("ROOM_ERROR", ids.join(","));
         var now = +(new Date());
         console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
+    }).catch(function(e) {
+        console.log(e);
     });
 }, Promise.resolve());
