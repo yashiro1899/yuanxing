@@ -1,41 +1,36 @@
 Country:
-4733	70007	中国
-1496    70205	泰国
-710	    70176	日本
-621	    70555	台湾
-439	    70245	越南
-439	    70229	新加坡
-391	    70096	韩国
-387	    70139	马来西亚
-286	    70008	香港
-161	    70242	印尼
-68	    70009	澳门
-46	    70030	奥地利
-42	    70147	美国
-
-28	    70031	悉尼
-16	    70106	温哥华
-14	    70077	马尼拉Berjaya Manila Hotel
-13	    70240	意大利西点酒店
-13	    70071	巴黎
-12	    70243	The Barn
-11	    70063	DREI LOWEN HOTEL
-11	    70017	迪拜
-8	    70109	柬埔寨金边金界酒店
-6	    70227	巴塞隆那希尔顿酒店
-4	    70136	马尔代夫柏悦哈达哈酒店
-3	    70231	奥克兰天空之城豪华酒店
-2	    70241	孟买国际机场酒店
-2	    70228	雅典皇家奥林匹克酒店ROYAL OLYMPIC
-2	    70213	土耳其伊斯坦堡ASKOC酒店
-2	    70154	缅甸仰光THAMADA酒店
-1	    70222	CINNAMON GRAND COLOMBO
-1	    70177	斯德哥尔摩Stockholm-ATTACHE
-1	    70124	万象SABAIDEE AT LAO
-1	    70097	阿姆斯特丹希尔顿酒店
-1	    70079	赫尔辛基Helsinki -ARTHUR
-1	    70062	哥本哈根艾迪那酒店
-1	    70046	布鲁塞���华美达酒店
+70017  阿联酋    United Arab Emirates
+70030  奥地利    Austria
+70031  澳大利亚  Australia
+70046  比利时    Belgium
+70062  丹麦      Denmark
+70063  德国      Germany
+70071  法国      France
+70077  菲律宾    Philippines
+70079  芬兰      Finland
+70096  韩国      Korea Rep.
+70097  荷兰      Netherlands
+70106  加拿大    Canada
+70109  柬埔寨    Cambodia
+70124  老挝      Laos
+70136  马尔代夫  Maldives
+70139  马来西亚  Malaysia
+70147  美国      United States
+70154  缅甸      Myanmar
+70176  日本      Japan
+70177  瑞典      Sweden
+70205  泰国      Thailand
+70213  土耳其    Turkey
+70222  斯里兰卡  Sri Lanka
+70227  西班牙    Spain
+70228  希腊      Greece
+70229  新加坡    Singapore
+70231  新西兰    New Zealand
+70240  意大利    Italy
+70241  印度      India
+70242  印尼      Indonesia
+70243  英国      United Kingdom
+70245  越南      Vietnam
 
 
 City:
