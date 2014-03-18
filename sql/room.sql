@@ -1,10 +1,9 @@
 CREATE TABLE IF NOT EXISTS `think_room` (
     `roomtypeid` INT(11) UNSIGNED NOT NULL,
     `hotelid`    INT(11) UNSIGNED NOT NULL,
-    `taobao_hid` INT(11) UNSIGNED NOT NULL,
-    `taobao_rid` INT(11) UNSIGNED NOT NULL,
     `namechn`    VARCHAR(64) NOT NULL,
     `status`     INT(11) UNSIGNED NOT NULL,
+    `taobao_rid` INT(11) UNSIGNED NOT NULL,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`roomtypeid`),
     KEY taobao_hid (`taobao_hid`),

@@ -3,31 +3,13 @@ var jielvapi = require("./jielv-api.js");
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 
-var select = function(ids) {
+var db = function(querystring, method) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
-        var querystring = "SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")";
-
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
             if (err) rows = [];
             resolve(rows);
-        });
-        connection.end();
-    });
-};
-var insert = function(values) {
-    return new Promise(function(resolve, reject) {
-        var connection = mysql.createConnection(config);
-        var querystring = "INSERT INTO `think_hotel` (`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`) VALUES " + values;
-
-        connection.connect();
-        connection.query(querystring, function(err, rows, fields) {
-            if (err) {
-                resolve(false);
-            } else {
-                resolve(true);
-            }
         });
         connection.end();
     });
@@ -42,10 +24,11 @@ for (; i < 505; i += 1) {
     data.push(hotelIds);
 }
 
-var total = 0;
+var total1 = 0;
+var total2 = 0;
 var start = +(new Date());
 data.reduce(function(sequence, ids) {
-    var values = [];
+    var data = [];
 
     return sequence.then(function() {
         return jielvapi({
@@ -53,49 +36,40 @@ data.reduce(function(sequence, ids) {
             "hotelIds": ids
         });
     }).then(function(result) {
-        var data = [];
         if (result && result.success == 1) data = result.data;
-
-        total += data.length;
-        data.forEach(function(h) {
+        total1 += data.length;
+        var ids = data.map(function(h) {return h.hotelid;});
+        var querystring = "SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")";
+        return db(querystring, "select");
+    }).then(function(result) {
+        var ids = result.map(function(h) {return h.hotelid;});
+        var values = data.map(function(h) {
             var v = [];
             var website = h.website.trim();
             if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
-
             v.push(h.hotelid);
             v.push(JSON.stringify(h.hotelcd));
             v.push(JSON.stringify(h.namechn));
             v.push(JSON.stringify(h.nameeng));
-            v.push(h.country);
-            v.push(h.state);
-            v.push(h.city);
+            v.push(h.country);v.push(h.state);v.push(h.city);
             v.push(JSON.stringify(website));
-            values.push(v);
+            v.push(0);
+            return v;
         });
-        var ids = values.map(function(h) {
-            return h[0];
-        });
-        return select(ids.join(","));
-    }).then(function(result) {
-        result = result.map(function(h) {
-            return h.hotelid;
-        });
-        values = values.filter(function(h) {
-            return result.indexOf(h[0]) == -1;
-        });
-        return insert(values.map(function(h) {
-            return "(" + h.join(",") + ")";
-        }).join(','));
-    }).then(function(result) {
-        if (!result) {
-            values.forEach(function(h) {
-                console.log(h[0], "error");
-            });
-        }
+        values = values.filter(function(h) {return ids.indexOf(h[0]) == -1;});
+        values = values.map(function(h) {return "(" + h.join(",") + ")";});
 
-        var now = +(new Date());
-        console.log("total:", total, ",time:", now - start, "milliseconds");
+        var querystring = "INSERT INTO `think_hotel` VALUES " + values.join(",");
+        return db(querystring, "insert");
+    }).then(function(result) {
+        console.log(result);
+        // if (!result) {
+        //     values.forEach(function(h) {
+        //         console.log(h[0], "error");
+        //     });
+        // }
+
+        // var now = +(new Date());
+        // console.log("total:", total, ",time:", now - start, "milliseconds");
     });
 }, Promise.resolve());
-// SELECT SQL_CALC_FOUND_ROWS * FROM users limit 0,5;
-// SELECT FOUND_ROWS()
