@@ -19,7 +19,7 @@ var db = function(querystring, method) {
 
 var total = 0;
 var start = +(new Date());
-db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel`").then(function(hotels) {
+db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0").then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         return sequence.then(function() {
             return oauth.accessProtectedResource(null, null, {
@@ -38,9 +38,6 @@ db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel`").then(function(hotels
             } else {
                 console.log('NO_MATCH', hotel.namechn);
             }
-        }).then(function(result) {
-            var now = +(new Date());
-            console.log("total:", total, ",time:", now - start, "milliseconds");
         }).catch(function(e) {
             console.log(e);
         });
