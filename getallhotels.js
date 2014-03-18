@@ -39,8 +39,7 @@ data.reduce(function(sequence, ids) {
         if (result && result.success == 1) data = result.data;
         total1 += data.length;
         var ids = data.map(function(h) {return h.hotelid;});
-        var querystring = "SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")";
-        return db(querystring, "select");
+        return db("SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")");
     }).then(function(result) {
         var ids = result.map(function(h) {return h.hotelid;});
         var values = data.map(function(h) {
@@ -59,17 +58,41 @@ data.reduce(function(sequence, ids) {
         values = values.filter(function(h) {return ids.indexOf(h[0]) == -1;});
         values = values.map(function(h) {return "(" + h.join(",") + ")";});
 
-        var querystring = "INSERT INTO `think_hotel` VALUES " + values.join(",");
-        return db(querystring, "insert");
+        var fields = " (`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`taobao_hid`)";
+        return db("INSERT INTO `think_hotel`" + fields + " VALUES " + values.join(","));
     }).then(function(result) {
-        console.log(result);
-        // if (!result) {
-        //     values.forEach(function(h) {
-        //         console.log(h[0], "error");
-        //     });
-        // }
+        var ids = data.map(function(h) {return h.hotelid;});
+        if (result.length) console.log("HOTEL_ERROR", ids.join(","));
 
-        // var now = +(new Date());
-        // console.log("total:", total, ",time:", now - start, "milliseconds");
+//         var now = +(new Date());
+//         console.log("total:", total1, ",time:", now - start, "milliseconds");
+        ids = data.map(function(h) {
+            var rids = h.rooms.map(function(r) {return r.roomtypeid;});
+            total2 += h.rooms.length;
+            return rids.join(',');
+        });
+        return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
+    }).then(function(result) {
+        var ids = result.map(function(r) {return r.roomtypeid;});
+        var values = [];
+        data.forEach(function(h) {
+            h.rooms.forEach(function(r) {
+                var v = [];
+                v.push(r.roomtypeid);
+                v.push(h.hotelid);
+                v.push(JSON.stringify(r.namechn));
+                v.push(0);v.push(0);
+                values.push(v);
+            });
+        });
+        values = values.map(function(h) {return "(" + h.join(",") + ")";});
+
+        var fields = " (`roomtypeid`,`hotelid`,`namechn`,`status`,`taobao_rid`)";
+        return db("INSERT INTO `think_room`" + fields + " VALUES " + values.join(","));
+    }).then(function(result) {
+        var ids = data.map(function(h) {return h.hotelid;});
+        if (result.length) console.log("ROOM_ERROR", ids.join(","));
+        var now = +(new Date());
+        console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
     });
 }, Promise.resolve());
