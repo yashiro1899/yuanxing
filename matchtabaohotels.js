@@ -22,8 +22,6 @@ var db = function(querystring) {
     });
 };
 
-var total = 0;
-var start = +(new Date());
 var qs = "SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
@@ -44,12 +42,11 @@ db(qs).then(function(hotels) {
                 result = result["hotel_name_get_response"]["hotel"];
             }
             if (result && result.hid) {
-                total += 1;
-                db("UPDATE `think_hotel` set `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
+                db("UPDATE `think_hotel` SET `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
             } else {
                 console.log('NO_MATCH', hotel.hotelid, hotel.namechn);
             }
-        }).catch(function(e) {
+        })["catch"](function(e) {
             console.log(e);
         });
     }, Promise.resolve());
