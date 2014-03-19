@@ -1,5 +1,5 @@
 var config = require("./auth.conf").mysql;
-var areacode = require("./areacode.conf");
+var areacode = require("./define.conf");
 var jielvapi = require("./jielv-api.js");
 var oauth = require("./taobao-oauth.js");
 var mysql = require('mysql');

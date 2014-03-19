@@ -5,7 +5,7 @@
 var oauth = require("../../../../taobao-oauth");
 var jielvapi = require("../../../../jielv-api");
 var querystring = require('querystring');
-var areacode = require("../../../../areacode.conf");
+var areacode = require("../../../../define.conf");
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
