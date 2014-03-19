@@ -54,7 +54,9 @@ db(qs).then(function(hotels) {
             result.forEach(function(r) {
                 var rid = mapping[r.namechn];
                 if (rid) {
-                    db("UPDATE `think_room` SET `taobao_rid` = " + rid + " WHERE `roomtypeid` = " + r.roomtypeid);
+                    db("UPDATE `think_room` SET `status` = 128, `taobao_rid` = " + rid + " WHERE `roomtypeid` = " + r.roomtypeid);
+                } else {
+                    db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` = " + r.roomtypeid);
                 }
             });
         })["catch"](function(e) {
