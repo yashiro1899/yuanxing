@@ -22,7 +22,7 @@ var db = function(querystring) {
     });
 };
 
-var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 LIMIT 1000";
+var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 LIMIT 1000,1000";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         var mapping = {};
@@ -41,7 +41,7 @@ db(qs).then(function(hotels) {
                     result = result["room_type"];
                 } else {
                     result = [];
-                    console.log("no room_types", hotel.taobao_hid)
+                    console.log("NO_ROOM_TYPES", hotel.taobao_hid)
                 }
             } else {
                 result = [];
