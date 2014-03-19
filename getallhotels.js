@@ -3,13 +3,18 @@ var jielvapi = require("./jielv-api.js");
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 
-var db = function(querystring, method) {
+var db = function(querystring) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
-            if (err) rows = [];
-            resolve(rows);
+            if (/^SELECT/.test(querystring)) {
+                if (err) rows = [];
+                resolve(rows);
+            } else if (/^INSERT/.test(querystring)) {
+                if (err) resolve(false);
+                else resolve(true);
+            }
         });
         connection.end();
     });
@@ -29,6 +34,7 @@ var total2 = 0;
 var start = +(new Date());
 data.reduce(function(sequence, ids) {
     var data = [];
+    var inserted = [];
 
     return sequence.then(function() {
         return jielvapi({
@@ -56,15 +62,19 @@ data.reduce(function(sequence, ids) {
             return v;
         });
         values = values.filter(function(h) {return ids.indexOf(h[0]) == -1;});
+        inserted = values;
         values = values.map(function(h) {return "(" + h.join(",") + ")";});
 
         var fields = " (`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`taobao_hid`)";
         return db("INSERT INTO `think_hotel`" + fields + " VALUES " + values.join(","));
     }).then(function(result) {
-        var ids = data.map(function(h) {return h.hotelid;});
-        if (result.length) console.log("HOTEL_ERROR", ids.join(","));
+        if (!result && inserted.length > 0) {
+            inserted.forEach(function(h) {
+                console.log("HOTEL_ERROR", h[0]);
+            });
+        }
 
-        ids = data.map(function(h) {
+        var ids = data.map(function(h) {
             var rids = h.rooms.map(function(r) {return r.roomtypeid;});
             total2 += h.rooms.length;
             return rids.join(',');
@@ -83,16 +93,22 @@ data.reduce(function(sequence, ids) {
                 values.push(v);
             });
         });
-        values = values.map(function(h) {return "(" + h.join(",") + ")";});
+        values = values.filter(function(r) {return ids.indexOf(r[0]) == -1;});
+        inserted = values;
+        values = values.map(function(r) {return "(" + r.join(",") + ")";});
 
         var fields = " (`roomtypeid`,`hotelid`,`namechn`,`status`,`taobao_rid`)";
         return db("INSERT INTO `think_room`" + fields + " VALUES " + values.join(","));
     }).then(function(result) {
-        var ids = data.map(function(h) {return h.hotelid;});
-        if (result.length) console.log("ROOM_ERROR", ids.join(","));
+        if (!result && inserted.length > 0) {
+            inserted.forEach(function(r) {
+                console.log("ROOM_ERROR", r[0]);
+            });
+        }
+
         var now = +(new Date());
         console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
-    }).catch(function(e) {
+    })["catch"](function(e) {
         console.log(e);
     });
 }, Promise.resolve());
