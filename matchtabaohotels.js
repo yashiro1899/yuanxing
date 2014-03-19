@@ -27,7 +27,11 @@ var start = +(new Date());
 var qs = "SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
-        hotel.namechn = hotel.namechn.replace(/\(.+|（.+$/, "");
+        var name = hotel.namechn.trim();
+        name = name.replace(/\(.+|（.+$/, "");
+        name = name.replace(/^TF/, "");
+        name = name.replace(/^FB-/, "");
+        hotel.namechn = name;
         return sequence.then(function() {
             return oauth.accessProtectedResource(null, null, {
                 "domestic": true,
