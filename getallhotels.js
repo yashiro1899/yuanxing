@@ -54,8 +54,8 @@ data.reduce(function(sequence, ids) {
             if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
             v.push(h.hotelid);
             v.push(JSON.stringify(h.hotelcd));
-            v.push(JSON.stringify(h.namechn));
-            v.push(JSON.stringify(h.nameeng));
+            v.push(JSON.stringify(h.namechn.trim()));
+            v.push(JSON.stringify(h.nameeng.trim()));
             v.push(h.country);v.push(h.state);v.push(h.city);
             v.push(JSON.stringify(website));
             v.push(0);

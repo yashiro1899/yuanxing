@@ -24,22 +24,24 @@ var db = function(querystring) {
 
 var total = 0;
 var start = +(new Date());
-db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999").then(function(hotels) {
+var qs = "SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999";
+db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
+        hotel.namechn = hotel.namechn.replace(/\(.+|（.+$/, "");
         return sequence.then(function() {
             return oauth.accessProtectedResource(null, null, {
                 "domestic": true,
                 "method": "taobao.hotel.name.get",
                 "name": hotel.namechn,
                 "province": areacode.province[hotel.state] && areacode.province[hotel.state][1]
-            }, "token");
+            }, "");
         }).then(function(result) {
             if (result && result["hotel_name_get_response"]) {
                 result = result["hotel_name_get_response"]["hotel"];
             }
             if (result && result.hid) {
                 total += 1;
-                return db("UPDATE `think_hotel` set `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
+                db("UPDATE `think_hotel` set `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
             } else {
                 console.log('NO_MATCH', hotel.hotelid, hotel.namechn);
             }
