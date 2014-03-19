@@ -5,13 +5,18 @@ var oauth = require("./taobao-oauth.js");
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 
-var db = function(querystring, method) {
+var db = function(querystring) {
     return new Promise(function(resolve, reject) {
         var connection = mysql.createConnection(config);
         connection.connect();
         connection.query(querystring, function(err, rows, fields) {
-            if (err) rows = [];
-            resolve(rows);
+            if (/^SELECT/.test(querystring)) {
+                if (err) rows = [];
+                resolve(rows);
+            } else if (/^INSERT/.test(querystring)) {
+                if (err) resolve(false);
+                else resolve(true);
+            }
         });
         connection.end();
     });
@@ -19,7 +24,7 @@ var db = function(querystring, method) {
 
 var total = 0;
 var start = +(new Date());
-db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0").then(function(hotels) {
+db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999").then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         return sequence.then(function() {
             return oauth.accessProtectedResource(null, null, {
@@ -36,7 +41,7 @@ db("SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0
                 total += 1;
                 return db("UPDATE `think_hotel` set `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
             } else {
-                console.log('NO_MATCH', hotel.namechn);
+                console.log('NO_MATCH', hotel.hotelid, hotel.namechn);
             }
         }).catch(function(e) {
             console.log(e);
