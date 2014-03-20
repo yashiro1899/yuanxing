@@ -21,7 +21,7 @@ var db = function(querystring) {
     });
 };
 
-var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 LIMIT 4000,1000";
+var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 AND `city` > 99999";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         var mapping = {};
