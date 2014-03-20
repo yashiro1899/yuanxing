@@ -82,7 +82,7 @@
             <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
-                <td></td>
+                <td><%-roomstatus[r.roomtypeid]%></td>
                 <td>
                     <a href="/publish/confirm/?hid=<%=v.hotelid%>&rid=<%=r.roomtypeid%>&hname=<%=v.namechn%>&rname=<%=r.namechn%>&domestic=<%=v.city < 99999%>">发布</a>
                 </td>

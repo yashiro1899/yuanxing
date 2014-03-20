@@ -39,15 +39,13 @@ module.exports = Controller("Home/BaseController", function() {
 
             var promise = model.order("hotelid").page(page).select();
             promise = promise.then(function(result) {
-                var ids = result.map(function(h) {
-                    return h.hotelid;
-                });
+                var ids = result.map(function(h) {return h.hotelid;});
                 return jielvapi({
                     "QueryType": "hotelinfo",
                     "hotelIds": ids.join("/")
                 });
             }).then(function(result) {
-                var data = [];
+                var data = [], rids = [];
                 if (result && result.success == 1) data = result.data;
 
                 range = data.length;
@@ -55,9 +53,22 @@ module.exports = Controller("Home/BaseController", function() {
                     var website = h.website.trim();
                     if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
                     h.website = website;
+
+                    h.rooms.forEach(function(r) {
+                        rids.push(r.roomtypeid);
+                    });
                     return h;
                 });
                 that.assign("list", data);
+
+                return D("Room").field("roomtypeid,status,taobao_rid").where("roomtypeid in (" + rids.join(",") + ")").select();
+            }).then(function(result) {
+                var roomstatus = {};
+                result = result || [];
+                result = result.forEach(function(r) {
+                    roomstatus[r.roomtypeid] = areacode.roomstatus[r.status] || "";
+                });
+                that.assign("roomstatus", roomstatus);
 
                 model = D("Hotel");
                 if (query.length > 0) model = model.where("namechn like '%" + query + "%'");
