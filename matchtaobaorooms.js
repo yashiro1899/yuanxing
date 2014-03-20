@@ -1,5 +1,4 @@
 var config = require("./auth.conf").mysql;
-var areacode = require("./define.conf");
 var jielvapi = require("./jielv-api.js");
 var oauth = require("./taobao-oauth.js");
 var mysql = require('mysql');
@@ -22,7 +21,7 @@ var db = function(querystring) {
     });
 };
 
-var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 LIMIT 1000,1000";
+var qs = "SELECT `hotelid`,`namechn`,`taobao_hid` FROM `think_hotel` WHERE `taobao_hid` > 0 LIMIT 4000,1000";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         var mapping = {};
