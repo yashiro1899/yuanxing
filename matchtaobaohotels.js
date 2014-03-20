@@ -22,7 +22,7 @@ var db = function(querystring) {
     });
 };
 
-var qs = "SELECT `hotelid`,`namechn`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` < 99999";
+var qs = "SELECT `hotelid`,`namechn`,`country` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` > 99999";
 db(qs).then(function(hotels) {
     hotels.reduce(function(sequence, hotel) {
         var name = hotel.namechn.trim();
@@ -32,14 +32,16 @@ db(qs).then(function(hotels) {
         hotel.namechn = name;
         return sequence.then(function() {
             return oauth.accessProtectedResource(null, null, {
-                "domestic": true,
+                "domestic": false,
                 "method": "taobao.hotel.name.get",
                 "name": hotel.namechn,
-                "province": areacode.province[hotel.state] && areacode.province[hotel.state][1]
+                "country": areacode.country[hotel.country] && areacode.country[hotel.country][1]
             }, "");
         }).then(function(result) {
             if (result && result["hotel_name_get_response"]) {
                 result = result["hotel_name_get_response"]["hotel"];
+            } else if (result["error_response"]) {
+                console.log(result["error_response"]["msg"]);
             }
             if (result && result.hid) {
                 db("UPDATE `think_hotel` SET `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
