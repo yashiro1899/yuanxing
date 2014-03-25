@@ -95,7 +95,7 @@
                 <% } else if (roomstatus[r.roomtypeid]["status"] < 2) { %>
                     <a href="">匹配/发布</a>
                 <% } else { %>
-                    <a href="">发布</a>
+                    <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" href="javascript:void(0)">发布</a>
                 <% } %>
                 </td>
             </tr>
@@ -117,4 +117,8 @@
         </div>
     </div>
 </div>
+<form id="precisely-publish" action="/publish/create/" method="post">
+    <input type="hidden" name="roomtypeid" value="" />
+</form>
+<script src="/static/js/publish-list.js"></script>
 <% include inc/footer.html %>
