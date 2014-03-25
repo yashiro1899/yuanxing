@@ -37,6 +37,7 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("provinces", areacode.province);
             this.assign("formdata", formdata);
 
+            var rooms = [];
             var promise = model.order("hotelid").page(page).select();
             promise = promise.then(function(result) {
                 var ids = result.map(function(h) {return h.hotelid;});
@@ -63,10 +64,49 @@ module.exports = Controller("Home/BaseController", function() {
 
                 return D("Room").field("roomtypeid,status,taobao_rid").where("roomtypeid in (" + rids.join(",") + ")").select();
             }).then(function(result) {
+                var promises = [];
+                var rids = [];
+
+                rooms = result || [];
+                rooms.forEach(function(r) {
+                    if (r.taobao_rid > 0) rids.push(r.taobao_rid);
+                    if (rids.length == 20) {
+                        promises.push(oauth.accessProtectedResource(req, res, {
+                            "method": "taobao.hotel.rooms.search",
+                            "rids": rids.join(",")
+                        }));
+                        rids = [];
+                    }
+                });
+                if (rids.length > 0) {
+                    promises.push(oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.rooms.search",
+                        "rids": rids.join(",")
+                    }));
+                }
+
+                return Promise.all(promises);
+            }).then(function(result) {
+                var goods = {};
                 var roomstatus = {};
-                result = result || [];
-                result = result.forEach(function(r) {
-                    roomstatus[r.roomtypeid] = areacode.roomstatus[r.status] || "";
+                result.forEach(function(g) {
+                    if (g && g["hotel_rooms_search_response"]) {
+                        g = g["hotel_rooms_search_response"]["rooms"];
+                        g = g ? g["room"] : [];
+                        if (g.length > 0) {
+                            g = g[0];
+                            goods[g.rid] = g.iid;
+                        }
+                    }
+                });
+
+                rooms.forEach(function(r) {
+                    var status = r.status;
+                    if (goods[r.taobao_rid]) status = 2;
+                    roomstatus[r.roomtypeid] = "<i class=\"icon-ok\"></i>"; // 可发布
+                    if (areacode.roomstatus[status]) {
+                        roomstatus[r.roomtypeid] = areacode.roomstatus[status];
+                    }
                 });
                 that.assign("roomstatus", roomstatus);
 
