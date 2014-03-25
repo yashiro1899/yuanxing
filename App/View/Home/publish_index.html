@@ -82,9 +82,13 @@
             <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
-                <td><%-roomstatus[r.roomtypeid]%></td>
+                <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
                 <td>
-                    <a href="/publish/confirm/?hid=<%=v.hotelid%>&rid=<%=r.roomtypeid%>&hname=<%=v.namechn%>&rname=<%=r.namechn%>&domestic=<%=v.city < 99999%>">发布</a>
+                <% if (roomstatus[r.roomtypeid]["status"] == 2) { %>
+                    <a href="http://kezhan.trip.taobao.com/item.htm?item_id=<%=roomstatus[r.roomtypeid]["num_iid"]%>" target="_blank">查看</a>
+                <% } else { %>
+                    <a href="">发布</a>
+                <% } %>
                 </td>
             </tr>
         <% }); %>

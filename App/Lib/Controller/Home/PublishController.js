@@ -102,11 +102,17 @@ module.exports = Controller("Home/BaseController", function() {
 
                 rooms.forEach(function(r) {
                     var status = r.status;
-                    if (goods[r.taobao_rid]) status = 2;
-                    roomstatus[r.roomtypeid] = "<i class=\"icon-ok\"></i>"; // 可发布
-                    if (areacode.roomstatus[status]) {
-                        roomstatus[r.roomtypeid] = areacode.roomstatus[status];
+                    roomstatus[r.roomtypeid] = {};
+                    roomstatus[r.roomtypeid]["icon"] = "<i class=\"icon-ok\"></i>"; // 可发布
+
+                    if (goods[r.taobao_rid]) {
+                        status = 2;
+                        roomstatus[r.roomtypeid]["num_iid"] = goods[r.taobao_rid];
                     }
+                    if (areacode.roomstatus[status]) {
+                        roomstatus[r.roomtypeid]["icon"] = areacode.roomstatus[status];
+                    }
+                    roomstatus[r.roomtypeid]["status"] = status;
                 });
                 that.assign("roomstatus", roomstatus);
 
