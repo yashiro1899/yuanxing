@@ -133,27 +133,22 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
         },
-        confirmAction: function() {
+        createAction: function() {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
 
-            var hid = this.param("hid");
-            var rid = this.param("rid");
-            var hname = this.param("hname");
-            var rname = this.param("rname");
-            var domestic = this.param("domestic") == "true";
+            if (this.isPost()) {
+                var roomtypeid = this.post("roomtypeid");
+                var promise;
 
-            var promise = oauth.accessProtectedResource(req, res, {
-                "domestic": false,
-                "method": "taobao.hotels.search",
-                "name": "濠景",
-                "country": "Singapore"
-            });
-            promise = promise.then(function(result) {
-                that.end(result);
-            });
-            return promise;
+                if (!roomtypeid) {
+                    this.end(null);
+                    return null;
+                }
+            } else {
+                this.end(null);
+            }
         }
     };
 });
