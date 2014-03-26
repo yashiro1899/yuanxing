@@ -4,8 +4,9 @@
  */
 var oauth = require("../../../../taobao-oauth");
 var jielvapi = require("../../../../jielv-api");
-var querystring = require('querystring');
 var areacode = require("../../../../define.conf");
+var querystring = require('querystring');
+var dateformat = require("dateformat");
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
@@ -140,12 +141,67 @@ module.exports = Controller("Home/BaseController", function() {
 
             if (this.isPost()) {
                 var roomtypeid = this.post("roomtypeid");
-                var promise;
+                var promise, start, end, data;
 
                 if (!roomtypeid) {
                     this.end(null);
                     return null;
                 }
+
+                start = +(new Date());
+                end = start + 30 * 24 * 60 * 60 * 1000;
+                start = new Date(start);
+                end = new Date(end);
+                start = dateformat(start, "yyyy-mm-dd");
+                end = dateformat(end, "yyyy-mm-dd");
+                promise = jielvapi({
+                    "QueryType": "hotelpriceall",
+                    "roomtypeids": roomtypeid,
+                    "checkInDate": start,
+                    "checkOutDate": end
+                }).then(function(result) {
+                    data = [];
+                    if (result && result.success == 1) data = result.data;
+                    if (data.length === 0) {
+                        that.end({
+                            success: 8,
+                            message: "暂无价格！"
+                        });
+                        return getDefer().promise;
+                    }
+
+                    data = data[0];
+                    var m = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                    m = m.field("think_hotel.taobao_hid,think_room.taobao_rid");
+                    return m.where({"think_room.roomtypeid": roomtypeid}).select();
+                }).then(function(result) {
+                    result = result[0];
+                    var title = data.hotelName + " " + data.roomtypeName;
+                    var ratetype = data.roomPriceDetail[0]["ratetype"];
+                    var quotas = data.roomPriceDetail.map(function(rpd) {
+                        return {
+                            date: rpd.night.slice(0, 10),
+                            price: rpd.preeprice,
+                            num: rpd.qtyable
+                        };
+                    });
+
+                    return oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.room.add",
+                        "hid": result.taobao_hid,
+                        "rid": result.taobao_rid,
+                        "title": title,
+                        "bed_type": "B",
+                        "breakfast": areacode.breakfast[ratetype] || "A",
+                        "payment_type": "A",
+                        "desc": title,
+                        "room_quotas": JSON.stringify(quotas),
+                        "pic_path": "http://img01.taobaocdn.com/bao/uploaded/i5/T1y86oFqhfXXaS6ecW_023222.jpg_310x310.jpg"
+                    });
+                }).then(function(result) {
+                    that.end(result);
+                });
+                return promise;
             } else {
                 this.end(null);
             }

@@ -97,7 +97,7 @@ data.reduce(function(sequence, ids) {
         inserted = values;
         values = values.map(function(r) {return "(" + r.join(",") + ")";});
 
-        var fields = " (`roomtypeid`,`hotelid`,`namechn`,`status`,`taobao_rid`)";
+        var fields = " (`roomtypeid`,`hotelid`,`namechn`,`bedtype`,`status`,`taobao_rid`)";
         return db("INSERT INTO `think_room`" + fields + " VALUES " + values.join(","));
     }).then(function(result) {
         if (!result && inserted.length > 0) {
