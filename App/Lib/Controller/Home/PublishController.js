@@ -109,7 +109,7 @@ module.exports = Controller("Home/BaseController", function() {
                 rooms.forEach(function(r) {
                     var status = r.status;
                     roomstatus[r.roomtypeid] = {};
-                    roomstatus[r.roomtypeid]["icon"] = "<i class=\"icon-ok\"></i>"; // 可发布
+                    roomstatus[r.roomtypeid]["icon"] = "<i title=\"可发布\" class=\"icon-ok\"></i>";
 
                     if (goods[r.taobao_rid]) {
                         status = 2;
