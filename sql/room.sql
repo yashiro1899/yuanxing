@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `think_room` (
     `roomtypeid` INT(11) UNSIGNED NOT NULL,
     `hotelid`    INT(11) UNSIGNED NOT NULL,
     `namechn`    VARCHAR(64) NOT NULL,
+    `bedtype`    VARCHAR(16) NOT NULL,
     `status`     INT(11) UNSIGNED NOT NULL,
     `taobao_rid` INT(11) UNSIGNED NOT NULL,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

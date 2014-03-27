@@ -89,6 +89,7 @@ data.reduce(function(sequence, ids) {
                 v.push(r.roomtypeid);
                 v.push(h.hotelid);
                 v.push(JSON.stringify(r.namechn));
+                v.push(JSON.stringify(r.bedtype));
                 v.push(0);v.push(0);
                 values.push(v);
             });
