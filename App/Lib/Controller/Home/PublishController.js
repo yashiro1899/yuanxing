@@ -197,7 +197,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "desc": title,
                         "room_quotas": JSON.stringify(quotas),
                         // "pic_path": "i2/143591588/T2LWsUXE4XXXXXXXXX_!!143591588.jpg"
-                        "pic": "/Users/ice/Documents/workspace/yuanxing/www/static/img/test.jpg"
+                        "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
                     });
                 }).then(function(result) {
                     that.end(result);
