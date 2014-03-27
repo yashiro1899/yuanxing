@@ -132,14 +132,14 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
         body += util.format('\r\n--%s\r\n', boundary);
         body += util.format('Content-Disposition: form-data; name="pic"; filename="%s"\r\n', params.pic);
         body += util.format('Content-Type: %s\r\n\r\n', getMimeType(params.pic));
-        body += fs.readFileSync(params.pic);
-        body += util.format('\r\n--%s--', boundary);
+        body = new Buffer(body);
+        body = Buffer.concat([body, fs.readFileSync(params.pic), new Buffer(util.format('\r\n--%s--', boundary))]);
         delete params.pic;
     }
     if (access_token) params["access_token"] = access_token;
 
     headers['Host'] = parsed.host;
-    headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
+    headers['Content-Length'] = body ? body.length : 0;
     if (headers['Content-Length'] > 0) {
         headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary + '';
     }
