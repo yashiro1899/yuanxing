@@ -196,7 +196,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "payment_type": "A",
                         "desc": title,
                         "room_quotas": JSON.stringify(quotas),
-                        "pic_path": "http://img01.taobaocdn.com/bao/uploaded/i5/T1y86oFqhfXXaS6ecW_023222.jpg_310x310.jpg"
+                        "pic_path": "i2/143591588/T2LWsUXE4XXXXXXXXX_!!143591588.jpg"
                     });
                 }).then(function(result) {
                     that.end(result);
