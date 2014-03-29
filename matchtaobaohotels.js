@@ -1,55 +1,80 @@
 var config = require("./auth.conf").mysql;
-var areacode = require("./define.conf");
 var jielvapi = require("./jielv-api.js");
-var oauth = require("./taobao-oauth.js");
+var mapping = require("./define.conf");
 var mysql = require('mysql');
+var oauth = require("./taobao-oauth.js");
 var Promise = require('es6-promise').Promise;
 
+var connection = mysql.createConnection(config);
 var db = function(querystring) {
     return new Promise(function(resolve, reject) {
-        var connection = mysql.createConnection(config);
-        connection.connect();
         connection.query(querystring, function(err, rows, fields) {
             if (/^SELECT/.test(querystring)) {
-                if (err) rows = [];
+                if (err) {
+                    console.log(err.toString());
+                    rows = [];
+                }
                 resolve(rows);
-            } else if (/^INSERT/.test(querystring)) {
-                if (err) resolve(false);
-                else resolve(true);
+            } else {
+                if (err) {
+                    console.log(err.toString());
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
             }
         });
-        connection.end();
     });
 };
+connection.connect();
 
-var qs = "SELECT `hotelid`,`namechn`,`country` FROM `think_hotel` WHERE `taobao_hid` = 0 AND `city` > 99999";
+var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 limit 50";
 db(qs).then(function(hotels) {
-    hotels.reduce(function(sequence, hotel) {
-        var name = hotel.namechn.trim();
-        name = name.replace(/\(.+|（.+$/, "");
-        name = name.replace(/^TF/, "");
-        name = name.replace(/^FB-/, "");
-        hotel.namechn = name;
-        return sequence.then(function() {
-            return oauth.accessProtectedResource(null, null, {
-                "domestic": false,
-                "method": "taobao.hotel.name.get",
-                "name": hotel.namechn,
-                "country": areacode.country[hotel.country] && areacode.country[hotel.country][1]
-            }, "");
-        }).then(function(result) {
-            if (result && result["hotel_name_get_response"]) {
+    var start = +(new Date());
+    var promises = [];
+    var promise;
+    hotels.forEach(function(hotel) {
+        var params = {
+            "method": "taobao.hotel.name.get",
+            "name": hotel.namechn
+        };
+        if (mapping.province[hotel.state]) {
+            params["domestic"] = true;
+            params["province"] = mapping.province[hotel.state] && mapping.province[hotel.state][1];
+        } else {
+            params["domestic"] = false;
+            params["country"] = mapping.country[hotel.country] && mapping.country[hotel.country][1];
+        }
+
+        promise = oauth.accessProtectedResource(null, null, params, mapping.token);
+        promise = promise.then(function(result) {
+            if (result && result["hotel_name_get_response"])
                 result = result["hotel_name_get_response"]["hotel"];
-            } else if (result["error_response"]) {
+            else if (result["error_response"])
                 console.log(result["error_response"]["msg"]);
-            }
+
             if (result && result.hid) {
-                db("UPDATE `think_hotel` SET `taobao_hid` = " + result.hid + " WHERE `hotelid` = " + hotel.hotelid);
-            } else {
-                console.log('NO_MATCH', hotel.hotelid, hotel.namechn);
+                console.log("MATCHED", hotel.namechn);
+
+                var qs = "UPDATE `think_hotel` SET `taobao_hid` = ";
+                qs += (result.hid + " WHERE `hotelid` = " + hotel.hotelid);
+                return db(qs);
             }
-        })["catch"](function(e) {
-            console.log(e);
+        })["catch"](function(e) {console.log(e);});
+        promises.push(promise);
+    });
+
+    Promise.all(promises).then(function(result) {
+        var total = 0;
+        var now = +(new Date());
+
+        result.forEach(function(success, index) {
+            if (success) {
+                total += 1;
+                console.log("UPDATED", hotels[index]["namechn"]);
+            }
         });
-    }, Promise.resolve());
+        console.log("success:", total, ",time:", now - start, "milliseconds");
+        connection.end();
+    });
 });
