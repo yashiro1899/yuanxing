@@ -91,6 +91,7 @@
             <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
+                <% if (roomstatus[r.roomtypeid]) { %>
                 <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
                 <td>
                 <% if (roomstatus[r.roomtypeid]["status"] == 2) { %>
@@ -101,6 +102,10 @@
                     <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" href="javascript:void(0)">发布</a>
                 <% } %>
                 </td>
+                <% } else { %>
+                    <td></td>
+                    <td></td>
+                <% } %>
             </tr>
         <% }); %>
         <% } else { %>
