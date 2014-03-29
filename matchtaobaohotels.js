@@ -3,6 +3,7 @@ var jielvapi = require("./jielv-api.js");
 var mapping = require("./define.conf");
 var mysql = require('mysql');
 var oauth = require("./taobao-oauth.js");
+var token = require("./auth.conf").token;
 var Promise = require('es6-promise').Promise;
 
 var connection = mysql.createConnection(config);
@@ -28,11 +29,11 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 LIMIT 50,50";
+var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 LIMIT 150,50";
 db(qs).then(function(hotels) {
+    var total1 = 0, total2 = 0;
     var start = +(new Date());
     var promises = [];
-    var promise;
     hotels.forEach(function(hotel) {
         var params = {
             "method": "taobao.hotel.name.get",
@@ -46,30 +47,74 @@ db(qs).then(function(hotels) {
             params["country"] = mapping.country[hotel.country] && mapping.country[hotel.country][1];
         }
 
-        promise = oauth.accessProtectedResource(null, null, params, require("./auth.conf").token);
-        promise = promise.then(function(result) {
-            if (result && result["hotel_name_get_response"])
-                result = result["hotel_name_get_response"]["hotel"];
-            else if (result["error_response"])
-                console.log(result["error_response"]["msg"]);
+        (function(params) {
+            var taobao_hid = 0;
+            var roomtypes = {};
+            var promise = oauth.accessProtectedResource(null, null, params, token);
+            promise = promise.then(function(result) {
+                if (result && result["hotel_name_get_response"])
+                    result = result["hotel_name_get_response"]["hotel"];
+                else if (result["error_response"])
+                    console.log(result["error_response"]["msg"]);
 
-            if (result && result.hid) {
-                console.log("MATCHED", hotel.namechn);
+                if (result && result.hid) {
+                    taobao_hid = result.hid;
 
-                var qs = "UPDATE `think_hotel` SET `taobao_hid` = ";
-                qs += (result.hid + " WHERE `hotelid` = " + hotel.hotelid);
-                return db(qs);
-            }
-        })["catch"](function(e) {console.log(e);});
-        promises.push(promise);
+                    var qs = "UPDATE `think_hotel` SET `taobao_hid` = ";
+                    qs += (result.hid + " WHERE `hotelid` = " + hotel.hotelid);
+                    return db(qs);
+                }
+                throw "NO_MATCHED " + hotel.namechn;
+            }).then(function(result) {
+                if (result) total1 += 1;
+
+                return oauth.accessProtectedResource(null, null, {
+                    "hid": taobao_hid,
+                    "method": "taobao.hotel.get",
+                    "need_room_type": true
+                }, token);
+            }).then(function(result) {
+                if (result && result["hotel_get_response"]) {
+                    result = result["hotel_get_response"]["hotel"];
+                    result = result["room_types"];
+                    result = (result ? result["room_type"] : []);
+                } else {
+                    result = [];
+                }
+
+                if (result.length === 0) throw "NO_ROOM_TYPE " + hotel.namechn;
+                result.forEach(function(r) {roomtypes[r.name] = r.rid;});
+                return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
+            }).then(function(result) {
+                result = result || [];
+
+                var sqls = [];
+                result.forEach(function(r, i) {
+                    var rid = roomtypes[r.namechn];
+                    var qs = "UPDATE `think_room` SET ";
+                    if (rid) {
+                        result[i]["matched"] = true;
+                        qs += "`status` = 128, `taobao_rid` = " + rid + "WHERE`roomtypeid` = " + r.roomtypeid;
+                        sqls.push(db(qs));
+                    } else {
+                        qs += "`status` = 1 WHERE `roomtypeid` = " + r.roomtypeid;
+                        sqls.push(db(qs));
+                    }
+                });
+                roomtypes = result;
+                return Promise.all(sqls);
+            }).then(function(result) {
+                roomtypes.forEach(function(r, i) {
+                    if (r.matched && result[i]) total2 += 1;
+                });
+            })["catch"](function(e) {console.log(e);});
+            promises.push(promise);
+        })(params);
     });
 
     Promise.all(promises).then(function(result) {
-        var total = 0;
         var now = +(new Date());
-
-        result.forEach(function(success) {if (success) total += 1;});
-        console.log("success:", total, ",time:", now - start, "milliseconds");
+        console.log("hotel success:", total1, "room success:", total2, ",time:", now - start, "milliseconds");
         connection.end();
     });
 })["catch"](function(e) {console.log(e);});
