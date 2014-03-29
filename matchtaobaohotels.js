@@ -94,10 +94,10 @@ db(qs).then(function(hotels) {
                     var qs = "UPDATE `think_room` SET ";
                     if (rid) {
                         result[i]["matched"] = true;
-                        qs += "`status` = 128, `taobao_rid` = " + rid + "WHERE`roomtypeid` = " + r.roomtypeid;
+                        qs += "`status`=128, `taobao_rid`=" + rid + " WHERE`roomtypeid` = " + r.roomtypeid;
                         sqls.push(db(qs));
                     } else {
-                        qs += "`status` = 1 WHERE `roomtypeid` = " + r.roomtypeid;
+                        qs += "`status`=1 WHERE `roomtypeid` = " + r.roomtypeid;
                         sqls.push(db(qs));
                     }
                 });
