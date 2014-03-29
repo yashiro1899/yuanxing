@@ -2,11 +2,11 @@
  * controller
  * @return
  */
-var oauth = require("../../../../taobao-oauth");
-var jielvapi = require("../../../../jielv-api");
-var areacode = require("../../../../define.conf");
-var querystring = require('querystring');
 var dateformat = require("dateformat");
+var jielvapi = require("../../../../jielv-api");
+var mapping = require("../../../../define.conf");
+var oauth = require("../../../../taobao-oauth");
+var querystring = require('querystring');
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
@@ -39,36 +39,30 @@ module.exports = Controller("Home/BaseController", function() {
                 model1 = model1.where({state: province});
                 model2 = model2.where({state: province});
             }
-            this.assign("countries", areacode.country);
-            this.assign("provinces", areacode.province);
+            this.assign("countries", mapping.country);
+            this.assign("provinces", mapping.province);
             this.assign("formdata", formdata);
 
             var rooms = [];
-            var promise1 = model1.order("hotelid").page(page).select();
+            var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) {
-                var ids = result.map(function(h) {return h.hotelid;});
-                return jielvapi({
-                    "QueryType": "hotelinfo",
-                    "hotelIds": ids.join("/")
-                });
-            }).then(function(result) {
-                var data = [], rids = [];
-                if (result && result.success == 1) data = result.data;
-
-                range = data.length;
-                data = data.map(function(h) {
-                    var website = h.website.trim();
-                    if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
-                    h.website = website;
-
-                    h.rooms.forEach(function(r) {
+                result = result || [];
+                var rids = [];
+                var data = result.map(function(h) {
+                    var original = JSON.parse(h.original);
+                    original["namechn"] = h.namechn;
+                    original["website"] = h.website;
+                    original.rooms.forEach(function(r) {
                         rids.push(r.roomtypeid);
                     });
-                    return h;
+                    return original;
                 });
+
+                range = data.length;
                 that.assign("list", data);
 
-                return D("Room").field("roomtypeid,status,taobao_rid").where("roomtypeid in (" + rids.join(",") + ")").select();
+                var model =D("Room").field("roomtypeid,status,taobao_rid");
+                return model.where("roomtypeid in (" + rids.join(",") + ")").select();
             }).then(function(result) {
                 var promises = [];
                 var rids = [];
@@ -90,7 +84,6 @@ module.exports = Controller("Home/BaseController", function() {
                         "rids": rids.join(",")
                     }));
                 }
-
                 return Promise.all(promises);
             }).then(function(result) {
                 var goods = {};
@@ -115,9 +108,7 @@ module.exports = Controller("Home/BaseController", function() {
                         status = 2;
                         roomstatus[r.roomtypeid]["num_iid"] = goods[r.taobao_rid];
                     }
-                    if (areacode.roomstatus[status]) {
-                        roomstatus[r.roomtypeid]["icon"] = areacode.roomstatus[status];
-                    }
+                    roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status];
                     roomstatus[r.roomtypeid]["status"] = status;
                 });
                 that.assign("roomstatus", roomstatus);

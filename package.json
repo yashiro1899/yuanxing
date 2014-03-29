@@ -4,11 +4,11 @@
   "description": "taobao app",
   "main": "www/index.js",
   "dependencies": {
-    "thinkjs": "~0.4.0",
-    "cookie": "~0.1.0",
+    "thinkjs": "^0.4.10",
+    "cookie": "^0.1.1",
     "simple-mime": "0.0.8",
     "es6-promise": "^0.1.1",
-    "mysql": "^2.1.0",
+    "mysql": "^2.1.1",
     "dateformat": "^1.0.7-1.2.3"
   },
   "devDependencies": {},
