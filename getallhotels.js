@@ -39,7 +39,6 @@ for (; i < 520; i += 1) {
     hotelIds = hotelIds.join("/");
 
     (function(hids) {
-        console.log(hids);
         var data = [],
             inserted = [];
         var promise = jielvapi({
@@ -136,6 +135,7 @@ for (; i < 520; i += 1) {
             return Promise.all(sqls);
         }).then(function(result) {
             if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
+            console.log(hids);
         })["catch"](function(e) {console.log(e);});
         promises.push(promise);
     })(hotelIds);
