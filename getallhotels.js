@@ -47,7 +47,7 @@ for (; i < 520; i += 1) {
         if (result && result.success == 1) data = result.data;
         total1 += data.length;
         var ids = data.map(function(h) {return h.hotelid;});
-        ids.filter(function(i) {return i === "";});
+        ids = ids.filter(function(i) {return i !== "";});
         return db("SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")");
     }).then(function(result) {
         var ids = result.map(function(h) {return h.hotelid;});
@@ -92,7 +92,7 @@ for (; i < 520; i += 1) {
             total2 += h.rooms.length;
             return rids.join(',');
         });
-        ids.filter(function(i) {return i === "";});
+        ids = ids.filter(function(i) {return i !== "";});
         return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
     }).then(function(result) {
         var ids = result.map(function(r) {return r.roomtypeid;});
