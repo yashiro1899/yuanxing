@@ -45,10 +45,10 @@ for (; i < 520; i += 1) {
         "hotelIds": hotelIds
     }).then(function(result) {
         if (result && result.success == 1) data = result.data;
-        if (data.length === 0) throw (new Error("The End"));
         total1 += data.length;
         var ids = data.map(function(h) {return h.hotelid;});
         ids = ids.filter(function(i) {return i !== "";});
+        if (ids.length === 0) throw (new Error("No Hotel"));
         return db("SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids.join(",") + ")");
     }).then(function(result) {
         var ids = result.map(function(h) {return h.hotelid;});
@@ -69,7 +69,8 @@ for (; i < 520; i += 1) {
                 var qs = "UPDATE `think_hotel` SET ";
                 var f = fields1.split(",");
                 v.forEach(function(value, index) {
-                    if (index !== 0) qs += ",";
+                    if (index === 0) return null;
+                    if (index > 1) qs += ",";
                     qs += f[index];
                     qs += "=";
                     qs += value;
@@ -94,6 +95,7 @@ for (; i < 520; i += 1) {
             return rids.join(',');
         });
         ids = ids.filter(function(i) {return i !== "";});
+        if (ids.length === 0) throw (new Error("No Room"));
         return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
     }).then(function(result) {
         var ids = result.map(function(r) {return r.roomtypeid;});
@@ -112,7 +114,8 @@ for (; i < 520; i += 1) {
                     var qs = "UPDATE `think_room` SET ";
                     var f = fields2.split(",");
                     v.forEach(function(value, index) {
-                        if (index !== 0) qs += ",";
+                        if (index === 0) return null;
+                        if (index > 1) qs += ",";
                         qs += f[index];
                         qs += "=";
                         qs += value;
