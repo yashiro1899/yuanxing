@@ -30,7 +30,7 @@ var fields = "`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`
 var total1 = 0, total2 = 0;
 var start = +(new Date());
 var promises = [];
-var hotelIds, promise, data;
+var hotelIds, promise, data, inserted;
 var i = 0, j;
 for (; i < 5; i += 1) {
     hotelIds = [];
@@ -38,6 +38,7 @@ for (; i < 5; i += 1) {
     hotelIds = hotelIds.join("/");
 
     data = [];
+    inserted = [];
     promise = jielvapi({
         "QueryType": "hotelinfo",
         "hotelIds": hotelIds
@@ -76,10 +77,33 @@ for (; i < 5; i += 1) {
             return v;
         });
         values = values.filter(function(h) {return ids.indexOf(h[0]) == -1;});
+        inserted = values.map(function(h) {return h[0];});
         values = values.map(function(h) {return "(" + h.join(",") + ")";});
         if (values.length > 0)
             sqls.push(db("INSERT INTO `think_hotel` (" + fields + ") VALUES " + values.join(",")));
         return Promise.all(sqls);
+    }).then(function(result) {
+        if (inserted.length > 0 && !result.pop()) console.log("HOTEL_ERROR", inserted.join(","));
+
+        var ids = data.map(function(h) {
+            var rids = h.rooms.map(function(r) {return r.roomtypeid;});
+            total2 += h.rooms.length;
+            return rids.join(',');
+        });
+        return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
+    }).then(function(result) {
+        var ids = result.map(function(r) {return r.roomtypeid;});
+        var values = [];
+        data.forEach(function(h) {
+            h.rooms.forEach(function(r) {
+                var v = [];
+                v.push(r.roomtypeid);
+                v.push(h.hotelid);
+                v.push(JSON.stringify(r.namechn.trim()));
+                v.push(0);v.push(0);
+                values.push(v);
+            });
+        });
     })["catch"](function(e) {console.log(e);});
     promises.push(promise);
 }
@@ -88,35 +112,6 @@ Promise.all(promises).then(function(result) {
     console.log(result);
     connection.end();
 });
-//         inserted = values;
-
-//     }).then(function(result) {
-//         if (!result && inserted.length > 0) {
-//             inserted.forEach(function(h) {
-//                 console.log("HOTEL_ERROR", h[0]);
-//             });
-//         }
-
-//         var ids = data.map(function(h) {
-//             var rids = h.rooms.map(function(r) {return r.roomtypeid;});
-//             total2 += h.rooms.length;
-//             return rids.join(',');
-//         });
-//         return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
-//     }).then(function(result) {
-//         var ids = result.map(function(r) {return r.roomtypeid;});
-//         var values = [];
-//         data.forEach(function(h) {
-//             h.rooms.forEach(function(r) {
-//                 var v = [];
-//                 v.push(r.roomtypeid);
-//                 v.push(h.hotelid);
-//                 v.push(JSON.stringify(r.namechn));
-//                 v.push(JSON.stringify(r.bedtype));
-//                 v.push(0);v.push(0);
-//                 values.push(v);
-//             });
-//         });
 //         values = values.filter(function(r) {return ids.indexOf(r[0]) == -1;});
 //         inserted = values;
 //         values = values.map(function(r) {return "(" + r.join(",") + ")";});
