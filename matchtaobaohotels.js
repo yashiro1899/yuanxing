@@ -28,7 +28,7 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 limit 50";
+var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 LIMIT 50,50";
 db(qs).then(function(hotels) {
     var start = +(new Date());
     var promises = [];
@@ -46,7 +46,7 @@ db(qs).then(function(hotels) {
             params["country"] = mapping.country[hotel.country] && mapping.country[hotel.country][1];
         }
 
-        promise = oauth.accessProtectedResource(null, null, params, mapping.token);
+        promise = oauth.accessProtectedResource(null, null, params, require("./auth.conf").token);
         promise = promise.then(function(result) {
             if (result && result["hotel_name_get_response"])
                 result = result["hotel_name_get_response"]["hotel"];
@@ -68,13 +68,8 @@ db(qs).then(function(hotels) {
         var total = 0;
         var now = +(new Date());
 
-        result.forEach(function(success, index) {
-            if (success) {
-                total += 1;
-                console.log("UPDATED", hotels[index]["namechn"]);
-            }
-        });
+        result.forEach(function(success) {if (success) total += 1;});
         console.log("success:", total, ",time:", now - start, "milliseconds");
         connection.end();
     });
-});
+})["catch"](function(e) {console.log(e);});
