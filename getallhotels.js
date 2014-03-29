@@ -45,10 +45,11 @@ for (; i < 520; i += 1) {
         "hotelIds": hotelIds
     }).then(function(result) {
         if (result && result.success == 1) data = result.data;
+        if (data.length === 0) throw (new Error("The End"));
         total1 += data.length;
         var ids = data.map(function(h) {return h.hotelid;});
         ids = ids.filter(function(i) {return i !== "";});
-        return db("SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids + ")");
+        return db("SELECT `hotelid` FROM `think_hotel` WHERE `hotelid` IN (" + ids.join(",") + ")");
     }).then(function(result) {
         var ids = result.map(function(h) {return h.hotelid;});
         var sqls = [];
