@@ -26,7 +26,8 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var fields = "`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
+var fields1 = "`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
+var fields2 = "`roomtypeid`,`hotelid`,`namechn`,`status`,`original`";
 var total1 = 0, total2 = 0;
 var start = +(new Date());
 var promises = [];
@@ -62,9 +63,9 @@ for (; i < 5; i += 1) {
             v.push(JSON.stringify(website));
             v.push(JSON.stringify(JSON.stringify(h)));
 
-            if (ids.indexOf(h[0]) > -1) {
+            if (ids.indexOf(h.hotelid) > -1) {
                 var qs = "UPDATE `think_hotel` SET ";
-                var f = fields.split(",");
+                var f = fields1.split(",");
                 v.forEach(function(value, index) {
                     if (index !== 0) qs += ",";
                     qs += f[index];
@@ -80,7 +81,7 @@ for (; i < 5; i += 1) {
         inserted = values.map(function(h) {return h[0];});
         values = values.map(function(h) {return "(" + h.join(",") + ")";});
         if (values.length > 0)
-            sqls.push(db("INSERT INTO `think_hotel` (" + fields + ") VALUES " + values.join(",")));
+            sqls.push(db("INSERT INTO `think_hotel` (" + fields1 + ") VALUES " + values.join(",")));
         return Promise.all(sqls);
     }).then(function(result) {
         if (inserted.length > 0 && !result.pop()) console.log("HOTEL_ERROR", inserted.join(","));
@@ -93,6 +94,7 @@ for (; i < 5; i += 1) {
         return db("SELECT `roomtypeid` FROM `think_room` WHERE `roomtypeid` IN (" + ids.join(",") + ")");
     }).then(function(result) {
         var ids = result.map(function(r) {return r.roomtypeid;});
+        var sqls = [];
         var values = [];
         data.forEach(function(h) {
             h.rooms.forEach(function(r) {
@@ -100,31 +102,36 @@ for (; i < 5; i += 1) {
                 v.push(r.roomtypeid);
                 v.push(h.hotelid);
                 v.push(JSON.stringify(r.namechn.trim()));
-                v.push(0);v.push(0);
+                v.push(0);
+                v.push(JSON.stringify(JSON.stringify(r)));
                 values.push(v);
+                if (ids.indexOf(r.roomtypeid) > -1) {
+                    var qs = "UPDATE `think_room` SET ";
+                    var f = fields2.split(",");
+                    v.forEach(function(value, index) {
+                        if (index !== 0) qs += ",";
+                        qs += f[index];
+                        qs += "=";
+                        qs += value;
+                    });
+                    qs += " WHERE `roomtypeid`=" + r.roomtypeid;
+                    sqls.push(db(qs));
+                }
             });
         });
+        values = values.filter(function(r) {return ids.indexOf(r[0]) == -1;});
+        inserted = values.map(function(r) {return r[0];});
+        values = values.map(function(r) {return "(" + r.join(",") + ")";});
+        if (values.length > 0)
+            sqls.push(db("INSERT INTO `think_room` (" + fields2 + ") VALUES " + values.join(",")));
+    }).then(function(result) {
+        if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
     })["catch"](function(e) {console.log(e);});
     promises.push(promise);
 }
 
 Promise.all(promises).then(function(result) {
-    console.log(result);
+    var now = +(new Date());
+    console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
     connection.end();
 });
-//         values = values.filter(function(r) {return ids.indexOf(r[0]) == -1;});
-//         inserted = values;
-//         values = values.map(function(r) {return "(" + r.join(",") + ")";});
-
-//         var fields = " (`roomtypeid`,`hotelid`,`namechn`,`bedtype`,`status`,`taobao_rid`)";
-//         return db("INSERT INTO `think_room`" + fields + " VALUES " + values.join(","));
-//     }).then(function(result) {
-//         if (!result && inserted.length > 0) {
-//             inserted.forEach(function(r) {
-//                 console.log("ROOM_ERROR", r[0]);
-//             });
-//         }
-
-//         var now = +(new Date());
-//         console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
-// }, Promise.resolve());
