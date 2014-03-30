@@ -179,7 +179,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var title = data.hotelName + " " + data.roomtypeName;
                     var ratetype = detail["ratetype"];
                     var bedtype = mapping.bedtype[original.bedtype] || "B";
-                    var storey = original["floordistribution"];
+                    var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
                     var quotas = data.roomPriceDetail.map(function(rpd) {
                         return {
                             date: rpd.night.slice(0, 10),
@@ -221,10 +221,21 @@ module.exports = Controller("Home/BaseController", function() {
                         "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
                     });
                 }).then(function(result) {
+                    if (!result || result["error_response"]) {
+                        var now = +(new Date());
+                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + roomtypeid, "true", {
+                            path: "/",
+                            expires: (new Date(24 * 60 * 60 * 1000 + now))
+                        }));
+                        that.end({
+                            success: 8,
+                            message: "暂无价格！"
+                        });
+                        return null;
+                    }
+
+                    result = result["hotel_room_add_response"]["room"];
                     that.end(result);
-                    // Object {hotel_room_add_response: Object}
-                    // hotel_room_add_response: Object
-                    // room: Object
                     // created: "2014-03-31 02:21:38"
                     // gid: 5691201
                     // iid: 38161119023
