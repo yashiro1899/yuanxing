@@ -162,7 +162,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                     data = data[0];
                     var m = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
-                    m = m.field("think_hotel.taobao_hid,think_room.taobao_rid");
+                    m = m.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
                     return m.where({"think_room.roomtypeid": roomtypeid}).select();
                 }).then(function(result) {
                     result = result[0];
@@ -186,7 +186,6 @@ module.exports = Controller("Home/BaseController", function() {
                         "payment_type": "A",
                         "desc": title,
                         "room_quotas": JSON.stringify(quotas),
-                        // "pic_path": "i2/143591588/T2LWsUXE4XXXXXXXXX_!!143591588.jpg"
                         "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
                     });
                 }).then(function(result) {
