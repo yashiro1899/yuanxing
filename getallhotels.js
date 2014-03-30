@@ -27,7 +27,7 @@ var db = function(querystring) {
 connection.connect();
 
 var fields1 = "`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
-var fields2 = "`roomtypeid`,`hotelid`,`namechn`,`status`,`original`";
+var fields2 = "`roomtypeid`,`hotelid`,`namechn`,`original`";
 var total1 = 0, total2 = 0;
 var start = +(new Date());
 var promises = [];
@@ -109,7 +109,6 @@ for (; i < 520; i += 1) {
                     v.push(r.roomtypeid);
                     v.push(h.hotelid);
                     v.push(JSON.stringify(r.namechn.trim()));
-                    v.push(0);
                     v.push(JSON.stringify(JSON.stringify(r)));
                     values.push(v);
                     if (ids.indexOf(r.roomtypeid) > -1) {

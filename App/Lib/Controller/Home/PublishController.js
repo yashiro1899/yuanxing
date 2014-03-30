@@ -156,12 +156,10 @@ module.exports = Controller("Home/BaseController", function() {
                     if (result && result.success == 1) data = result.data;
                     if (data.length === 0) {
                         var now = +(new Date());
-                        var data = cookie.serialize("noprice." + roomtypeid, "true", {
+                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + roomtypeid, "true", {
                             path: "/",
-                            expires: (new Date(5 * 60 * 1000 + now))
-                        });
-
-                        res.setHeader("Set-Cookie", data);
+                            expires: (new Date(24 * 60 * 60 * 1000 + now))
+                        }));
                         that.end({
                             success: 8,
                             message: "暂无价格！"
@@ -175,6 +173,8 @@ module.exports = Controller("Home/BaseController", function() {
                     return m.where({"think_room.roomtypeid": roomtypeid}).select();
                 }).then(function(result) {
                     result = result[0];
+
+                    var original = JSON.parse(result["original"]);
                     var title = data.hotelName + " " + data.roomtypeName;
                     var ratetype = data.roomPriceDetail[0]["ratetype"];
                     var quotas = data.roomPriceDetail.map(function(rpd) {
@@ -185,20 +185,29 @@ module.exports = Controller("Home/BaseController", function() {
                         };
                     });
 
-                    return oauth.accessProtectedResource(req, res, {
-                        "method": "taobao.hotel.room.add",
-                        "hid": result.taobao_hid,
-                        "rid": result.taobao_rid,
-                        "title": title,
-                        "bed_type": "B",
-                        "breakfast": areacode.breakfast[ratetype] || "A",
-                        "payment_type": "A",
-                        "desc": title,
-                        "room_quotas": JSON.stringify(quotas),
-                        "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
-                    });
-                }).then(function(result) {
-                    that.end(result);
+                    var size = parseFloat(original["bedsize"]) || 1.5;
+                    if (size <= 1) size = "A";
+                    else if (size > 2.2) size = "H";
+                    else if (mapping.bedsize[size]) size = mapping.bedsize[size];
+                    else size = "E";
+                    that.end(original);
+
+                    var area = original["acreages"];
+                    // return oauth.accessProtectedResource(req, res, {
+                    //     "method": "taobao.hotel.room.add",
+                    //     "hid": result.taobao_hid,
+                    //     "rid": result.taobao_rid,
+                    //     "title": title,
+                    //     "size": size,
+                    //     "bed_type": "B",
+                    //     "breakfast": areacode.breakfast[ratetype] || "A",
+                    //     "payment_type": "A",
+                    //     "desc": title,
+                    //     "room_quotas": JSON.stringify(quotas),
+                    //     "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
+                    // });
+                // }).then(function(result) {
+                    // that.end(result);
                 });
                 return promise;
             } else {
