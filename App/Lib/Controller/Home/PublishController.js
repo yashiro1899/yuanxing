@@ -175,8 +175,11 @@ module.exports = Controller("Home/BaseController", function() {
                     result = result[0];
 
                     var original = JSON.parse(result["original"]);
+                    var detail = data.roomPriceDetail[0];
                     var title = data.hotelName + " " + data.roomtypeName;
-                    var ratetype = data.roomPriceDetail[0]["ratetype"];
+                    var ratetype = detail["ratetype"];
+                    var bedtype = mapping.bedtype[original.bedtype] || "B";
+                    var storey = original["floordistribution"];
                     var quotas = data.roomPriceDetail.map(function(rpd) {
                         return {
                             date: rpd.night.slice(0, 10),
@@ -185,29 +188,47 @@ module.exports = Controller("Home/BaseController", function() {
                         };
                     });
 
-                    var size = parseFloat(original["bedsize"]) || 1.5;
+                    var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
                     if (size <= 1) size = "A";
                     else if (size > 2.2) size = "H";
                     else if (mapping.bedsize[size]) size = mapping.bedsize[size];
                     else size = "E";
-                    that.end(original);
 
-                    var area = original["acreages"];
-                    // return oauth.accessProtectedResource(req, res, {
-                    //     "method": "taobao.hotel.room.add",
-                    //     "hid": result.taobao_hid,
-                    //     "rid": result.taobao_rid,
-                    //     "title": title,
-                    //     "size": size,
-                    //     "bed_type": "B",
-                    //     "breakfast": areacode.breakfast[ratetype] || "A",
-                    //     "payment_type": "A",
-                    //     "desc": title,
-                    //     "room_quotas": JSON.stringify(quotas),
-                    //     "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
-                    // });
-                // }).then(function(result) {
-                    // that.end(result);
+                    var area = parseInt(original["acreages"].replace(/^\D/, ""), 10) || 20;
+                    if (area <= 15) area = "A";
+                    else if (area > 15 && area <= 30) area = "B";
+                    else if (area > 30 && area <= 50) area = "C";
+                    else area = "D";
+
+                    var bbn = "A";
+                    if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
+                    else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
+
+                    return oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.room.add",
+                        "hid": result.taobao_hid,
+                        "rid": result.taobao_rid,
+                        "title": title,
+                        "area": area, // optional
+                        "size": size, // optional
+                        "bed_type": bedtype,
+                        "storey": storey, // optional
+                        "breakfast": mapping.breakfast[ratetype] || "A",
+                        "bbn": bbn, // optional
+                        "payment_type": "A",
+                        "desc": title,
+                        "room_quotas": JSON.stringify(quotas),
+                        "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
+                    });
+                }).then(function(result) {
+                    that.end(result);
+                    // Object {hotel_room_add_response: Object}
+                    // hotel_room_add_response: Object
+                    // room: Object
+                    // created: "2014-03-31 02:21:38"
+                    // gid: 5691201
+                    // iid: 38161119023
+                    // status: 2
                 });
                 return promise;
             } else {
