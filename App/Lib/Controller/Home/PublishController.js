@@ -107,7 +107,8 @@ module.exports = Controller("Home/BaseController", function() {
                         status = 2;
                         roomstatus[r.roomtypeid]["num_iid"] = goods[r.taobao_rid];
                     }
-                    roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] || "";
+                    roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
+                        "<img src=\"/static/img/icon-yes.gif\" />"; // 可发布
                     roomstatus[r.roomtypeid]["status"] = status;
                 });
                 that.assign("roomstatus", roomstatus);
