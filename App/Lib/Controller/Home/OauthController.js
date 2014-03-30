@@ -2,8 +2,8 @@
  * controller
  * @return
  */
-var oauth = require("../../../../taobao-oauth");
 var cookie = require("cookie");
+var oauth = require("../../../../taobao-oauth");
 module.exports = Controller(function() {
     return {
         callbackAction: function() {

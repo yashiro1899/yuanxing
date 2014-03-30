@@ -2,6 +2,7 @@
  * controller
  * @return
  */
+var cookie = require("cookie");
 var dateformat = require("dateformat");
 var jielvapi = require("../../../../jielv-api");
 var mapping = require("../../../../define.conf");
@@ -154,6 +155,13 @@ module.exports = Controller("Home/BaseController", function() {
                     data = [];
                     if (result && result.success == 1) data = result.data;
                     if (data.length === 0) {
+                        var now = +(new Date());
+                        var data = cookie.serialize("noprice." + roomtypeid, "true", {
+                            path: "/",
+                            expires: (new Date(5 * 60 * 1000 + now))
+                        });
+
+                        res.setHeader("Set-Cookie", data);
                         that.end({
                             success: 8,
                             message: "暂无价格！"
