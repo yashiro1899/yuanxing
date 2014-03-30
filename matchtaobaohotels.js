@@ -29,7 +29,8 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` WHERE `taobao_hid` = 0 LIMIT 5437,6000";
+var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
+qs += "ORDER BY `hotelid` LIMIT 100,100";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
