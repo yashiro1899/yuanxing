@@ -21,17 +21,19 @@ $(function() {
             dataType: "json",
             data: "roomtypeid=" + roomtypeid
         }).done(function(response) {
-            td.html("");
             if (response["success"] == 8) {
+                td.html("");
                 td.prev().html(NOPRICE_ICON);
                 alert(response["message"]);
                 return null;
             }
+            td.html("发布中…");
             $.ajax("/publish/create/", {
                 type: "post",
                 dataType: "json",
                 data: "data=" + JSON.stringify(response)
             }).done(function(response) {
+                td.html("");
                 if (response["success"] == 1) {
                     alert(response["message"]);
                     location.href = "/connect/";
