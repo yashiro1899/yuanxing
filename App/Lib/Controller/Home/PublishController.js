@@ -126,15 +126,14 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
         },
-        createAction: function() {
+        inquiryAction: function() {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
 
             if (this.isPost()) {
                 var roomtypeid = this.post("roomtypeid");
-                var promise, start, end, data;
-
+                var promise, start, end;
                 if (!roomtypeid) {
                     this.end(null);
                     return null;
@@ -152,7 +151,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "checkInDate": start,
                     "checkOutDate": end
                 }).then(function(result) {
-                    data = [];
+                    var data = [];
                     if (result && result.success == 1) data = result.data;
                     if (data.length === 0) {
                         var now = +(new Date());
@@ -164,14 +163,35 @@ module.exports = Controller("Home/BaseController", function() {
                             success: 8,
                             message: "暂无价格！"
                         });
-                        return getDefer().promise;
                     }
+                    that.end(data[0]);
+                });
+            } else {
+                this.end(null);
+            }
+        },
+        createAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
 
-                    data = data[0];
-                    var m = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
-                    m = m.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
-                    return m.where({"think_room.roomtypeid": roomtypeid}).select();
-                }).then(function(result) {
+            if (this.isPost()) {
+                var data = this.post("data");
+                if (!data) {
+                    this.end(null);
+                    return null;
+                }
+                try {
+                    data = JSON.parse(data);
+                } catch(e) {
+                    this.end(null);
+                    return null;
+                }
+
+                var promise = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                promise = promise.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
+                promise = promise.where({"think_room.roomtypeid": data.roomtypeId}).select();
+                promise.then(function(result) {
                     result = result[0];
 
                     var original = JSON.parse(result["original"]);
@@ -222,8 +242,10 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }).then(function(result) {
                     if (!result || result["error_response"]) {
+                        that.end(result);
+                        return null;
                         var now = +(new Date());
-                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + roomtypeid, "true", {
+                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + data.roomtypeId, "true", {
                             path: "/",
                             expires: (new Date(24 * 60 * 60 * 1000 + now))
                         }));

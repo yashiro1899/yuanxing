@@ -14,8 +14,8 @@ $(function() {
         var roomtypeid = $(this).data("roomtypeid");
         var td = $(this).parent();
 
-        td.html("发布中…");
-        $.ajax("/publish/create/", {
+        td.html("询价中…");
+        $.ajax("/publish/inquiry/", {
             type: "post",
             dataType: "json",
             data: "roomtypeid=" + roomtypeid
@@ -26,7 +26,13 @@ $(function() {
                 alert(response["message"]);
                 return null;
             }
-            console.log(response);
+            $.ajax("/publish/create/", {
+                type: "post",
+                dataType: "json",
+                data: "data=" + JSON.stringify(response)
+            }).done(function(response) {
+                console.log(response);
+            });
         });
     });
 });
