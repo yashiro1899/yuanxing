@@ -93,10 +93,9 @@ module.exports = Controller("Home/BaseController", function() {
                     if (g && g["hotel_rooms_search_response"]) {
                         g = g["hotel_rooms_search_response"]["rooms"];
                         g = g ? g["room"] : [];
-                        if (g.length > 0) {
-                            g = g[0];
-                            goods[g.rid] = g.iid;
-                        }
+                        g.forEach(function(r) {
+                            goods[r.rid] = r.iid;
+                        });
                     }
                 });
 
