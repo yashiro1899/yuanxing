@@ -30,7 +30,7 @@ var db = function(querystring) {
 connection.connect();
 
 var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
-qs += "ORDER BY `hotelid` LIMIT 7858,1000";
+qs += "ORDER BY `hotelid` LIMIT 8858,1000";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
