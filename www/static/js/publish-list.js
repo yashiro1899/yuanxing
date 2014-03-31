@@ -13,6 +13,7 @@ $(function() {
     $("#result_list").on("click", ".precisely-publish", function(e) {
         var roomtypeid = $(this).data("roomtypeid");
         var td = $(this).parent();
+        if (!window.confirm("确认发布？")) return false;
 
         td.html("询价中…");
         $.ajax("/publish/inquiry/", {
@@ -20,8 +21,8 @@ $(function() {
             dataType: "json",
             data: "roomtypeid=" + roomtypeid
         }).done(function(response) {
+            td.html("");
             if (response["success"] == 8) {
-                td.html("");
                 td.prev().html(NOPRICE_ICON);
                 alert(response["message"]);
                 return null;
@@ -31,7 +32,13 @@ $(function() {
                 dataType: "json",
                 data: "data=" + JSON.stringify(response)
             }).done(function(response) {
-                console.log(response);
+                if (response["success"] == 1) {
+                    alert(response["message"]);
+                    location.href = "/connect/";
+                    return null;
+                }
+                td.prev().html(NOPRICE_ICON);
+                alert(response["message"]);
             });
         });
     });

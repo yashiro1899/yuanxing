@@ -262,7 +262,10 @@ module.exports = Controller("Home/BaseController", function() {
                         iid: result.iid
                     });
                 }).then(function(result) {
-                    that.redirect("/connect/");
+                    that.end({
+                        success: 1,
+                        message: "发布成功！"
+                    });
                 });
                 return promise;
             } else {
