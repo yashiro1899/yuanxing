@@ -241,8 +241,6 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }).then(function(result) {
                     if (!result || result["error_response"]) {
-                        that.end(result);
-                        return null;
                         var now = +(new Date());
                         res.setHeader("Set-Cookie", cookie.serialize("noprice." + data.roomtypeId, "true", {
                             path: "/",
@@ -256,11 +254,15 @@ module.exports = Controller("Home/BaseController", function() {
                     }
 
                     result = result["hotel_room_add_response"]["room"];
-                    that.end(result);
-                    // created: "2014-03-31 02:21:38"
-                    // gid: 5691201
-                    // iid: 38161119023
-                    // status: 2
+                    return D("Goods").add({
+                        gid: result.gid,
+                        userid: that.userInfo["taobao_user_id"],
+                        hotelid: data.hotelId,
+                        roomtypeid: data.roomtypeId,
+                        iid: result.iid
+                    });
+                }).then(function(result) {
+                    that.redirect("/connect/");
                 });
                 return promise;
             } else {
