@@ -232,7 +232,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "size": size, // optional
                         "bed_type": bedtype,
                         "storey": storey, // optional
-                        "breakfast": mapping.breakfast[ratetype] || "A",
+                        "breakfast": "A",
                         "bbn": bbn, // optional
                         "payment_type": "A",
                         "desc": title,
