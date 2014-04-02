@@ -1,36 +1,36 @@
 Country:
-70017  阿联酋    United Arab Emirates
-70030  奥地利    Austria
-70031  澳大利亚  Australia
-70046  比利时    Belgium
-70062  丹麦      Denmark
-70063  德国      Germany
-70071  法国      France
-70077  菲律宾    Philippines
-70079  芬兰      Finland
-70096  韩国      Korea Rep.
-70097  荷兰      Netherlands
-70106  加拿大    Canada
-70109  柬埔寨    Cambodia
-70124  老挝      Laos
-70136  马尔代夫  Maldives
-70139  马来西亚  Malaysia
-70147  美国      United States
-70154  缅甸      Myanmar
-70176  日本      Japan
-70177  瑞典      Sweden
-70205  泰国      Thailand
-70213  土耳其    Turkey
-70222  斯里兰卡  Sri Lanka
-70227  西班牙    Spain
-70228  希腊      Greece
-70229  新加坡    Singapore
-70231  新西兰    New Zealand
-70240  意大利    Italy
-70241  印度      India
-70242  印尼      Indonesia
-70243  英国      United Kingdom
-70245  越南      Vietnam
+70017  United Arab Emirates  阿联酋
+70030  Austria               奥地利
+70031  Australia             澳大利亚
+70046  Belgium               比利时
+70062  Denmark               丹麦
+70063  Germany               德国
+70071  France                法国
+70077  Philippines           菲律宾
+70079  Finland               芬兰
+70096  Korea Rep.            韩国
+70097  Netherlands           荷兰
+70106  Canada                加拿大
+70109  Cambodia              柬埔寨
+70124  Laos                  老挝
+70136  Maldives              马尔代夫
+70139  Malaysia              马来西亚
+70147  United States         美国
+70154  Myanmar               缅甸
+70176  Japan                 日本
+70177  Sweden                瑞典
+70205  Thailand              泰国
+70213  Turkey                土耳其
+70222  Sri Lanka             斯里兰卡
+70227  Spain                 西班牙
+70228  Greece                希腊
+70229  Singapore             新加坡
+70231  New Zealand           新西兰
+70240  Italy                 意大利
+70241  India                 印度
+70242  Indonesia             印尼
+70243  United Kingdom        英国
+70245  Vietnam               越南
 
 
 State:
