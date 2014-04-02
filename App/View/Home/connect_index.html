@@ -4,8 +4,8 @@
         <div class="inner-center-column">
             <div class="module filtered" id="changelist">
 <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
-    <li<% if (tab == "onsale") { %> class="active"<% } %>><a href="/connect/">出售中</a></li>
-    <li<% if (tab == "inventory") { %> class="active"<% } %>><a href="/connect/inventory/">仓库中</a></li>
+    <li<% if (tab == "onsale") { %> class="active"<% } %>><a href="/connect/<%if (formdata.q) {%>?q=<%=formdata.q%><%}%>">出售中</a></li>
+    <li<% if (tab == "inventory") { %> class="active"<% } %>><a href="/connect/inventory/<%if (formdata.q) {%>?q=<%=formdata.q%><%}%>">仓库中</a></li>
 </ul>
 <div class="toolbar-content clearfix">
     <div id="toolbar" class="clearfix">
