@@ -200,7 +200,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var bedtype = mapping.bedtype[original.bedtype] || "B";
                     var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
                     var quotas = data.roomPriceDetail.map(function(rpd) {
-                        return {
+                        return { // TODO: various ratetype
                             date: rpd.night.slice(0, 10),
                             price: rpd.preeprice,
                             num: rpd.qtyable
