@@ -16,6 +16,12 @@
         </form>
     </div>
 </div>
+<ul class="breadcrumb">
+    <li><i class="icon-home"></i> 货源酒店未知&#12288;</li>
+    <li><i class="icon-tag"></i> 货源房型未知&#12288;</li>
+    <li><i class="icon-magnet"></i> 已关联&#12288;</li>
+    <li><i class="icon-remove"></i> 暂无价格</li>
+</ul>
 <div class="results">
     <table id="result_list" class="table table-striped table-bordered table-condensed">
         <thead>
@@ -44,15 +50,13 @@
         <% list.forEach(function(v, i) { %>
             <tr>
                 <td>
-                    <a href="http://kezhan.trip.taobao.com/item.htm?item_id=<%=v.iid%>" target="_blank"><%=v.iid%></a>
+                    <a href="http://kezhan.trip.taobao.com/publish.htm?item_num_id=<%=v.iid%>&auto=false" target="_blank"><%=v.iid%></a>
                 </td>
                 <td><%=v.hotel.name%></td>
                 <td><%=v.hotel.address%></td>
                 <td><%=v.room_type.name%></td>
                 <td></td>
                 <td>
-                    <a href="http://kezhan.trip.taobao.com/publish.htm?item_num_id=<%=v.iid%>&auto=false" target="_blank">编辑</a>
-                    <span class="divider">|</span>
                     <a href="javascript:void(0)">关联</a>
                 </td>
         <% }); %>

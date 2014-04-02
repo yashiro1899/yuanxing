@@ -21,6 +21,7 @@ module.exports = Controller("Home/BaseController", function() {
                 "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.onsale.get",
+                "order_by": "modified:desc",
                 "page_no": page,
                 "page_size": 20
             };
@@ -82,6 +83,7 @@ module.exports = Controller("Home/BaseController", function() {
                 "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.inventory.get",
+                "order_by": "modified:desc",
                 "page_no": page,
                 "page_size": 20
             };
