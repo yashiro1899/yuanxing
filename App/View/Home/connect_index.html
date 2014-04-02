@@ -55,9 +55,13 @@
                 <td><%=v.hotel.name%></td>
                 <td><%=v.hotel.address%></td>
                 <td><%=v.room_type.name%></td>
-                <td></td>
+                <td><%-v.goodstatusicon%></td>
                 <td>
+                <% if (v.goodstatus == 128) { %>
                     <a href="javascript:void(0)">关联</a>
+                <% } else if (v.goodstatus < 2) { %>
+                    <a href="javascript:void(0)">匹配/关联</a>
+                <% } %>
                 </td>
         <% }); %>
         </tbody>

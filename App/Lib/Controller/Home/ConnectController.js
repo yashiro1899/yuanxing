@@ -69,7 +69,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 var ids = goods.map(function(g, i) {
                     goods[i]["goodstatus"] = 0;
-                    goods[i]["goodstatusicon"] = mapping[0];
+                    goods[i]["goodstatusicon"] = mapping.goodstatus[0];
                     return g.gid;
                 });
                 if (ids.length === 0) {
