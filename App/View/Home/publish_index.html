@@ -93,11 +93,7 @@
                 <% if (roomstatus[r.roomtypeid]) { %>
                 <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
                 <td>
-                <% if (roomstatus[r.roomtypeid]["status"] == 2) { %>
-                    <a href="http://kezhan.trip.taobao.com/item.htm?item_id=<%=roomstatus[r.roomtypeid]["num_iid"]%>" target="_blank">查看</a>
-                <% } else if (roomstatus[r.roomtypeid]["status"] < 2) { %>
-                    <a href="">匹配/发布</a>
-                <% } else { %>
+                <% if (roomstatus[r.roomtypeid]["status"] == 128) { %>
                     <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" href="javascript:void(0)">发布</a>
                 <% } %>
                 </td>

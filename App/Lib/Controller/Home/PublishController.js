@@ -62,15 +62,29 @@ module.exports = Controller("Home/BaseController", function() {
                 range = data.length;
                 that.assign("list", data);
 
-                var model =D("Room").field("roomtypeid,status,taobao_rid");
-                return model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                var promises = [], model;
+                model = D("Room").field("roomtypeid,status,taobao_rid");
+                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                promises.push(model);
+                model = D("Goods").field("roomtypeid,status");
+                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                promises.push(model);
+                return Promise.all(promises);
             }).then(function(result) {
                 var promises = [];
-                var rids = [];
+                var rids = {};
+                var goods = result[1] || [];
 
-                rooms = result || [];
-                rooms.forEach(function(r) {
-                    if (r.taobao_rid > 0) rids.push(r.taobao_rid);
+                goods.forEach(function(g) {
+                    rids[g.roomtypeid] = g;
+                });
+                goods = rids;
+                rids = [];
+
+                rooms = result[0] || [];
+                rooms.forEach(function(r, i) {
+                    if (goods[r.roomtypeid]) rooms[i]["status"] = goods[r.roomtypeid]["status"];
+                    else if (r.taobao_rid > 0) rids.push(r.taobao_rid);
                     if (rids.length == 20) {
                         promises.push(oauth.accessProtectedResource(req, res, {
                             "method": "taobao.hotel.rooms.search",
@@ -103,10 +117,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var status = r.status;
                     roomstatus[r.roomtypeid] = {};
 
-                    if (goods[r.taobao_rid]) {
-                        status = 2;
-                        roomstatus[r.roomtypeid]["num_iid"] = goods[r.taobao_rid];
-                    }
+                    if (goods[r.taobao_rid]) status = 2;
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
                         "<img src=\"/static/img/icon-yes.gif\" />"; // 可发布
                     roomstatus[r.roomtypeid]["status"] = status;
