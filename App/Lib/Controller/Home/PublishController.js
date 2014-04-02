@@ -156,7 +156,7 @@ module.exports = Controller("Home/BaseController", function() {
                         var now = +(new Date());
                         res.setHeader("Set-Cookie", cookie.serialize("noprice." + roomtypeid, "true", {
                             path: "/",
-                            expires: (new Date(24 * 60 * 60 * 1000 + now))
+                            expires: (new Date(7 * 24 * 60 * 60 * 1000 + now))
                         }));
                         that.end({
                             success: 8,
@@ -196,16 +196,21 @@ module.exports = Controller("Home/BaseController", function() {
                     var original = JSON.parse(result["original"]);
                     var detail = data.roomPriceDetail[0];
                     var title = data.hotelName + " " + data.roomtypeName;
-                    var ratetype = detail["ratetype"];
                     var bedtype = mapping.bedtype[original.bedtype] || "B";
                     var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
-                    var quotas = data.roomPriceDetail.map(function(rpd) {
-                        return { // TODO: various ratetype
+                    var quotas = {};
+                    data.roomPriceDetail.forEach(function(rpd) {
+                        var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                        if (rpd.ratetype != detail.ratetype) return null;
+                        quotas[night] = {
                             date: rpd.night.slice(0, 10),
                             price: rpd.preeprice,
                             num: rpd.qtyable
                         };
                     });
+                    var temp = [], i;
+                    for (i in quotas) temp.push(quotas[i]);
+                    quotas = temp;
 
                     var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
                     if (size <= 1) size = "A";
@@ -218,6 +223,10 @@ module.exports = Controller("Home/BaseController", function() {
                     else if (area > 15 && area <= 30) area = "B";
                     else if (area > 30 && area <= 50) area = "C";
                     else area = "D";
+
+                    var breakfast = "A";
+                    if (detail.ratetype == 16 || detail.ratetype == 56) breakfast = "B";
+                    else if (detail.ratetype == 9) breakfast = "C";
 
                     var bbn = "A";
                     if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
@@ -232,7 +241,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "size": size, // optional
                         "bed_type": bedtype,
                         "storey": storey, // optional
-                        "breakfast": "A",
+                        "breakfast": breakfast,
                         "bbn": bbn, // optional
                         "payment_type": "A",
                         "desc": title,
