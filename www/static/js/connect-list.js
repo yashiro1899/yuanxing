@@ -1,7 +1,7 @@
 $(function() {
     var NOPRICE_ICON = "<i title=\"暂无价格\" class=\"icon-remove\"></i>";
 
-    $("#result_list .precisely-publish").each(function(i, el) {
+    $("#result_list .precisely-connect").each(function(i, el) {
         el = $(el);
         var roomtypeid = el.data("roomtypeid");
         var td = el.parent();
@@ -11,7 +11,7 @@ $(function() {
         }
     });
 
-    $("#result_list").on("click", ".precisely-publish", function(e) {
+    $("#result_list").on("click", ".precisely-connect", function(e) {
         var roomtypeid = $(this).data("roomtypeid");
         var td = $(this).parent();
 
@@ -29,25 +29,25 @@ $(function() {
                 return null;
             }
 
-            if (!window.confirm("确认发布？")) {
-                $("span", td).remove();
-                $("a", td).show();
-                return false;
-            }
-            td.html("发布中…");
-            $.ajax("/publish/create/", {
-                type: "post",
-                dataType: "json",
-                data: "data=" + JSON.stringify(response)
-            }).done(function(response) {
-                td.html("");
-                if (response["success"] == 1) {
-                    location.href = "/connect/";
-                    return null;
-                }
-                td.prev().html(NOPRICE_ICON);
-                alert(response["message"]);
-            });
+    //         if (!window.confirm("确认发布？")) {
+    //             $("span", td).remove();
+    //             $("a", td).show();
+    //             return false;
+    //         }
+    //         td.html("发布中…");
+    //         $.ajax("/publish/create/", {
+    //             type: "post",
+    //             dataType: "json",
+    //             data: "data=" + JSON.stringify(response)
+    //         }).done(function(response) {
+    //             td.html("");
+    //             if (response["success"] == 1) {
+    //                 location.href = "/connect/";
+    //                 return null;
+    //             }
+    //             td.prev().html(NOPRICE_ICON);
+    //             alert(response["message"]);
+    //         });
         });
     });
 });

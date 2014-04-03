@@ -115,15 +115,17 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                return D("Room").field("taobao_rid").where("taobao_rid in (" + ids.join(",") + ")").select();
+                ids = "taobao_rid in (" + ids.join(",") + ")";
+                return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
             }).then(function(result) {
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = true;});
+                result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
                         goods[i]["goodstatus"] = 128;
                         goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
+                        goods[i]["roomtypeid"] = exists[g.rid];
                     }
                 });
                 that.assign("list", goods);
@@ -197,7 +199,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 if (ids.length === 0) {
                     that.assign("list", goods);
-                    that.display();
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
                 return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
@@ -216,7 +218,7 @@ module.exports = Controller("Home/BaseController", function() {
                 ids = ids.map(function(g) {return g.hid;});
                 if (ids.length === 0) {
                     that.assign("list", goods);
-                    that.display();
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
                 return D("Hotel").field("taobao_hid").where("taobao_hid in (" + ids.join(",") + ")").select();
@@ -235,18 +237,20 @@ module.exports = Controller("Home/BaseController", function() {
                 ids = ids.map(function(g) {return g.rid;});
                 if (ids.length === 0) {
                     that.assign("list", goods);
-                    that.display();
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
-                return D("Room").field("taobao_rid").where("taobao_rid in (" + ids.join(",") + ")").select();
+                ids = "taobao_rid in (" + ids.join(",") + ")";
+                return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
             }).then(function(result) {
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = true;});
+                result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
                         goods[i]["goodstatus"] = 128;
                         goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
+                        goods[i]["roomtypeid"] = exists[g.rid];
                     }
                 });
                 that.assign("list", goods);
