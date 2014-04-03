@@ -34,15 +34,21 @@ $(function() {
                 $("a", td).show();
                 return false;
             }
+
+            var data = JSON.stringify(response);
             td.html("发布中…");
             $.ajax("/publish/create/", {
                 type: "post",
                 dataType: "json",
-                data: "data=" + JSON.stringify(response)
+                data: "data=" + data
             }).done(function(response) {
                 td.html("");
                 if (response["success"] == 1) {
-                    location.href = "/connect/";
+                    $('<form action="/connect/create/" method="post">\
+                      <textarea name="data">' + data + '</textarea>\
+                      <input type="hidden" name="gid" value="' + response.gid + '" />\
+                      <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
+                      </form>').submit();
                     return null;
                 }
                 td.prev().html(NOPRICE_ICON);

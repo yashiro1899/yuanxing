@@ -198,6 +198,7 @@ module.exports = Controller("Home/BaseController", function() {
                     return null;
                 }
 
+                var gid = 0;
                 var promise = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
                 promise = promise.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
                 promise = promise.where({"think_room.roomtypeid": data.roomtypeId}).select();
@@ -269,6 +270,7 @@ module.exports = Controller("Home/BaseController", function() {
                     }
 
                     result = result["hotel_room_add_response"]["room"];
+                    gid = result.gid;
                     return D("Goods").add({
                         gid: result.gid,
                         userid: that.userInfo["taobao_user_id"],
@@ -279,7 +281,8 @@ module.exports = Controller("Home/BaseController", function() {
                 }).then(function(result) {
                     that.end({
                         success: 1,
-                        message: "发布成功！"
+                        message: "发布成功！",
+                        gid: gid
                     });
                 });
                 return promise;

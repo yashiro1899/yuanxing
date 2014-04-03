@@ -29,19 +29,11 @@ $(function() {
                 return null;
             }
 
-            var param = {};
-            param["data"] = JSON.stringify(response);
-            param["gid"] = gid;
-            param["roomtypeid"] = roomtypeid;
-
-            $.ajax("/connect/create/", {
-                async: false,
-                type: "post",
-                dataType: "json",
-                data: param
-            }).done(function(response) {
-                alert(response["message"]);
-            });
+            $('<form action="/connect/create/" method="post">\
+              <textarea name="data">' + JSON.stringify(response) + '</textarea>\
+              <input type="hidden" name="gid" value="' + gid + '" />\
+              <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
+              </form>').submit();
         });
     });
 });
