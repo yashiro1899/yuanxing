@@ -215,7 +215,7 @@ module.exports = Controller("Home/BaseController", function() {
                         if (rpd.ratetype != detail.ratetype) return null;
                         quotas[night] = {
                             date: rpd.night.slice(0, 10),
-                            price: rpd.preeprice + 99999,
+                            price: 9999999,
                             num: rpd.qtyable
                         };
                     });
@@ -263,7 +263,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (!result || result["error_response"]) {
                         that.end({
                             success: 8,
-                            message: "暂无价格！" // TODO: sub_msg
+                            message: result["error_response"]["sub_msg"] || "暂无价格！"
                         });
                         return null;
                     }

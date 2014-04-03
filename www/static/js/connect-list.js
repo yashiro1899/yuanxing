@@ -12,11 +12,11 @@ $(function() {
     });
 
     $("#result_list").on("click", ".precisely-connect", function(e) {
+        var gid = $(this).data("gid");
         var roomtypeid = $(this).data("roomtypeid");
         var td = $(this).parent();
 
-        td.append("<span>询价中…</span>");
-        $(this).hide();
+        $(this).html("询价中…");
         $.ajax("/publish/inquiry/", {
             type: "post",
             dataType: "json",
@@ -29,25 +29,19 @@ $(function() {
                 return null;
             }
 
-    //         if (!window.confirm("确认发布？")) {
-    //             $("span", td).remove();
-    //             $("a", td).show();
-    //             return false;
-    //         }
-    //         td.html("发布中…");
-    //         $.ajax("/publish/create/", {
-    //             type: "post",
-    //             dataType: "json",
-    //             data: "data=" + JSON.stringify(response)
-    //         }).done(function(response) {
-    //             td.html("");
-    //             if (response["success"] == 1) {
-    //                 location.href = "/connect/";
-    //                 return null;
-    //             }
-    //             td.prev().html(NOPRICE_ICON);
-    //             alert(response["message"]);
-    //         });
+            var param = {};
+            param["data"] = JSON.stringify(response);
+            param["gid"] = gid;
+            param["roomtypeid"] = roomtypeid;
+
+            $.ajax("/connect/create/", {
+                async: false,
+                type: "post",
+                dataType: "json",
+                data: param
+            }).done(function(response) {
+                alert(response["message"]);
+            });
         });
     });
 });
