@@ -96,15 +96,17 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                return D("Hotel").field("taobao_hid").where("taobao_hid in (" + ids.join(",") + ")").select();
+                ids = "taobao_hid in (" + ids.join(",") + ")";
+                return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
             }).then(function(result) {
                 var exists = {};
                 result = result || [];
-                result.forEach(function(h) {exists[h.taobao_hid] = true;});
+                result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.hid]) {
                         goods[i]["goodstatus"] = 1;
                         goods[i]["goodstatusicon"] = mapping.goodstatus[1];
+                        goods[i]["hotelid"] = exists[g.hid];
                     }
                 });
 
@@ -221,15 +223,17 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                return D("Hotel").field("taobao_hid").where("taobao_hid in (" + ids.join(",") + ")").select();
+                ids = "taobao_hid in (" + ids.join(",") + ")";
+                return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
             }).then(function(result) {
                 var exists = {};
                 result = result || [];
-                result.forEach(function(h) {exists[h.taobao_hid] = true;});
+                result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.hid]) {
                         goods[i]["goodstatus"] = 1;
                         goods[i]["goodstatusicon"] = mapping.goodstatus[1];
+                        goods[i]["hotelid"] = exists[g.hid];
                     }
                 });
 
