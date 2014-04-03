@@ -215,7 +215,7 @@ module.exports = Controller("Home/BaseController", function() {
                         if (rpd.ratetype != detail.ratetype) return null;
                         quotas[night] = {
                             date: rpd.night.slice(0, 10),
-                            price: rpd.preeprice,
+                            price: rpd.preeprice + 99999,
                             num: rpd.qtyable
                         };
                     });
