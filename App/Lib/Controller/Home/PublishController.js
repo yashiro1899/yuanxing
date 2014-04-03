@@ -261,14 +261,9 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }).then(function(result) {
                     if (!result || result["error_response"]) {
-                        var now = +(new Date());
-                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + data.roomtypeId, "true", {
-                            path: "/",
-                            expires: (new Date(24 * 60 * 60 * 1000 + now))
-                        }));
                         that.end({
                             success: 8,
-                            message: "暂无价格！"
+                            message: "暂无价格！" // TODO: sub_msg
                         });
                         return null;
                     }
