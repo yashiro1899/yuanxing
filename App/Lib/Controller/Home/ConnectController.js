@@ -269,20 +269,11 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             if (this.isPost()) {
+                // var action = this.post("action");
                 var data = this.post("data");
                 var gid = this.post("gid");
                 var roomtypeid = this.post("roomtypeid");
-
-                if (!data || !gid || !roomtypeid) {
-                    this.end(null);
-                    return null;
-                }
-                try {
-                    data = JSON.parse(data);
-                } catch(e) {
-                    this.end(null);
-                    return null;
-                }
+                // var formdata = {};
 
                 var promises = [];
                 var model;
@@ -297,7 +288,30 @@ module.exports = Controller("Home/BaseController", function() {
                 model = model.where({"think_room.roomtypeid": roomtypeid}).select();
                 promises.push(model);
                 return Promise.all(promises).then(function(result) {
-                    that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
+                    var taobao = result[0]["hotel_room_get_response"]["room"];
+                    var jielv = result[1][0];
+                    var jielvhotel = JSON.parse(jielv.h);
+                    var jielvroom = JSON.parse(jielv.r);
+                    var jielvbedtype = mapping.bedtype[jielvroom.bedtype] || "B";
+                    var jielvarea = parseInt(jielvroom["acreages"].replace(/^\D/, ""), 10) || 20;
+                    var list = {};
+
+                    list["taobao"] = {
+                        hotel: taobao.hotel.name,
+                        room: taobao.room_type.name,
+                        address: taobao.hotel.address,
+                        bedtype: mapping.bedtypestrings[taobao.bed_type],
+                        area: mapping.area[taobao.area]
+                    };
+                    list["jielv"] = {
+                        hotel: jielvhotel.namechn,
+                        room: jielvroom.namechn,
+                        address: jielvhotel.addresschn,
+                        bedtype: mapping.bedtypestrings[jielvbedtype],
+                        area: jielvarea
+                    };
+                    that.assign("list", list);
+                    that.display();
                 });
             } else {
                 this.end(null);
