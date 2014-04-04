@@ -49,16 +49,23 @@
         <th style="vertical-align:middle"><b>加价类型：</b></th>
         <td>
             <label class="radio inline" style="font-size:12px">
-                <input type="radio" value="1" name="ptype" style="margin-top:2px" checked="">比例加价</label>
+                <input type="radio" value="1" name="ptype" style="margin-top:2px" checked="" />比例加价</label>
             <label class="radio inline" style="font-size:12px">
-                <input type="radio" value="2" name="ptype" style="margin-top:2px">固定加价</label>
+                <input type="radio" value="2" name="ptype" style="margin-top:2px" />固定加价</label>
         </td>
     </tr>
     <tr>
         <th style="vertical-align:middle"><b>加价额度：</b></th>
         <td>
-            <input class="vTextField" id="id_name" maxlength="256" name="profit" type="text">
+            <div class="input-append">
+                <input class="input-small" name="profit" placeholder="额度" size="10" type="text" style="font-size:12px" />
+                <span class="add-on" style="font-size:12px">%</span>
+            </div>
         </td>
+    </tr>
+    <tr>
+        <th></th>
+        <td><button type="submit" class="btn btn-high btn-info">保存</button></td>
     </tr>
 </table>
 </form>
