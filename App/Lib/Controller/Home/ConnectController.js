@@ -262,6 +262,46 @@ module.exports = Controller("Home/BaseController", function() {
             });
 
             return promise;
+        },
+        createAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            if (this.isPost()) {
+                var data = this.post("data");
+                var gid = this.post("gid");
+                var roomtypeid = this.post("roomtypeid");
+
+                if (!data || !gid || !roomtypeid) {
+                    this.end(null);
+                    return null;
+                }
+                try {
+                    data = JSON.parse(data);
+                } catch(e) {
+                    this.end(null);
+                    return null;
+                }
+
+                var promises = [];
+                var model;
+                promises.push(oauth.accessProtectedResource(req, res, {
+                    "gid": gid,
+                    "method": "taobao.hotel.room.get",
+                    "need_hotel": true,
+                    "need_room_type": true
+                }));
+                model = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                model = model.field("think_hotel.original as h,think_room.original as r");
+                model = model.where({"think_room.roomtypeid": roomtypeid}).select();
+                promises.push(model);
+                return Promise.all(promises).then(function(result) {
+                    that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
+                });
+            } else {
+                this.end(null);
+            }
         }
     };
 });
