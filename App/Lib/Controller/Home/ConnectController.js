@@ -273,7 +273,10 @@ module.exports = Controller("Home/BaseController", function() {
                 var data = this.post("data");
                 var gid = this.post("gid");
                 var roomtypeid = this.post("roomtypeid");
-                // var formdata = {};
+                var formdata = {};
+                formdata["data"] = data;
+                formdata["gid"] = gid;
+                formdata["roomtypeid"] = roomtypeid;
 
                 var ratetypes = {};
                 data = JSON.parse(data);
@@ -319,6 +322,9 @@ module.exports = Controller("Home/BaseController", function() {
                         bedtype: mapping.bedtypestrings[jielvbedtype],
                         area: jielvarea
                     };
+
+                    formdata["iid"] = taobao.iid;
+                    that.assign("formdata", formdata);
                     that.assign("list", list);
                     that.display();
                 });
