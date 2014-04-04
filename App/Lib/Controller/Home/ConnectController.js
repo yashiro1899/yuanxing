@@ -275,6 +275,15 @@ module.exports = Controller("Home/BaseController", function() {
                 var roomtypeid = this.post("roomtypeid");
                 // var formdata = {};
 
+                var ratetypes = {};
+                data = JSON.parse(data);
+                data.roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                ratetypes = Object.keys(ratetypes);
+                ratetypes = ratetypes.map(function(rt) {
+                    return [rt, mapping.ratetype[rt]];
+                });
+                this.assign("ratetypes", ratetypes);
+
                 var promises = [];
                 var model;
                 promises.push(oauth.accessProtectedResource(req, res, {
