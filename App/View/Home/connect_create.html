@@ -34,34 +34,32 @@
 </table>
 <h2 class="legend">关联信息</h2>
 <form action="" method="post" id="connect-form" class="form-horizontal">
-<fieldset class="module aligned first">
-    <!-- <div class="control-group form-row field-name "> -->
-    <!--     <div> -->
-    <!--         <div class="control-label"> -->
-    <!--             <label for="id_name">价格类型</label> -->
-    <!--         </div> -->
-    <!--         <div class="controls"> -->
-    <!--             <input class="vTextField" id="id_name" maxlength="256" name="name" type="text"> -->
-    <!--         </div> -->
-    <!--     </div> -->
-    <!-- </div> -->
-
-
-
-    <div class="control-group form-row field-continent">
-        <div>
-            <div class="control-label">
-                <label for="id_continent" style="font-size:12px">价格类型</label>
-            </div>
-            <div class="controls">
-                <select id="id_continent" name="ratetype" style="font-size:12px">
-                <% ratetypes.forEach(function(v, i) { %>
-                    <option value="<%=v[0]%>"><%=v[1]%></option>
-                <% }); %>
-                </select>
-            </div>
-        </div>
-    </div>
-</fieldset>
+<table class="table-overview" style="width:100%">
+    <tr>
+        <th style="vertical-align:middle"><b>价格类型：</b></th>
+        <td width="90%">
+            <select id="id_continent" name="ratetype" style="font-size:12px">
+            <% ratetypes.forEach(function(v, i) { %>
+                <option value="<%=v[0]%>"><%=v[1]%></option>
+            <% }); %>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>加价类型：</b></th>
+        <td>
+            <label class="radio inline" style="font-size:12px">
+                <input type="radio" value="1" name="ptype" style="margin-top:2px" checked="">比例加价</label>
+            <label class="radio inline" style="font-size:12px">
+                <input type="radio" value="2" name="ptype" style="margin-top:2px">固定加价</label>
+        </td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>加价额度：</b></th>
+        <td>
+            <input class="vTextField" id="id_name" maxlength="256" name="profit" type="text">
+        </td>
+    </tr>
+</table>
 </form>
 <% include inc/footer.html %>
