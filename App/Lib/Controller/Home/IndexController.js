@@ -3,6 +3,7 @@
  * @return
  */
 var cookie = require("cookie");
+var dateformat = require("dateformat");
 var oauth = require("../../../../taobao-oauth");
 module.exports = Controller("Home/BaseController", function() {
     return {
@@ -43,6 +44,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 var gids = [];
                 var rids = [];
+                data = result;
                 result.forEach(function(i) {
                     gids.push(i.gid);
                     rids.push(i.roomtypeid);
@@ -77,8 +79,29 @@ module.exports = Controller("Home/BaseController", function() {
                     temp.forEach(function(i) {taobao[i.gid] = i;});
                 }
                 temp = result[1] || [];
-                temp.forEach(function(i) {jielv[i.roomtypeid] = i;});
-                that.end("<pre>" + JSON.stringify(taobao, null, 4) + "</pre>");
+                temp.forEach(function(i) {
+                    try {
+                        jielv[i.roomtypeid] = {
+                            hotel: JSON.parse(i.h),
+                            room: JSON.parse(i.r)
+                        };
+                    } catch(e) {console.log(e);}
+                });
+
+                data.forEach(function(v, i) {
+                    var t = taobao[v.gid];
+                    var j = jielv[v.roomtypeid];
+
+                    data[i]["taobaohotel"] = t.hotel.name;
+                    data[i]["taobaoroomtype"] = t.room_type.name;
+                    data[i]["taobaoaddress"] = t.hotel.address;
+                    data[i]["jielvhotel"] = j.hotel.namechn;
+                    data[i]["jielvroomtype"] = j.room.namechn;
+                    data[i]["jielvaddress"] = j.hotel.addresschn;
+                    data[i]["updated_at"] = dateformat(v.updated_at, "yyyy-mm-dd HH:MM");
+                });
+                that.assign("list", data);
+                that.end("<pre>" + JSON.stringify(data, null, 4) + "</pre>");
             });
             return promise;
         }
