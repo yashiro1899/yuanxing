@@ -353,10 +353,11 @@ module.exports = Controller("Home/BaseController", function() {
                         return oauth.accessProtectedResource(req, res, {
                             "method": "taobao.hotel.room.update",
                             "gid": gid,
-                            "room_quotas": JSON.stringify(quotas)
+                            "room_quotas": JSON.stringify(quotas),
+                            "status": 2 // TODO: LISTING
                         });
                     }).then(function(result) {
-                        console.log(result); // TODO: LISTING
+                        console.log(result);
                     });
                     return model;
                 }
