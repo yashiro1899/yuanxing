@@ -320,6 +320,7 @@ module.exports = Controller("Home/BaseController", function() {
                             that.end(null);
                             return getDefer().promise;
                         }
+                        that.redirect("/");
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
@@ -346,7 +347,7 @@ module.exports = Controller("Home/BaseController", function() {
                             "room_quotas": JSON.stringify(quotas)
                         });
                     }).then(function(result) {
-                        that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>")
+                        console.log(result); // TODO: LISTING
                     });
                     return model;
                 }
