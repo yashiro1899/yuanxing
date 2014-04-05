@@ -4,6 +4,7 @@
  */
 var cookie = require("cookie");
 var dateformat = require("dateformat");
+var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
 module.exports = Controller("Home/BaseController", function() {
     return {
@@ -25,6 +26,7 @@ module.exports = Controller("Home/BaseController", function() {
             var page = parseInt(this.param("p"), 10) || 1;
             var query = this.param("q").trim();
             var formdata = {};
+
             var promise, data;
             if (query.length > 0) {
                 formdata["q"] = query;
@@ -38,6 +40,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
             }
             if (!promise) promise = D("Goods").order("updated_at desc").page(page).select();
+            this.assign("formdata", formdata);
 
             promise = promise.then(function(result) {
                 result = result || [];
@@ -92,15 +95,27 @@ module.exports = Controller("Home/BaseController", function() {
                     var t = taobao[v.gid];
                     var j = jielv[v.roomtypeid];
 
-                    data[i]["taobaohotel"] = t.hotel.name;
-                    data[i]["taobaoroomtype"] = t.room_type.name;
-                    data[i]["taobaoaddress"] = t.hotel.address;
-                    data[i]["jielvhotel"] = j.hotel.namechn;
-                    data[i]["jielvroomtype"] = j.room.namechn;
-                    data[i]["jielvaddress"] = j.hotel.addresschn;
+                    if (t) {
+                        data[i]["taobaohotel"] = t.hotel.name;
+                        data[i]["taobaoroomtype"] = t.room_type.name;
+                        data[i]["taobaoaddress"] = t.hotel.address;
+                    }
+                    if (j) {
+                        data[i]["jielvhotel"] = j.hotel.namechn;
+                        data[i]["jielvroomtype"] = j.room.namechn;
+                        data[i]["jielvaddress"] = j.hotel.addresschn;
+                    }
+
                     data[i]["updated_at"] = dateformat(v.updated_at, "yyyy-mm-dd HH:MM");
+                    data[i]["typeicon"] = mapping.roomstatus[v.status];
+                    if (v.status == 4) {
+                        data[i]["ratetypestring"] = mapping.ratetype[v.ratetype];
+                        data[i]["ptypestring"] = mapping.ptypestrings[v.ptype];
+                        data[i]["profit"] = v.profit.toFixed(2);
+                    }
                 });
                 that.assign("list", data);
+                // that.display();
                 that.end("<pre>" + JSON.stringify(data, null, 4) + "</pre>");
             });
             return promise;
