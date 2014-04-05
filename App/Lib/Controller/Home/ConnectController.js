@@ -269,7 +269,6 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             if (this.isPost()) {
-                // var action = this.post("action");
                 var data = this.post("data");
                 var gid = this.post("gid");
                 var roomtypeid = this.post("roomtypeid");
@@ -278,8 +277,51 @@ module.exports = Controller("Home/BaseController", function() {
                 formdata["gid"] = gid;
                 formdata["roomtypeid"] = roomtypeid;
 
-                var ratetypes = {};
                 data = JSON.parse(data);
+                var model;
+                var action = this.post("action");
+                if (action == "create") { // insert into db
+                    var hotelid = this.post("hotelid");
+                    var iid = this.post("iid");
+                    var ratetype = this.post("ratetype");
+                    var ptype = this.post("ptype");
+                    var profit = this.post("profit") || 0;
+
+                    model = D("Goods").where({gid: gid}).select();
+                    model = model.then(function(result) {
+                        result = result || [];
+
+                        if (result.length > 0) {
+                            return D("Goods").where({gid: gid})update({
+                                status: 4,
+                                ratetype: ratetype,
+                                ptype: ptype,
+                                profit: profit
+                            });
+                        } else {
+                            return D("Goods").add({
+                                gid: gid,
+                                userid: that.that.userInfo["taobao_user_id"],
+                                hotelid: hotelid,
+                                roomtypeid: roomtypeid,
+                                status: 4,
+                                iid: iid,
+                                ratetype: ratetype,
+                                ptype: ptype,
+                                profit: profit
+                            });
+                        }
+                        that.end(result);
+                    }).then(function(result) {
+                        if (!result) {
+                            that.end(null);
+                            return getDefer().promise;
+                        }
+                    });
+                    return model;
+                }
+
+                var ratetypes = {};
                 data.roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
                 ratetypes = Object.keys(ratetypes);
                 ratetypes = ratetypes.map(function(rt) {
@@ -288,7 +330,6 @@ module.exports = Controller("Home/BaseController", function() {
                 this.assign("ratetypes", ratetypes);
 
                 var promises = [];
-                var model;
                 promises.push(oauth.accessProtectedResource(req, res, {
                     "gid": gid,
                     "method": "taobao.hotel.room.get",
@@ -324,6 +365,8 @@ module.exports = Controller("Home/BaseController", function() {
                     };
 
                     formdata["iid"] = taobao.iid;
+                    formdata["hotelid"] = jielvhotel.hotelid;
+                    formdata["ptype"] = 1;
                     that.assign("formdata", formdata);
                     that.assign("list", list);
                     that.display();
