@@ -115,8 +115,8 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                 });
                 that.assign("list", data);
-                // that.display();
-                that.end("<pre>" + JSON.stringify(data, null, 4) + "</pre>");
+                that.display();
+                // that.end("<pre>" + JSON.stringify(data, null, 4) + "</pre>");
             });
             return promise;
         }

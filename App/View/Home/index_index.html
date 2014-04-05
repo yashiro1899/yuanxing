@@ -16,22 +16,31 @@
     <table id="result_list" class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
-                <th scope="col" class="capital-column" width="20">
+                <th scope="col" width="30">
                     <div class="text">类型</div>
                 </th>
-                <th scope="col" class="name-column" width="240">
-                    <div class="text">酒店</div>
+                <th scope="col" width="100">
+                    <div class="text">淘宝编号</div>
                 </th>
-                <th scope="col" class="country-column">
-                    <div class="text">地址</div>
+                <th scope="col" width="240">
+                    <div class="text">酒店（淘宝/货源）</div>
                 </th>
-                <th scope="col" class="capital-column" width="240">
-                    <div class="text">房型</div>
+                <th scope="col">
+                    <div class="text">地址（淘宝/货源）</div>
                 </th>
-                <th scope="col" class="capital-column" width="40">
-                    <div class="text">状态</div>
+                <th scope="col" width="240">
+                    <div class="text">房型（淘宝/货源）</div>
                 </th>
-                <th scope="col" class="continent-column" width="100">
+                <th scope="col" width="50">
+                    <div class="text">价格类型</div>
+                </th>
+                <th scope="col" width="50">
+                    <div class="text">加价类型</div>
+                </th>
+                <th scope="col" width="50">
+                    <div class="text">加价额度</div>
+                </th>
+                <th scope="col" width="100">
                     <div class="text">操作</div>
                 </th>
             </tr>
@@ -39,41 +48,28 @@
         <tbody>
         <% list.forEach(function(v, i) { %>
             <tr>
-                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>"<% } %>>
-                <% if (v.website.length > 0) { %>
-                    <a href="<%=v.website%>" target="_blank"><%=v.namechn%></a>
-                <% } else { %>
-                    <%=v.namechn%>
-                <% } %>
-                </td>
-                <td <% if (v.rooms.length > 0) { %>rowspan="<%=v.rooms.length%>"<% } %>>
-                    <%=v.addresschn%>
-                </td>
-        <% if (v.rooms.length > 0) { %>
-        <% v.rooms.forEach(function(r, j) { %>
-        <% if (j !== 0) { %>
-            <tr>
-        <% } %>
-                <td style="border-left:0"><%=r.namechn%></td>
-                <% if (roomstatus[r.roomtypeid]) { %>
-                <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
+                <td><%-v.typeicon%></td>
                 <td>
-                <% if (roomstatus[r.roomtypeid]["status"] == 128) { %>
-                    <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" href="javascript:void(0)">发布</a>
-                <% } %>
+                    <a href="http://kezhan.trip.taobao.com/publish.htm?item_num_id=<%=v.iid%>&auto=false" target="_blank"><%=v.iid%></a>
                 </td>
-                <% } else { %>
-                    <td></td>
-                    <td></td>
-                <% } %>
+            <%if (v.status == 4) {%>
+                <td><%=v.taobaohotel%>/<%=v.jielvhotel%></td>
+                <td><%=v.taobaoaddress%>/<%=v.jielvaddress%></td>
+                <td><%=v.taobaoroomtype%>/<%=v.jielvroomtype%></td>
+                <td><%=v.ratetypestring%></td>
+                <td><%=v.ptypestring%></td>
+                <td><%=v.profit%></td>
+                <td></td>
+            <%} else {%>
+                <td><%=v.jielvhotel%></td>
+                <td><%=v.jielvaddress%></td>
+                <td><%=v.jielvroomtype%></td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td></td>
+            <%}%>
             </tr>
-        <% }); %>
-        <% } else { %>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        <% } %>
         <% }); %>
         </tbody>
     </table>
