@@ -2,6 +2,7 @@
  * controller
  * @return
  */
+var dateformat = require("dateformat");
 var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
@@ -292,7 +293,10 @@ module.exports = Controller("Home/BaseController", function() {
                         result = result || [];
 
                         if (result.length > 0) {
-                            return D("Goods").where({gid: gid})update({
+                            var g = D("Goods");
+                            g.pk = "gid";
+                            return g.update({
+                                gid: gid,
                                 status: 4,
                                 ratetype: ratetype,
                                 ptype: ptype,
@@ -311,12 +315,30 @@ module.exports = Controller("Home/BaseController", function() {
                                 profit: profit
                             });
                         }
-                        that.end(result);
                     }).then(function(result) {
-                        if (!result) {
+                        if (result === false) {
                             that.end(null);
                             return getDefer().promise;
                         }
+
+                        var quotas = {};
+                        data.roomPriceDetail.forEach(function(rpd) {
+                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            var price = rpd.preeprice;
+                            if (rpd.ratetype != ratetype) return null;
+                            if (ptype == 1) price = Math.round(price * (profit + 100));
+                            else if (ptype == 2) price = Math.round(price + profit) * 100;
+
+                            quotas[night] = {
+                                date: night,
+                                price: price,
+                                num: rpd.qtyable
+                            };
+                        });
+                        var temp = [], i;
+                        for (i in quotas) temp.push(quotas[i]);
+                        quotas = temp;
+                        that.end("<pre>" + JSON.stringify(quotas, null, 4) + "</pre>");
                     });
                     return model;
                 }

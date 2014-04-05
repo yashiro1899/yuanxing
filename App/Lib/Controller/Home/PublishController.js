@@ -215,7 +215,7 @@ module.exports = Controller("Home/BaseController", function() {
                         var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                         if (rpd.ratetype != detail.ratetype) return null;
                         quotas[night] = {
-                            date: rpd.night.slice(0, 10),
+                            date: night,
                             price: 9999999,
                             num: rpd.qtyable
                         };
