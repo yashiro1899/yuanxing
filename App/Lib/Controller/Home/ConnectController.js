@@ -2,6 +2,7 @@
  * controller
  * @return
  */
+var cookie = require("cookie");
 var dateformat = require("dateformat");
 var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
@@ -320,6 +321,14 @@ module.exports = Controller("Home/BaseController", function() {
                             that.end(null);
                             return getDefer().promise;
                         }
+                        var now = +(new Date());
+                        var content = "关联成功！";
+                        content += "<a href=\"http://kezhan.trip.taobao.com/publish.htm?item_num_id=";
+                        content += (iid + "&auto=false\" target=\"_blank\">去淘宝查看</a>");
+                        res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                            path: "/",
+                            expires: (new Date(24 * 60 * 60 * 1000 + now))
+                        }));
                         that.redirect("/");
 
                         var quotas = {};
