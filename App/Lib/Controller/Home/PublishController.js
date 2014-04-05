@@ -66,7 +66,7 @@ module.exports = Controller("Home/BaseController", function() {
                 model = D("Room").field("roomtypeid,status,taobao_rid");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
-                model = D("Goods").field("roomtypeid,status");
+                model = D("Goods").field("roomtypeid,status"); // TODO: private user
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
                 return Promise.all(promises);
