@@ -40,7 +40,34 @@ module.exports = Controller("Home/BaseController", function() {
 
             promise = promise.then(function(result) {
                 result = result || [];
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>")
+
+                var gids = [];
+                var rids = [];
+                result.forEach(function(i) {
+                    gids.push(i.gid);
+                    rids.push(i.roomtypeid);
+                });
+
+                var promises = [];
+                var model;
+                if (gids.length === 0) promises[0] = Promise.all([]);
+                else promises[0] = oauth.accessProtectedResource(req, res, {
+                    "gids": gids.join(','),
+                    "method": "taobao.hotel.rooms.search",
+                    "need_hotel": true,
+                    "need_room_type": true
+                });
+                if (rids.length === 0) promises[1] = Promise.all([]);
+                else {
+                    model = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                    model = model.field("think_hotel.original as h,think_room.original as r");
+                    model = model.where("think_room.roomtypeid in (" + rids.join(",") + ")").select();
+                    promises[1] = model;
+                }
+
+                return Promise.all(promises);
+            }).then(function(result) {
+                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             });
             return promise;
         }
