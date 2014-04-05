@@ -60,14 +60,25 @@ module.exports = Controller("Home/BaseController", function() {
                 if (rids.length === 0) promises[1] = Promise.all([]);
                 else {
                     model = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
-                    model = model.field("think_hotel.original as h,think_room.original as r");
+                    model = model.field("think_hotel.original as h,think_room.original as r,think_room.roomtypeid");
                     model = model.where("think_room.roomtypeid in (" + rids.join(",") + ")").select();
                     promises[1] = model;
                 }
 
                 return Promise.all(promises);
             }).then(function(result) {
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+                var taobao = {};
+                var jielv = {};
+                var temp;
+
+                if (result[0] && result[0]["hotel_rooms_search_response"]) {
+                    temp = result[0]["hotel_rooms_search_response"]["rooms"];
+                    temp = temp ? temp["room"] : [];
+                    temp.forEach(function(i) {taobao[i.gid] = i;});
+                }
+                temp = result[1] || [];
+                temp.forEach(function(i) {jielv[i.roomtypeid] = i;});
+                that.end("<pre>" + JSON.stringify(taobao, null, 4) + "</pre>");
             });
             return promise;
         }
