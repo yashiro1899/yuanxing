@@ -325,9 +325,10 @@ module.exports = Controller("Home/BaseController", function() {
                         data.roomPriceDetail.forEach(function(rpd) {
                             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             var price = rpd.preeprice;
+                            profit = parseInt(profit, 10) || 0;
                             if (rpd.ratetype != ratetype) return null;
-                            if (ptype == 1) price = Math.round(price * (profit + 100));
-                            else if (ptype == 2) price = Math.round(price + profit) * 100;
+                            if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
+                            else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
 
                             quotas[night] = {
                                 date: night,
@@ -338,7 +339,14 @@ module.exports = Controller("Home/BaseController", function() {
                         var temp = [], i;
                         for (i in quotas) temp.push(quotas[i]);
                         quotas = temp;
-                        that.end("<pre>" + JSON.stringify(quotas, null, 4) + "</pre>");
+
+                        return oauth.accessProtectedResource(req, res, {
+                            "method": "taobao.hotel.room.update",
+                            "gid": gid,
+                            "room_quotas": JSON.stringify(quotas)
+                        });
+                    }).then(function(result) {
+                        that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>")
                     });
                     return model;
                 }
