@@ -44,7 +44,7 @@
         <td width="90%">
             <select id="id_continent" name="ratetype" style="font-size:12px">
             <% ratetypes.forEach(function(v, i) { %>
-                <option value="<%=v[0]%>"><%=v[1]%></option>
+                <option value="<%=v[0]%>" <%if (formdata.ratetype == v[0]) {%>selected<%}%>><%=v[1]%></option>
             <% }); %>
             </select>
         </td>
@@ -53,23 +53,24 @@
         <th style="vertical-align:middle"><b>加价类型：</b></th>
         <td>
             <label class="radio inline" style="font-size:12px">
-                <input type="radio" value="1" name="ptype" style="margin-top:2px" checked="" />比例加价</label>
+                <input type="radio" value="1" name="ptype" style="margin-top:2px" <%if (formdata.ptype == 1) {%>checked<%}%> />比例加价</label>
             <label class="radio inline" style="font-size:12px">
-                <input type="radio" value="2" name="ptype" style="margin-top:2px" />固定加价</label>
+                <input type="radio" value="2" name="ptype" style="margin-top:2px" <%if (formdata.ptype == 2) {%>checked<%}%> />固定加价</label>
         </td>
     </tr>
     <tr>
         <th style="vertical-align:middle"><b>加价额度：</b></th>
         <td>
             <div class="input-append">
-                <input class="input-small" name="profit" placeholder="额度" size="10" type="text" style="font-size:12px" />
+                <input class="input-small" name="profit" placeholder="额度" size="10" type="text" style="font-size:12px" <%if (formdata.profit !== undefined) {%>value="<%=formdata.profit%>"<%}%> />
                 <span class="add-on" style="font-size:12px">%</span>
             </div>
         </td>
     </tr>
     <tr>
-        <th></th>
-        <td><button type="submit" class="btn btn-high btn-info">保存</button></td>
+        <td colspan="2" style="text-align:center">
+            <button type="submit" class="btn btn-high btn-info">保存</button>
+        </td>
     </tr>
 </table>
 </form>
