@@ -138,7 +138,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             return promise;
         },
-        inventoryAction: function() {
+        inventoryAction: function(sold_out) {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
@@ -148,7 +148,6 @@ module.exports = Controller("Home/BaseController", function() {
             var query = this.param("q").trim();
             var formdata = {};
             var params = {
-                "banner": "sold_out",
                 "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.inventory.get",
@@ -162,6 +161,11 @@ module.exports = Controller("Home/BaseController", function() {
             }
             this.assign("formdata", formdata);
             this.assign("tab", "inventory");
+
+            if (sold_out) {
+                params["banner"] = "sold_out";
+                this.assign("tab", "soldout");
+            }
 
             var goods = [];
             var promise = oauth.accessProtectedResource(req, res, params);
@@ -265,6 +269,9 @@ module.exports = Controller("Home/BaseController", function() {
             });
 
             return promise;
+        },
+        soldoutAction: function() {
+            this.inventoryAction(true);
         },
         createAction: function() {
             var that = this;
