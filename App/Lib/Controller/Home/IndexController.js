@@ -35,11 +35,21 @@ module.exports = Controller("Home/BaseController", function() {
                     result = result || [];
                     var ids = result.map(function(h) {return h.hotelid;});
                     var model = D("Goods");
-                    if (ids.length > 0) model = model.where("hotelid in (" + ids.join(",") + ")");
+                    if (ids.length > 0) {
+                        ids = " and hotelid in (" + ids.join(",") + ")";
+                        ids = "userid = " + that.userInfo["taobao_user_id"] + ids;
+                        model = model.where(ids);
+                    } else {
+                        ids = "userid = " + that.userInfo["taobao_user_id"];
+                        model = model.where(ids);
+                    }
                     return model.order("updated_at desc").page(page).select();
                 });
             }
-            if (!promise) promise = D("Goods").order("updated_at desc").page(page).select();
+            if (!promise) {
+                promise = "userid = " + that.userInfo["taobao_user_id"];
+                promise = D("Goods").where(promise).order("updated_at desc").page(page).select();
+            }
             this.assign("formdata", formdata);
 
             promise = promise.then(function(result) {
