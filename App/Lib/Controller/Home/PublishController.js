@@ -46,16 +46,14 @@ module.exports = Controller("Home/BaseController", function() {
 
             var rooms = [];
             var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
-            promise1 = promise1.then(function(result) {
+            promise1 = promise1.then(function(result) { // think_hotel
                 result = result || [];
                 var rids = [];
                 var data = result.map(function(h) {
                     var original = JSON.parse(h.original);
                     original["namechn"] = h.namechn;
                     original["website"] = h.website;
-                    original.rooms.forEach(function(r) {
-                        rids.push(r.roomtypeid);
-                    });
+                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
                     return original;
                 });
 
@@ -66,18 +64,17 @@ module.exports = Controller("Home/BaseController", function() {
                 model = D("Room").field("roomtypeid,status,taobao_rid");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
-                model = D("Goods").field("roomtypeid,status"); // TODO: private user
-                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                model = "userid = " + that.userInfo["taobao_user_id"];
+                model += " and roomtypeid in (" + rids.join(",") + ")";
+                model = D("Goods").field("roomtypeid,status").where(model).select();
                 promises.push(model);
                 return Promise.all(promises);
-            }).then(function(result) {
+            }).then(function(result) { // think_room, think_goods
                 var promises = [];
                 var rids = {};
                 var goods = result[1] || [];
 
-                goods.forEach(function(g) {
-                    rids[g.roomtypeid] = g;
-                });
+                goods.forEach(function(g) {rids[g.roomtypeid] = g;});
                 goods = rids;
                 rids = [];
 
@@ -100,7 +97,7 @@ module.exports = Controller("Home/BaseController", function() {
                     }));
                 }
                 return Promise.all(promises);
-            }).then(function(result) {
+            }).then(function(result) { // taobao.hotel.rooms.search
                 var goods = {};
                 var roomstatus = {};
                 result.forEach(function(g) {
@@ -125,9 +122,7 @@ module.exports = Controller("Home/BaseController", function() {
                 that.assign("roomstatus", roomstatus);
             });
 
-            var promise2 = model2.count().then(function(result) {
-                total = result || 0;
-            });
+            var promise2 = model2.count().then(function(result) {total = result || 0;});
 
             return Promise.all([promise1, promise2]).then(function(result) {
                 var qs = querystring.stringify(formdata);
