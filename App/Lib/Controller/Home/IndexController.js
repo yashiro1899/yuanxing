@@ -6,6 +6,7 @@ var cookie = require("cookie");
 var dateformat = require("dateformat");
 var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
+var querystring = require('querystring');
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "tasks",
@@ -34,53 +35,64 @@ module.exports = Controller("Home/BaseController", function() {
                 promise = promise.then(function(result) {
                     result = result || [];
                     var ids = result.map(function(h) {return h.hotelid;});
-                    var model = D("Goods");
+                    var model1 = D("Goods");
+                    var model2 = D("Goods");
+
                     if (ids.length > 0) {
                         ids = " and hotelid in (" + ids.join(",") + ")";
                         ids = "userid = " + that.userInfo["taobao_user_id"] + ids;
-                        model = model.where(ids);
+                        model1 = model1.where(ids);
+                        model2 = model2.where(ids);
                     } else {
                         ids = "userid = " + that.userInfo["taobao_user_id"];
-                        model = model.where(ids);
+                        model1 = model1.where(ids);
+                        model2 = model2.where(ids);
                     }
-                    return model.order("updated_at desc").page(page).select();
+
+                    model1 = model1.order("updated_at desc").page(page).select();
+                    model2 = model2.count();
+                    return Promise.all([model1, model2]);
                 });
             }
             if (!promise) {
                 promise = "userid = " + that.userInfo["taobao_user_id"];
-                promise = D("Goods").where(promise).order("updated_at desc").page(page).select();
+                model1 = D("Goods").where(promise).order("updated_at desc").page(page).select();
+                model2 = D("Goods").where(promise).count();
+                promise = Promise.all([model1, model2]);
             }
             this.assign("formdata", formdata);
 
             promise = promise.then(function(result) { // think_goods
-                result = result || [];
-
                 var gids = [];
                 var rids = [];
-                data = result;
-                result.forEach(function(i) {
+                data = result[0] || [];
+                data.forEach(function(i) {
                     gids.push(i.gid);
                     rids.push(i.roomtypeid);
                 });
 
-                var promises = [];
-                var model;
-                if (gids.length === 0) promises[0] = Promise.all([]);
-                else promises[0] = oauth.accessProtectedResource(req, res, {
+                var range = data.length;
+                var total = result[1] || 0;
+                var qs = querystring.stringify(formdata);
+                var pagination = that.pagination(total, range, page, qs);
+                that.assign('pagination', pagination);
+
+                var promise1, promise2;
+                if (gids.length === 0) promise1 = Promise.resolve([]);
+                else promise1 = oauth.accessProtectedResource(req, res, {
                     "gids": gids.join(','),
                     "method": "taobao.hotel.rooms.search",
                     "need_hotel": true,
                     "need_room_type": true
                 });
-                if (rids.length === 0) promises[1] = Promise.all([]);
+                if (rids.length === 0) promise2 = Promise.resolve([]);
                 else {
-                    model = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
-                    model = model.field("think_hotel.original as h,think_room.original as r,think_room.roomtypeid");
-                    model = model.where("think_room.roomtypeid in (" + rids.join(",") + ")").select();
-                    promises[1] = model;
+                    promise2 = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                    promise2 = promise2.field("think_hotel.original as h,think_room.original as r,think_room.roomtypeid");
+                    promise2 = promise2.where("think_room.roomtypeid in (" + rids.join(",") + ")").select();
                 }
 
-                return Promise.all(promises);
+                return Promise.all([promise1, promise2]);
             }).then(function(result) { // taobao.hotel.rooms.search, think_hotel, think_room
                 var taobao = {};
                 var jielv = {};
