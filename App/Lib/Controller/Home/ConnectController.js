@@ -37,7 +37,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var goods = [];
             var promise = oauth.accessProtectedResource(req, res, params);
-            promise = promise.then(function(result) {
+            promise = promise.then(function(result) { // taobao.items.onsale.get
                 if (result && result["items_onsale_get_response"]) {
                     total = result["items_onsale_get_response"]["total_results"];
                     result = result["items_onsale_get_response"]["items"];
@@ -55,7 +55,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_hotel": true,
                     "need_room_type": true
                 });
-            }).then(function(result) {
+            }).then(function(result) { // taobao.hotel.rooms.search
                 if (result && result["hotel_rooms_search_response"]) {
                     result = result["hotel_rooms_search_response"]["rooms"];
                     result = result ? result["room"] : [];
@@ -79,8 +79,9 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
-            }).then(function(result) {
+                ids = "userid = " + that.userInfo["taobao_user_id"] + "gid in (" + ids.join(",") + ")";
+                return D("Goods").field("gid,status").where(ids).select();
+            }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
                 result.forEach(function(g) {exists[g.gid] = g.status;});
@@ -100,7 +101,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 ids = "taobao_hid in (" + ids.join(",") + ")";
                 return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
-            }).then(function(result) {
+            }).then(function(result) { // think_hotel
                 var exists = {};
                 result = result || [];
                 result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
@@ -121,7 +122,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 ids = "taobao_rid in (" + ids.join(",") + ")";
                 return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
-            }).then(function(result) {
+            }).then(function(result) { // think_room
                 var exists = {};
                 result = result || [];
                 result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
@@ -164,7 +165,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var goods = [];
             var promise = oauth.accessProtectedResource(req, res, params);
-            promise = promise.then(function(result) {
+            promise = promise.then(function(result) { // taobao.items.inventory.get
                 if (result && result["items_inventory_get_response"]) {
                     total = result["items_inventory_get_response"]["total_results"];
                     result = result["items_inventory_get_response"]["items"];
@@ -182,7 +183,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_hotel": true,
                     "need_room_type": true
                 });
-            }).then(function(result) {
+            }).then(function(result) { // taobao.hotel.rooms.search
                 if (result && result["hotel_rooms_search_response"]) {
                     result = result["hotel_rooms_search_response"]["rooms"];
                     result = result ? result["room"] : [];
@@ -206,8 +207,9 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
-            }).then(function(result) {
+                ids = "userid = " + that.userInfo["taobao_user_id"] + "gid in (" + ids.join(",") + ")";
+                return D("Goods").field("gid,status").where(ids).select();
+            }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
                 result.forEach(function(g) {exists[g.gid] = g.status;});
@@ -227,7 +229,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 ids = "taobao_hid in (" + ids.join(",") + ")";
                 return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
-            }).then(function(result) {
+            }).then(function(result) { // think_hotel
                 var exists = {};
                 result = result || [];
                 result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
@@ -248,7 +250,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 ids = "taobao_rid in (" + ids.join(",") + ")";
                 return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
-            }).then(function(result) {
+            }).then(function(result) { // think_room
                 var exists = {};
                 result = result || [];
                 result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
