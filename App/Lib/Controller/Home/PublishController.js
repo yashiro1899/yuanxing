@@ -193,11 +193,11 @@ module.exports = Controller("Home/BaseController", function() {
                     return null;
                 }
 
-                var gid = 0;
+                var gid = 0, iid = 0;
                 var promise = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
                 promise = promise.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
                 promise = promise.where({"think_room.roomtypeid": data.roomtypeId}).select();
-                promise.then(function(result) {
+                promise.then(function(result) { // think_hotel, think_room
                     result = result[0];
 
                     var original = JSON.parse(result["original"]);
@@ -255,7 +255,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "room_quotas": JSON.stringify(quotas),
                         "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
                     });
-                }).then(function(result) {
+                }).then(function(result) { // taobao.hotel.room.add
                     if (!result || result["error_response"]) {
                         that.end({
                             success: 8,
@@ -266,6 +266,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                     result = result["hotel_room_add_response"]["room"];
                     gid = result.gid;
+                    iid = result.iid;
                     return D("Goods").add({
                         gid: result.gid,
                         userid: that.userInfo["taobao_user_id"],
@@ -273,7 +274,16 @@ module.exports = Controller("Home/BaseController", function() {
                         roomtypeid: data.roomtypeId,
                         iid: result.iid
                     });
-                }).then(function(result) {
+                }).then(function(result) { // think_goods
+                    var now = +(new Date());
+                    var content = "发布成功！";
+                    content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
+                    content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
+                    res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                        path: "/",
+                        expires: (new Date(24 * 60 * 60 * 1000 + now))
+                    }));
+
                     that.end({
                         success: 1,
                         message: "发布成功！",
