@@ -11,8 +11,15 @@ module.exports = Controller(function() {
             var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
             var values;
 
+            if (this.get("error")) {
+                var message = "<br/><br/>登录失败！有任何问题，请联系 ";
+                message += "<a href=\"mailto:yashiro1899@gmail.com\">yashiro1899@gmail.com</a>";
+                that.end(that.get("error_description") + message);
+                return null;
+            }
+
             return promise.then(function(result) {
-                if (result) {
+                if (result) { // TODO: expires_in
                     values = {
                         id: result["taobao_user_id"]
                     };
