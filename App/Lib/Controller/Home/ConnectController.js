@@ -79,8 +79,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                ids = "userid = " + that.userInfo["taobao_user_id"] + "gid in (" + ids.join(",") + ")";
-                return D("Goods").field("gid,status").where(ids).select();
+                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
             }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
@@ -207,8 +206,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                ids = "userid = " + that.userInfo["taobao_user_id"] + "gid in (" + ids.join(",") + ")";
-                return D("Goods").field("gid,status").where(ids).select();
+                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
             }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
