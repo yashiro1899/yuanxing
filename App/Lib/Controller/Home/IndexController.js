@@ -52,7 +52,7 @@ module.exports = Controller("Home/BaseController", function() {
             }
             this.assign("formdata", formdata);
 
-            promise = promise.then(function(result) {
+            promise = promise.then(function(result) { // think_goods
                 result = result || [];
 
                 var gids = [];
@@ -81,7 +81,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }
 
                 return Promise.all(promises);
-            }).then(function(result) {
+            }).then(function(result) { // taobao.hotel.rooms.search, think_hotel, think_room
                 var taobao = {};
                 var jielv = {};
                 var temp;
@@ -126,7 +126,6 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 that.assign("list", data);
                 that.display();
-                // that.end("<pre>" + JSON.stringify(data, null, 4) + "</pre>");
             });
             return promise;
         }
