@@ -148,6 +148,7 @@ module.exports = Controller("Home/BaseController", function() {
             var query = this.param("q").trim();
             var formdata = {};
             var params = {
+                "banner": "sold_out",
                 "cid": 50016161,
                 "fields": "num_iid",
                 "method": "taobao.items.inventory.get",
@@ -306,7 +307,7 @@ module.exports = Controller("Home/BaseController", function() {
                         } else {
                             return D("Goods").add({
                                 gid: gid,
-                                userid: that.that.userInfo["taobao_user_id"],
+                                userid: that.userInfo["taobao_user_id"],
                                 hotelid: hotelid,
                                 roomtypeid: roomtypeid,
                                 status: 4,
@@ -323,7 +324,7 @@ module.exports = Controller("Home/BaseController", function() {
                         }
                         var now = +(new Date());
                         var content = "关联成功！";
-                        content += "<a href=\"http://http://kezhan.trip.taobao.com/item.htm?item_id=";
+                        content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
                         content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
                         res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
                             path: "/",
