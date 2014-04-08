@@ -24,7 +24,7 @@ module.exports = Controller(function() {
                         id: result["taobao_user_id"]
                     };
                     var model = D("User").where(values).select();
-                    values.nick = result["taobao_user_nick"];
+                    values.nick = decodeURIComponent(result["taobao_user_nick"]);
                     values.token = result["access_token"];
                     return model;
                 } else {

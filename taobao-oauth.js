@@ -191,7 +191,7 @@ OAuth2.prototype._storeAccessToken = function(req, res, result) {
     var now = +(new Date());
     var data = {
         "taobao_user_id": result["taobao_user_id"],
-        "taobao_user_nick": result["taobao_user_nick"],
+        "taobao_user_nick": decodeURIComponent(result["taobao_user_nick"]),
         "access_token": result["access_token"]
     };
     data = querystring.stringify(data);
