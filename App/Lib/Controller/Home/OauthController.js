@@ -8,15 +8,15 @@ module.exports = Controller(function() {
     return {
         callbackAction: function() {
             var that = this;
-            var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
             var values;
 
-            if (this.get("error")) {
+            if (this.get("error") || !this.get("code")) {
                 var message = "<br/><br/>登录失败！有任何问题，请联系 ";
                 message += "<a href=\"mailto:yashiro1899@gmail.com\">yashiro1899@gmail.com</a>";
                 that.end(that.get("error_description") + message);
                 return null;
             }
+            var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
 
             return promise.then(function(result) {
                 if (result) { // TODO: expires_in
