@@ -66,7 +66,7 @@
         <td>
             <div class="input-append">
                 <input class="input-small" name="profit" placeholder="额度" size="10" type="text" style="font-size:12px" <%if (formdata.profit !== undefined) {%>value="<%=formdata.profit%>"<%}%> />
-                <span class="add-on" style="font-size:12px">%</span>
+                <span class="add-on" style="font-size:12px"><%if (formdata.ptype == 1) {%>%<%} else {%>元<%}%></span>
             </div>
         </td>
     </tr>
