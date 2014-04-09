@@ -62,7 +62,10 @@
                 <td><%=v.ratetypestring%></td>
                 <td><%=v.ptypestring%></td>
                 <td><%=v.profit%></td>
-                <td></td>
+                <td>
+                    <a href="/connect/update/?gid=<%=v.gid%>">编辑</a>&#12288;
+                    <a href="javascript:void(0)" class="connect-remove" data-gid="<%=v.gid%>">删除</a>
+                </td>
             <%} else {%>
                 <td><%=v.jielvhotel%></td>
                 <td><%=v.jielvaddress%></td>
@@ -71,7 +74,9 @@
                 <td>-</td>
                 <td>-</td>
                 <td>-</td>
-                <td></td>
+                <td>
+                    <a href="javascript:void(0)" class="precisely-connect" data-gid="<%=v.gid%>" data-roomtypeid="<%=v.roomtypeid%>">关联</a>
+                </td>
             <%}%>
             </tr>
         <% }); %>

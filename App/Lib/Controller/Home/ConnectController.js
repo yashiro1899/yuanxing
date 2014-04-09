@@ -431,6 +431,14 @@ module.exports = Controller("Home/BaseController", function() {
             } else {
                 this.end(null);
             }
+        },
+        updateAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var gid = this.param("gid");
+            this.end(gid);
         }
     };
 });
