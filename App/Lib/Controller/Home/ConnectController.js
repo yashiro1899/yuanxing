@@ -304,7 +304,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var iid = this.post("iid");
                     var ratetype = this.post("ratetype");
                     var ptype = this.post("ptype");
-                    var profit = this.post("profit") || 0;
+                    var profit = parseInt(this.post("profit"), 10) || 0;
 
                     model = D("Goods").where({gid: gid}).select();
                     model = model.then(function(result) {
@@ -453,7 +453,7 @@ module.exports = Controller("Home/BaseController", function() {
                     gid: gid,
                     ratetype: this.post("ratetype"),
                     ptype: this.post("ptype"),
-                    profit: (this.post("profit") || 0)
+                    profit: (parseInt(this.post("profit"), 10) || 0)
                 }).then(function(result) {
                     var now = +(new Date());
                     var content = "编辑成功！";
