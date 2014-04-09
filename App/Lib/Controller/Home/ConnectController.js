@@ -455,6 +455,11 @@ module.exports = Controller("Home/BaseController", function() {
                     ptype: this.post("ptype"),
                     profit: (parseInt(this.post("profit"), 10) || 0)
                 }).then(function(result) {
+                    if (result === false) {
+                        that.end("编辑失败！");
+                        return getDefer().promise;
+                    }
+
                     var now = +(new Date());
                     var content = "编辑成功！";
                     content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
@@ -464,12 +469,43 @@ module.exports = Controller("Home/BaseController", function() {
                         expires: (new Date(24 * 60 * 60 * 1000 + now))
                     }));
                     that.redirect("/");
+
+                    data = JSON.parse(that.post("data"));
+                    var ratetype = that.post("ratetype");
+                    var ptype = that.post("ptype");
+                    var profit = parseInt(that.post("profit"), 10) || 0;
+                    var quotas = {};
+                    data.roomPriceDetail.forEach(function(rpd) {
+                        var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                        var price = rpd.preeprice;
+                        profit = parseInt(profit, 10) || 0;
+                        if (rpd.ratetype != ratetype) return null;
+                        if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
+                        else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+
+                        quotas[night] = {
+                            date: night,
+                            price: price,
+                            num: rpd.qtyable
+                        };
+                    });
+                    var temp = [], i;
+                    for (i in quotas) temp.push(quotas[i]);
+                    quotas = temp;
+
+                    return oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.room.update",
+                        "gid": gid,
+                        "room_quotas": JSON.stringify(quotas),
+                        "status": 2 // TODO: LISTING
+                    });
+                }).then(function(result) {
+                    console.log(result);
                 });
             } else {
                 promise = D("Goods").where({gid: gid}).select();
                 promise = promise.then(function(result) {
                     data = result[0];
-                    that.assign("formdata", data);
 
                     var promises = [];
                     var model, start, end;
@@ -530,6 +566,9 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                     if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetypes[data.ratetype]]);
                     that.assign("ratetypes", ratetypes);
+
+                    data["data"] = JSON.stringify(result[2]["data"][0]);
+                    that.assign("formdata", data);
                     that.display("connect:create");
                 });
             }
