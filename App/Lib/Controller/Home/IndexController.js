@@ -133,7 +133,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (v.status == 4) {
                         data[i]["ratetypestring"] = mapping.ratetype[v.ratetype];
                         data[i]["ptypestring"] = mapping.ptypestrings[v.ptype];
-                        data[i]["profit"] = v.profit.toFixed(2);
+                        data[i]["profit"] = (v.ptype == 1 ? v.profit + "%" : v.profit.toFixed(2));
                     }
                 });
                 that.assign("list", data);
