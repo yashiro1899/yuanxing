@@ -1,14 +1,9 @@
 $(function() {
-    var NOPRICE_ICON = "<i title=\"暂无价格\" class=\"icon-remove\"></i>";
-
     $("#result_list .precisely-connect").each(function(i, el) {
         el = $(el);
         var roomtypeid = el.data("roomtypeid");
         var td = el.parent();
-        if ($.cookie("noprice." + roomtypeid)) {
-            td.html("");
-            td.prev().html(NOPRICE_ICON);
-        }
+        if ($.cookie("noprice." + roomtypeid)) td.html("暂无价格");
     });
 
     $("#result_list").on("click", ".precisely-connect", function(e) {
@@ -23,8 +18,7 @@ $(function() {
             data: "roomtypeid=" + roomtypeid
         }).done(function(response) {
             if (response["success"] == 8) {
-                td.html("");
-                td.prev().html(NOPRICE_ICON);
+                td.html("暂无价格");
                 alert(response["message"]);
                 return null;
             }
