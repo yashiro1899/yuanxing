@@ -4,6 +4,7 @@
  */
 var cookie = require("cookie");
 var dateformat = require("dateformat");
+var jielvapi = require("../../../../jielv-api");
 var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
@@ -332,9 +333,9 @@ module.exports = Controller("Home/BaseController", function() {
                                 profit: profit
                             });
                         }
-                    }).then(function(result) {
+                    }).then(function(result) { // think_goods
                         if (result === false) {
-                            that.end(null);
+                            that.end("关联失败！");
                             return getDefer().promise;
                         }
                         var now = +(new Date());
@@ -429,7 +430,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                 });
             } else {
-                this.end(null);
+                this.redirect("/connect/");
             }
         },
         updateAction: function() {
@@ -438,7 +439,84 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             var gid = this.param("gid");
-            this.end(gid);
+            if (!gid) {
+                this.redirect("/");
+                return null;
+            }
+            var promise, data;
+            this.assign("message", "");
+
+            if (this.isPost()) {
+                null;
+            } else {
+                promise = D("Goods").where({gid: gid}).select();
+                promise = promise.then(function(result) {
+                    data = result[0];
+                    that.assign("formdata", data);
+
+                    var promises = [];
+                    var model, start, end;
+                    promises.push(oauth.accessProtectedResource(req, res, {
+                        "gid": gid,
+                        "method": "taobao.hotel.room.get",
+                        "need_hotel": true,
+                        "need_room_type": true
+                    }));
+
+                    model = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
+                    model = model.field("think_hotel.original as h,think_room.original as r");
+                    model = model.where({"think_room.roomtypeid": data.roomtypeid}).select();
+                    promises.push(model);
+
+                    start = +(new Date());
+                    end = start + 30 * 24 * 60 * 60 * 1000;
+                    start = new Date(start);
+                    end = new Date(end);
+                    start = dateformat(start, "yyyy-mm-dd");
+                    end = dateformat(end, "yyyy-mm-dd");
+                    promises.push(jielvapi({
+                        "QueryType": "hotelpriceall",
+                        "roomtypeids": data.roomtypeid,
+                        "checkInDate": start,
+                        "checkOutDate": end
+                    }));
+                    return Promise.all(promises);
+                }).then(function(result) {
+                    var taobao = result[0]["hotel_room_get_response"]["room"];
+                    var jielv = result[1][0];
+                    var jielvhotel = JSON.parse(jielv.h);
+                    var jielvroom = JSON.parse(jielv.r);
+                    var jielvbedtype = mapping.bedtype[jielvroom.bedtype] || "B";
+                    var jielvarea = parseInt(jielvroom["acreages"].replace(/^\D/, ""), 10) || 20;
+                    var list = {};
+                    list["taobao"] = {
+                        hotel: taobao.hotel.name,
+                        room: taobao.room_type.name,
+                        address: taobao.hotel.address,
+                        bedtype: mapping.bedtypestrings[taobao.bed_type],
+                        area: mapping.area[taobao.area]
+                    };
+                    list["jielv"] = {
+                        hotel: jielvhotel.namechn,
+                        room: jielvroom.namechn,
+                        address: jielvhotel.addresschn,
+                        bedtype: mapping.bedtypestrings[jielvbedtype],
+                        area: jielvarea
+                    };
+                    that.assign("list", list);
+
+                    var ratetypes = {};
+                    result[2]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                    ratetypes = Object.keys(ratetypes);
+                    ratetypes = ratetypes.map(function(rt) {
+                        return [rt, mapping.ratetype[rt]];
+                    });
+                    if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetypes[data.ratetype]]);
+                    that.assign("ratetypes", ratetypes);
+                    that.display("connect:create");
+                });
+            }
+            return promise;
         }
     };
 });
