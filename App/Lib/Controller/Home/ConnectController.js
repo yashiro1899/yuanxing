@@ -447,7 +447,24 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("message", "");
 
             if (this.isPost()) {
-                null;
+                promise = D("Goods");
+                promise.pk = "gid";
+                promise = promise.update({
+                    gid: gid,
+                    ratetype: this.post("ratetype"),
+                    ptype: this.post("ptype"),
+                    profit: (this.post("profit") || 0)
+                }).then(function(result) {
+                    var now = +(new Date());
+                    var content = "编辑成功！";
+                    content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
+                    content += (that.post("iid") + "\" target=\"_blank\">去淘宝查看</a>");
+                    res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                        path: "/",
+                        expires: (new Date(24 * 60 * 60 * 1000 + now))
+                    }));
+                    that.redirect("/");
+                });
             } else {
                 promise = D("Goods").where({gid: gid}).select();
                 promise = promise.then(function(result) {
