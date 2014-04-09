@@ -534,6 +534,23 @@ module.exports = Controller("Home/BaseController", function() {
                 });
             }
             return promise;
+        },
+        deleteAction: function() {
+            var that = this;
+            var gid = this.post("gid");
+
+            if (!gid) {
+                this.end(null);
+                return null;
+            }
+
+            return D("Goods").where({gid: gid})["delete"]().then(function(result) {
+                if (result === false) {
+                    that.end(null);
+                    return null;
+                }
+                that.end({success: 1});
+            });
         }
     };
 });

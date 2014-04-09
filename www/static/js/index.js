@@ -30,4 +30,19 @@ $(function() {
               </form>').submit();
         });
     });
+
+    $("#result_list").on("click", ".connect-remove", function(e) {
+        if (!window.confirm("确认删除？")) return false;
+
+        var el = $(this);
+        var gid = $(this).data("gid");
+        $.ajax("/connect/delete/", {
+            type: "post",
+            dataType: "JSON",
+            data: "gid=" + gid
+        }).done(function(response) {
+            if (response["success"] != 1) return false;
+            el.parents("tr").remove();
+        });
+    });
 });
