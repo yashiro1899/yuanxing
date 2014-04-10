@@ -87,6 +87,16 @@
         </tbody>
     </table>
 </div>
+<div class="actions">
+    <label>
+        <span class="action-label">Action:</span>
+        <select name="action" style="font-size:12px;margin-bottom:-2px">
+            <option value="delete_selected">批量删除</option>
+        </select>
+    </label>&nbsp;
+    <button type="submit" class="btn" style="font-size:12px">Go</button>&nbsp;
+    <span class="action-counter" style="display:inline">0 of 15 selected</span>
+</div>
 <div class="below-actions">
     <% include inc/pagination.html %>
 </div>
