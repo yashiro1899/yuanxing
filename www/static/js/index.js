@@ -65,4 +65,32 @@ $(function() {
         elActionSelect.prop('checked', checked);
         elActionCounter.html((checked ? total : 0) + " of " + total + " selected");
     });
+
+    $("#action-go").click(function(e) {
+        var selected = [];
+        elActionSelect.each(function(i, el) {
+            if ($(el).prop("checked")) selected.push(el);
+        });
+        if (selected.length === 0) return false;
+
+        var action = $(".actions [name=action]").val();
+        switch (action) {
+            case "delete_selected":
+                if (!window.confirm("确认删除所选 " + selected.length + " 项？")) return false;
+                selected.reduce(function(sequence, el) {
+                    return sequence.then(function(result) {
+                        return $.ajax("/connect/delete/", {
+                            type: "post",
+                            dataType: "JSON",
+                            data: "gid=" + $(el).val()
+                        }).then(function(result) {
+                            if (result["success"] == 1) $(el).parents("tr").remove();
+                        });
+                    });
+                }, $().promise());
+                break;
+            default:
+                break;
+        }
+    });
 });
