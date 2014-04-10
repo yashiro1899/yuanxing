@@ -112,8 +112,13 @@ $(function() {
                                 data: "data=" + data
                             });
                         }).then(function(result) {
-                            if (result && result["success"] == 1) td.html("发布成功");
-                            else if (result) td.prev().html(NOPRICE_ICON);
+                            if (result && result["success"] == 1) {
+                                td.html("发布成功");
+                                td.prev().html("");
+                            } else if (result) {
+                                td.html("");
+                                td.prev().html(NOPRICE_ICON);
+                            }
                         });
                     });
                 }, $().promise());
