@@ -61,6 +61,8 @@ $(function() {
         elActionToggle.prop("checked", selected === total);
     });
     elActionToggle.change(function(e) {
-        elActionSelect.prop('checked', $(this).prop("checked"));
+        var checked = $(this).prop("checked");
+        elActionSelect.prop('checked', checked);
+        elActionCounter.html((checked ? total : 0) + " of " + total + " selected");
     });
 });
