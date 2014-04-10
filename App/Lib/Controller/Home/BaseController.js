@@ -10,6 +10,7 @@ module.exports = Controller(function() {
             this.super_("init", http);
             this.assign("title", this.title || "");
             this.assign("navType", this.navType || "");
+            this.assign("staticversion", Date.now()); // TODO: replace fixed
 
             var that = this;
             return oauth.getUserInfo(this.http.req, this.http.res).then(function(u) {

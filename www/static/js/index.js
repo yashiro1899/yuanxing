@@ -45,4 +45,7 @@ $(function() {
             el.parents("tr").remove();
         });
     });
+
+    var actiontotal = $("#result_list .action-select").length;
+    $(".actions .action-counter").html("0 of " + actiontotal + " selected");
 });

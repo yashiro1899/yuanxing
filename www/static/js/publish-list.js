@@ -56,4 +56,7 @@ $(function() {
             });
         });
     });
+
+    var actiontotal = $("#result_list .action-select").length;
+    $(".actions .action-counter").html(actiontotal + " of " + actiontotal + " selected");
 });
