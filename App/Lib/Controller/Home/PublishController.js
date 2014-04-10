@@ -116,7 +116,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                     if (goods[r.taobao_rid]) status = 2;
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
-                        "<img src=\"/static/img/icon-yes.gif\" />"; // 可发布
+                        '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
                     roomstatus[r.roomtypeid]["status"] = status;
                 });
                 that.assign("roomstatus", roomstatus);
