@@ -78,6 +78,7 @@ $(function() {
             case "delete_selected":
                 if (!window.confirm("确认删除所选 " + selected.length + " 项？")) return false;
                 selected.reduce(function(sequence, el) {
+                    $(window).scrollTop($(el).position()["top"]);
                     return sequence.then(function(result) {
                         return $.ajax("/connect/delete/", {
                             type: "post",

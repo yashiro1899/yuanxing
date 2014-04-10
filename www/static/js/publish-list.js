@@ -92,6 +92,7 @@ $(function() {
                     return sequence.then(function(result) {
                         var td = $(el).parent().next();
                         td.html("询价中…");
+                        $(window).scrollTop(td.position()["top"]);
                         return $.ajax("/publish/inquiry/", {
                             type: "post",
                             dataType: "json",
