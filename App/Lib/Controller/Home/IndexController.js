@@ -131,7 +131,7 @@ module.exports = Controller("Home/BaseController", function() {
                     data[i]["updated_at"] = dateformat(v.updated_at, "yyyy-mm-dd HH:MM");
                     data[i]["typeicon"] = mapping.roomstatus[v.status];
                     if (v.status == 4) {
-                        data[i]["typeicon"] = '<input class="action-select" type="checkbox" value="' + v.gid + '" checked />';
+                        data[i]["typeicon"] = '<input class="action-select" type="checkbox" value="' + v.gid + '" />';
                         data[i]["ratetypestring"] = mapping.ratetype[v.ratetype];
                         data[i]["ptypestring"] = mapping.ptypestrings[v.ptype];
                         data[i]["profit"] = (v.ptype == 1 ? v.profit + "%" : v.profit.toFixed(2));
