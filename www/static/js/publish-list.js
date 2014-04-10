@@ -57,6 +57,21 @@ $(function() {
         });
     });
 
-    var actiontotal = $("#result_list .action-select").length;
-    $(".actions .action-counter").html(actiontotal + " of " + actiontotal + " selected");
+    var elActionSelect = $("#result_list .action-select");
+    var elActionToggle = $("#action-toggle");
+    var elActionCounter = $(".actions .action-counter");
+    var total = elActionSelect.length;
+
+    elActionCounter.html(total + " of " + total + " selected");
+    elActionSelect.change(function(e) {
+        var selected = 0;
+        elActionSelect.each(function(i, el) {
+            if ($(el).prop("checked")) selected += 1;
+        });
+        elActionCounter.html(selected + " of " + total + " selected");
+        elActionToggle.prop("checked", selected === total);
+    });
+    elActionToggle.change(function(e) {
+        elActionSelect.prop('checked', $(this).prop("checked"));
+    });
 });
