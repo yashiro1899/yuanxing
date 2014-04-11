@@ -163,6 +163,13 @@ module.exports = Controller("Home/BaseController", function() {
                             success: 8,
                             message: "暂无价格！"
                         });
+
+                        var model = D("Room");
+                        model.pk = "roomtypeid";
+                        return model.update({
+                            roomtypeid: roomtypeid,
+                            no_price_expires: Date.now() + 7 * 24 * 60 * 60 * 1000
+                        });
                     }
                     that.end(data[0]);
                 });
