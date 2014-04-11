@@ -61,7 +61,7 @@ module.exports = Controller("Home/BaseController", function() {
                 that.assign("list", data);
 
                 var promises = [], model;
-                model = D("Room").field("roomtypeid,status,taobao_rid");
+                model = D("Room").field("roomtypeid,status,taobao_rid,no_price_expires");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
                 model = "userid = " + that.userInfo["taobao_user_id"];
@@ -71,17 +71,17 @@ module.exports = Controller("Home/BaseController", function() {
                 return Promise.all(promises);
             }).then(function(result) { // think_room, think_goods
                 var promises = [];
-                var rids = {};
                 var goods = result[1] || [];
-
+                var rids = {};
                 goods.forEach(function(g) {rids[g.roomtypeid] = g;});
                 goods = rids;
-                rids = [];
 
+                rids = [];
                 rooms = result[0] || [];
                 rooms.forEach(function(r, i) {
                     if (goods[r.roomtypeid]) rooms[i]["status"] = goods[r.roomtypeid]["status"];
                     else if (r.taobao_rid > 0) rids.push(r.taobao_rid);
+
                     if (rids.length == 20) {
                         promises.push(oauth.accessProtectedResource(req, res, {
                             "method": "taobao.hotel.rooms.search",
@@ -115,6 +115,8 @@ module.exports = Controller("Home/BaseController", function() {
                     roomstatus[r.roomtypeid] = {};
 
                     if (goods[r.taobao_rid]) status = 2;
+                    if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
+
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
                         '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
                     roomstatus[r.roomtypeid]["status"] = status;
