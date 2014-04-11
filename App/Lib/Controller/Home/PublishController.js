@@ -159,11 +159,6 @@ module.exports = Controller("Home/BaseController", function() {
                     var data = [];
                     if (result && result.success == 1) data = result.data;
                     if (data.length === 0) {
-                        var now = +(new Date());
-                        res.setHeader("Set-Cookie", cookie.serialize("noprice." + roomtypeid, 1, {
-                            path: "/",
-                            expires: (new Date(7 * 24 * 60 * 60 * 1000 + now))
-                        }));
                         that.end({
                             success: 8,
                             message: "暂无价格！"
