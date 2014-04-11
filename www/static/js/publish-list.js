@@ -51,14 +51,20 @@ $(function() {
     var elActionToggle = $("#action-toggle");
     var elActionCounter = $(".actions .action-counter");
     var total = elActionSelect.length;
-
-    elActionCounter.html(total + " of " + total + " selected");
-    elActionSelect.change(function(e) {
+    var counter = function() {
         var selected = 0;
+        elActionSelect = $("#result_list .action-select");
+        total = elActionSelect.length;
         elActionSelect.each(function(i, el) {
             if ($(el).prop("checked")) selected += 1;
         });
         elActionCounter.html(selected + " of " + total + " selected");
+        return selected;
+    };
+
+    elActionCounter.html(total + " of " + total + " selected");
+    elActionSelect.change(function(e) {
+        var selected = counter();
         elActionToggle.prop("checked", selected === total);
     });
     elActionToggle.change(function(e) {
@@ -91,6 +97,7 @@ $(function() {
                             if (result["success"] == 8) {
                                 td.html("");
                                 td.prev().html(NOPRICE_ICON);
+                                counter();
                                 return null;
                             }
 
@@ -104,11 +111,12 @@ $(function() {
                         }).then(function(result) {
                             if (result && result["success"] == 1) {
                                 td.html("发布成功");
-                                td.prev().html("");
+                                td.prev().html("<i title=\"已发布\" class=\"icon-upload\"></i>");
                             } else if (result) {
                                 td.html("");
                                 td.prev().html(NOPRICE_ICON);
                             }
+                            counter();
                         });
                     });
                 }, $().promise());

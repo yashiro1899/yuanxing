@@ -43,14 +43,20 @@ $(function() {
     var elActionToggle = $("#action-toggle");
     var elActionCounter = $(".actions .action-counter");
     var total = elActionSelect.length;
-
-    elActionCounter.html("0 of " + total + " selected");
-    elActionSelect.change(function(e) {
+    var counter = function() {
         var selected = 0;
+        elActionSelect = $("#result_list .action-select");
+        total = elActionSelect.length;
         elActionSelect.each(function(i, el) {
             if ($(el).prop("checked")) selected += 1;
         });
         elActionCounter.html(selected + " of " + total + " selected");
+        return selected;
+    };
+
+    elActionCounter.html("0 of " + total + " selected");
+    elActionSelect.change(function(e) {
+        var selected = counter();
         elActionToggle.prop("checked", selected === total);
     });
     elActionToggle.change(function(e) {
@@ -78,7 +84,10 @@ $(function() {
                             dataType: "JSON",
                             data: "gid=" + $(el).val()
                         }).then(function(result) {
-                            if (result["success"] == 1) $(el).parents("tr").remove();
+                            if (result["success"] == 1) {
+                                $(el).parents("tr").remove();
+                                counter();
+                            }
                         });
                     });
                 }, $().promise());
