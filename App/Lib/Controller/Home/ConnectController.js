@@ -121,16 +121,21 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
                 ids = "taobao_rid in (" + ids.join(",") + ")";
-                return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
+                return D("Room").field("roomtypeid,taobao_rid,no_price_expires").where(ids).select();
             }).then(function(result) { // think_room
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
+                result.forEach(function(r) {exists[r.taobao_rid] = r;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
                         goods[i]["goodstatus"] = 128;
                         goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
-                        goods[i]["roomtypeid"] = exists[g.rid];
+                        goods[i]["roomtypeid"] = exists[g.rid]["roomtypeid"];
+
+                        if (exists[g.rid]["no_price_expires"] > Date.now()) {
+                            goods[i]["goodstatus"] = 4;
+                            goods[i]["goodstatusicon"] = mapping.goodstatus[4];
+                        }
                     }
                 });
                 that.assign("list", goods);
@@ -253,16 +258,21 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
                 ids = "taobao_rid in (" + ids.join(",") + ")";
-                return D("Room").field("roomtypeid,taobao_rid").where(ids).select();
+                return D("Room").field("roomtypeid,taobao_rid,no_price_expires").where(ids).select();
             }).then(function(result) { // think_room
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = r.roomtypeid;});
+                result.forEach(function(r) {exists[r.taobao_rid] = r;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
                         goods[i]["goodstatus"] = 128;
                         goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
-                        goods[i]["roomtypeid"] = exists[g.rid];
+                        goods[i]["roomtypeid"] = exists[g.rid]["roomtypeid"];
+
+                        if (exists[g.rid]["no_price_expires"] > Date.now()) {
+                            goods[i]["goodstatus"] = 4;
+                            goods[i]["goodstatusicon"] = mapping.goodstatus[4];
+                        }
                     }
                 });
                 that.assign("list", goods);
