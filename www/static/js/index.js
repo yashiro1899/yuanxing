@@ -1,11 +1,4 @@
 $(function() {
-    $("#result_list .precisely-connect").each(function(i, el) {
-        el = $(el);
-        var roomtypeid = el.data("roomtypeid");
-        var td = el.parent();
-        if ($.cookie("noprice." + roomtypeid)) td.html("暂无价格");
-    });
-
     $("#result_list").on("click", ".precisely-connect", function(e) {
         var gid = $(this).data("gid");
         var roomtypeid = $(this).data("roomtypeid");
