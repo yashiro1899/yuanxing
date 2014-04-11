@@ -270,8 +270,8 @@ module.exports = Controller("Home/BaseController", function() {
                         goods[i]["roomtypeid"] = exists[g.rid]["roomtypeid"];
 
                         if (exists[g.rid]["no_price_expires"] > Date.now()) {
-                            goods[i]["goodstatus"] = 4;
-                            goods[i]["goodstatusicon"] = mapping.goodstatus[4];
+                            goods[i]["goodstatus"] = 3;
+                            goods[i]["goodstatusicon"] = mapping.goodstatus[3];
                         }
                     }
                 });
