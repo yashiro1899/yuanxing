@@ -17,7 +17,9 @@
         <td>
             <input name="pic_path" type="text" value="<%=formdata.guide%>" style="width:500px;font-size:12px" />
             <span class="help-inline" style="display:none">图片错误</span>
-            <img src="/static/img/placeholder.jpg" width="100" height="100" style="display:none;margin-top:10px" />
+            <%if (formdata.pic_path) {%>
+            <img src="<%=formdata.pic_path%>" width="100" height="100" style="margin-top:10px" />
+            <%}%>
         </td>
     </tr>
     <tr>
@@ -34,5 +36,5 @@
     </tr>
 </table>
 </form>
-<script src="/static/js/connect-create.js?<%=staticversion%>"></script>
+<script src="/static/js/user.js?<%=staticversion%>"></script>
 <% include inc/footer.html %>
