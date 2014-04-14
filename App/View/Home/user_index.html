@@ -1,0 +1,31 @@
+<% include inc/header.html %>
+<% include inc/message.html %>
+<h2 class="legend">用户信息</h2>
+<form action="" method="post" id="connect-form" class="form-horizontal">
+<input type="hidden" name="id" value="<%=formdata.id%>" />
+<table class="table-overview" style="width:100%">
+    <tr>
+        <th style="vertical-align:middle"><b>用户名：</b></th>
+        <td width="90%"><%=formdata.nick%></td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>授权到期时间：</b></th>
+        <td><%=formdata.expires%></td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>默认发布图片：</b></th>
+        <td></td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>淘宝购买须知：</b></th>
+        <td><textarea cols="40" name="guide" rows="2" style="overflow:hidden;word-wrap:break-word;resize:none;height:160px;margin-left:0px;margin-right:0px;width:500px"><%=formdata.guide%></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align:center">
+            <button type="submit" class="btn btn-high btn-info">保存</button>
+        </td>
+    </tr>
+</table>
+</form>
+<script src="/static/js/connect-create.js?<%=staticversion%>"></script>
+<% include inc/footer.html %>

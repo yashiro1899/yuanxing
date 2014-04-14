@@ -4,16 +4,32 @@
  */
 var cookie = require("cookie");
 var dateformat = require("dateformat");
-var mapping = require("../../../../define.conf");
-var oauth = require("../../../../taobao-oauth");
-var querystring = require('querystring');
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "user",
         title: "信息",
         indexAction: function() {
             var that = this;
-            that.end("kk");
+
+            var message = this.cookie("success.message");
+            var now = new Date();
+            this.assign("message", message);
+            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+                path: "/",
+                expires: now
+            }));
+
+            var promise = D("User").where("id=" + this.userInfo["taobao_user_id"]).select();
+            promise = promise.then(function(result) {
+                result = result || [];
+                result = result[0] || {};
+
+                var expires = result["expires"];
+                if (expires) result["expires"] = dateformat(expires, "yyyy-mm-dd HH:MM");
+                that.assign("formdata", result);
+                that.display();
+            });
+            return promise;
         }
     };
 });
