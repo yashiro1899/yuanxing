@@ -311,3 +311,16 @@ a.append-icon i{margin-left:5px}
 @media print{html,body{-webkit-print-color-adjust:exact} a[href]:after{content:"" !important} select{-webkit-appearance:none} #header,.left-column,#footer,#push,#suit-left,.actions,.inner-right-column,.add-row{display:none} #wrap,body{background:transparent} .suit-columns{padding-left:0} .two-columns .center-column{margin:0} .inner-two-columns .inner-center-column{margin-right:0}}
 .required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}
 .countries-column .text, .countries-column a {text-align: center;}
+#user-form .error input, #user-form .error textarea {
+    color: #b94a48;
+    border-color: #b94a48;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+       -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+#user-form .error input:focus, #user-form .error textarea:focus {
+    border-color: #953b39;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+       -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+}#user-form .error span {color: #b94a48;}

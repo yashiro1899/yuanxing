@@ -1,7 +1,7 @@
 <% include inc/header.html %>
 <% include inc/message.html %>
 <h2 class="legend">用户信息</h2>
-<form action="" method="post" id="connect-form" class="form-horizontal">
+<form action="/user/update/" method="post" id="user-form" class="form-horizontal">
 <input type="hidden" name="id" value="<%=formdata.id%>" />
 <table class="table-overview" style="width:100%">
     <tr>
@@ -15,13 +15,17 @@
     <tr>
         <th style="vertical-align:middle"><b>默认发布图片：</b></th>
         <td>
-            <input name="pic_path" type="text" value="<%=formdata.guide%>" style="width:500px" />
+            <input name="pic_path" type="text" value="<%=formdata.guide%>" style="width:500px;font-size:12px" />
+            <span class="help-inline" style="display:none">图片错误</span>
             <img src="/static/img/placeholder.jpg" width="100" height="100" style="display:none;margin-top:10px" />
         </td>
     </tr>
     <tr>
         <th style="vertical-align:middle"><b>淘宝购买须知：</b></th>
-        <td><textarea cols="40" name="guide" rows="2" style="overflow:hidden;word-wrap:break-word;resize:none;height:160px;margin-left:0px;margin-right:0px;width:500px"><%=formdata.guide%></textarea></td>
+        <td>
+            <textarea cols="40" name="guide" rows="2" style="overflow:hidden;word-wrap:break-word;resize:none;height:160px;margin-left:0px;margin-right:0px;width:500px;font-size:12px"><%=formdata.guide%></textarea>
+            <span class="help-inline" style="display:none">不能为空</span>
+        </td>
     </tr>
     <tr>
         <td colspan="2" style="text-align:center">
