@@ -19,7 +19,7 @@ module.exports = Controller(function() {
             var promise = oauth.redirectCallback(this.http.req, this.http.res, this.get("code"));
 
             return promise.then(function(result) {
-                if (result) { // TODO: expires_in
+                if (result) {
                     values = {
                         id: result["taobao_user_id"]
                     };
@@ -27,6 +27,7 @@ module.exports = Controller(function() {
                     values.nick = decodeURIComponent(result["taobao_user_nick"]);
                     values.token = result["access_token"];
                     values.expires = +(new Date(result["expires_in"] * 1000 + Date.now()));
+                    values.guide = "";
                     return model;
                 } else {
                     that.logoutAction();
