@@ -17,6 +17,14 @@ module.exports = Controller("Home/BaseController", function() {
             var req = this.http.req;
             var res = this.http.res;
 
+            var message = this.cookie("success.message");
+            var now = new Date();
+            this.assign("message", message);
+            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+                path: "/",
+                expires: now
+            }));
+
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
             var query = this.param("q").trim();

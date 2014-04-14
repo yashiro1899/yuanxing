@@ -30,6 +30,30 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
             return promise;
+        },
+        updateAction: function() {
+            var that = this;
+            var id = this.post("id");
+            var pic_path = this.post("pic_path");
+            var guide = this.post("guide");
+
+            if (id && pic_path && guide) {
+                return D("User").update({
+                    id: id,
+                    pic_path: pic_path,
+                    guide: guide
+                }).then(function(result) {
+                    var now = +(new Date());
+                    var content = "编辑成功！";
+                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                        path: "/",
+                        expires: (new Date(24 * 60 * 60 * 1000 + now))
+                    }));
+                    that.redirect("/connect/");
+                });
+            } else {
+                this.redirect("/connect/");
+            }
         }
     };
 });
