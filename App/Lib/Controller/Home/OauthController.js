@@ -26,6 +26,7 @@ module.exports = Controller(function() {
                     var model = D("User").where(values).select();
                     values.nick = decodeURIComponent(result["taobao_user_nick"]);
                     values.token = result["access_token"];
+                    values.expires = +(new Date(result["expires_in"] * 1000 + Date.now()));
                     return model;
                 } else {
                     that.logoutAction();
@@ -33,14 +34,23 @@ module.exports = Controller(function() {
                 }
             }).then(function(result) {
                 result = result || [];
+                var model;
+
                 if (result.length > 0) {
-                    return D("User").update(values);
+                    model = D("User").update(values);
+                    values = (result[0]["pic_path"] && result[0]["guide"]);
                 } else {
-                    return D("User").add(values);
+                    model = D("User").add(values);
+                    values = false;
                 }
+                return model;
             }).then(function(result) {
-                if (result !== false) that.redirect("/publish/");
-                else that.logoutAction();
+                if (result !== false) {
+                    if (!values) that.redirect("/user/");
+                    else that.redirect("/publish/");
+                } else {
+                    that.logoutAction();
+                }
             });
         },
         logoutAction: function() {
