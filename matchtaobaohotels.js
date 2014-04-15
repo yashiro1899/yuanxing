@@ -32,7 +32,7 @@ connection.connect();
 var fields1 = "`hid`,`hotelid`,`original`";
 var fields2 = "`rid`,`hid`,`roomtypeid`";
 var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
-qs += "ORDER BY `hotelid` LIMIT 1";
+qs += "ORDER BY `hotelid` LIMIT 1000";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
@@ -131,7 +131,7 @@ db(qs).then(function(hotels) {
                     var roomtypes = [];
                     if (h && h["hotel_get_response"]) {
                         h = h["hotel_get_response"]["hotel"];
-                        roomtypes = h.room_types["room_type"] || [];
+                        roomtypes = (h.room_types ? (h.room_types["room_type"] || []) : []);
                         roomtypes.forEach(function(r, i) {roomtypes[i]["hid"] = h.hid;});
                         data = data.concat(roomtypes);
                     }
