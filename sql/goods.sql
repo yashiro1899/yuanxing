@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS `think_goods` (
     PRIMARY KEY (`gid`),
     KEY iid (`iid`),
     CONSTRAINT `userid` FOREIGN KEY (`userid`) REFERENCES `think_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `hotelid_goods` FOREIGN KEY (`hotelid`) REFERENCES `think_hotel` (`hotelid`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `roomtypeid` FOREIGN KEY (`roomtypeid`) REFERENCES `think_room` (`roomtypeid`) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT `hotelid3` FOREIGN KEY (`hotelid`) REFERENCES `think_hotel` (`hotelid`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `roomtypeid2` FOREIGN KEY (`roomtypeid`) REFERENCES `think_room` (`roomtypeid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

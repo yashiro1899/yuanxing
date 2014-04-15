@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS `think_taobaohotel` (
+    `hid`        INT(11) UNSIGNED NOT NULL,
+    `hotelid`    INT(11) UNSIGNED NOT NULL,
+    `original`   TEXT NOT NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`hid`),
+    CONSTRAINT `hotelid2` FOREIGN KEY (`hotelid`) REFERENCES `think_hotel` (`hotelid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
