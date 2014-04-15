@@ -32,7 +32,7 @@ connection.connect();
 var fields1 = "`hid`,`hotelid`,`original`";
 var fields2 = "`rid`,`hid`,`roomtypeid`";
 var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
-qs += "ORDER BY `hotelid` LIMIT 1000";
+qs += "ORDER BY `hotelid` LIMIT 1";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
@@ -64,8 +64,8 @@ db(qs).then(function(hotels) {
                     result = total > 0 ? result["hotels_search_response"]["hotels"]["hotel"] : [];
                     if (total > 20) console.log("GREATER THAN 20,", total, hotel.namechn);
                 } else if (result["error_response"]) {
-                    result = [];
                     console.log(result["error_response"]["msg"]);
+                    result = [];
                 }
 
                 result.forEach(function(h) {
