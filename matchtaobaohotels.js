@@ -63,23 +63,17 @@ db(qs).then(function(hotels) {
                     console.log(result["error_response"]["msg"]);
                 }
 
-                if (result.length === 0) throw "NO_MATCHED " + hotel.namechn;
-
-                data = result;
-                data.forEach(function(h) {
+                result.forEach(function(h) {
                     var a = h.name.indexOf(hotel.namechn);
                     var b = hotel.namechn.indexOf(h.name);
                     if (a > -1 || b > -1) hids.push(h.hid);
                 });
-            //     if (result && result.hid) {
-            //         taobao_hid = result.hid;
+                if (hids.length === 0) throw "NO_MATCHED " + hotel.namechn;
 
-            //         var qs = "UPDATE `think_hotel` SET `taobao_hid` = ";
-            //         qs += (result.hid + " WHERE `hotelid` = " + hotel.hotelid);
-            //         return db(qs);
-            //     }
-            //
-            // }).then(function(result) {
+                data = result;
+                return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
+            }).then(function(result) {
+                console.log(JSON.stringify(result, null, 4));
             //     if (result) total1 += 1;
 
             //     return oauth.accessProtectedResource(null, null, {
