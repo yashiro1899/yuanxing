@@ -26,7 +26,7 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var fields1 = "`hotelid`,`hotelcd`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
+var fields1 = "`hotelid`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
 var fields2 = "`roomtypeid`,`hotelid`,`namechn`,`original`";
 var total1 = 0, total2 = 0;
 var start = +(new Date());
@@ -60,7 +60,6 @@ for (; i < 520; i += 1) {
                 var website = h.website.trim();
                 if (website.length > 0 && !(/^http/.test(website))) website = "http://" + website;
                 v.push(h.hotelid);
-                v.push(JSON.stringify(h.hotelcd));
                 v.push(JSON.stringify(h.namechn.trim()));
                 v.push(JSON.stringify(h.nameeng.trim()));
                 v.push(h.country);v.push(h.state);v.push(h.city);
