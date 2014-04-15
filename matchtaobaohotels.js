@@ -29,6 +29,7 @@ var db = function(querystring) {
 };
 connection.connect();
 
+var fields1 = "`hid`,`hotelid`,`original`";
 var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
 qs += "ORDER BY `hotelid` LIMIT 1";
 db(qs).then(function(hotels) {
@@ -49,7 +50,8 @@ db(qs).then(function(hotels) {
         }
 
         (function(params) {
-            var data = [];
+            var data = [],
+                inserted = [];
             var promise = oauth.accessProtectedResource(null, null, params, token);
             promise = promise.then(function(result) {
                 var total;
@@ -58,6 +60,7 @@ db(qs).then(function(hotels) {
                 if (result && result["hotels_search_response"]) {
                     total = result["hotels_search_response"]["total_results"];
                     result = total > 0 ? result["hotels_search_response"]["hotels"]["hotel"] : [];
+                    if (total > 20) console.log("GREATER THAN 20,", total, hotel.namechn);
                 } else if (result["error_response"]) {
                     result = [];
                     console.log(result["error_response"]["msg"]);
@@ -70,10 +73,44 @@ db(qs).then(function(hotels) {
                 });
                 if (hids.length === 0) throw "NO_MATCHED " + hotel.namechn;
 
-                data = result;
+                data = result.filter(function(h) {return hids.indexOf(h.hid) > -1;});
                 return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
             }).then(function(result) {
-                console.log(JSON.stringify(result, null, 4));
+                var ids = result.map(function(h) {return h.hid;});
+                var sqls = [];
+
+                var values = data.map(function(h) {
+                    var v = [];
+                    v.push(h.hid);
+                    v.push(hotel.hotelid);
+                    v.push(JSON.stringify(JSON.stringify(h)));
+
+                    if (ids.indexOf(h.hotelid) > -1) {
+                        var qs = "UPDATE `think_taobaohotel` SET ";
+                        var f = fields1.split(",");
+                        v.forEach(function(value, index) {
+                            if (index === 0) return null;
+                            if (index > 1) qs += ",";
+                            qs += f[index];
+                            qs += "=";
+                            qs += value;
+                        });
+                        qs += " WHERE `hid`=" + h.hid;
+                        sqls.push(db(qs));
+                    }
+                    return v;
+                });
+
+                values = values.filter(function(h) {return ids.indexOf(h[0]) < 0;});
+                inserted = values.map(function(h) {return h[0];});
+                values = values.map(function(h) {return "(" + h.join(",") + ")";});
+                if (values.length > 0)
+                    sqls.push(db("INSERT INTO `think_taobaohotel` (" + fields1 + ") VALUES " + values.join(",")));
+                return Promise.all(sqls);
+            }).then(function(result) {
+                if (inserted.length > 0 && !result.pop()) console.log("HOTEL_ERROR", inserted.join(","));
+
+                total1 += data.length;
             //     if (result) total1 += 1;
 
             //     return oauth.accessProtectedResource(null, null, {
@@ -81,7 +118,6 @@ db(qs).then(function(hotels) {
             //         "method": "taobao.hotel.get",
             //         "need_room_type": true
             //     }, token);
-            // }).then(function(result) {
             //     if (result && result["hotel_get_response"]) {
             //         result = result["hotel_get_response"]["hotel"];
             //         result = result["room_types"];
