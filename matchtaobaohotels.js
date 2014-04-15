@@ -52,7 +52,8 @@ db(qs).then(function(hotels) {
 
         (function(params) {
             var data = [],
-                inserted = [];
+                inserted = [],
+                roomtypeids = [];
             var promise = oauth.accessProtectedResource(null, null, params, token);
             promise = promise.then(function(result) { // taobao.hotels.search
                 var total;
@@ -124,7 +125,7 @@ db(qs).then(function(hotels) {
                 });
                 model = db("SELECT `roomtypeid`, `namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
                 return Promise.all([Promise.all(promises), model]);
-            }).then(function(result) { // taobao.hotel.get
+            }).then(function(result) { // taobao.hotel.get, think_room
                 data = [];
                 result[0].forEach(function(h) {
                     var roomtypes = [];
@@ -139,7 +140,8 @@ db(qs).then(function(hotels) {
 
                 var rooms = {};
                 var rids = [];
-                (result[1] || []).forEach(function(r) {rooms[r.namechn] = r.roomtypeid;});
+                roomtypeids = result[1] || [];
+                roomtypeids.forEach(function(r) {rooms[r.namechn] = r.roomtypeid;});
                 data = data.filter(function(r) {
                     if (rooms[r.name]) {
                         r.roomtypeid = rooms[r.name];
@@ -147,11 +149,11 @@ db(qs).then(function(hotels) {
                     }
                     return false;
                 });
-                rids = data.map(function(r) {return r.rid});
+                rids = data.map(function(r) {return r.rid;});
                 if (rids.length === 0) throw "NO_MATCHED " + hotel.namechn;
 
                 return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
-            }).then(function(result) {
+            }).then(function(result) { // think_taobaoroom
                 var ids = result.map(function(r) {return r.rid;});
                 var sqls = [];
 
@@ -183,23 +185,22 @@ db(qs).then(function(hotels) {
                 if (values.length > 0)
                     sqls.push(db("INSERT INTO `think_taobaoroom` (" + fields2 + ") VALUES " + values.join(",")));
                 return Promise.all(sqls);
-            //     result.forEach(function(r, i) {
-            //         var rid = roomtypes[r.namechn];
-            //         var qs = "UPDATE `think_room` SET ";
-            //         if (rid) {
-            //             result[i]["matched"] = true;
-            //             qs += "`status`=128, `taobao_rid`=" + rid + " WHERE`roomtypeid` = " + r.roomtypeid;
-            //             sqls.push(db(qs));
-            //         } else {
-            //             qs += "`status`=1 WHERE `roomtypeid` = " + r.roomtypeid;
-            //             sqls.push(db(qs));
-            //         }
-            //     });
-            //     roomtypes = result;
-            //     return Promise.all(sqls);
             }).then(function(result) {
                 if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
                 total2 += data.length;
+
+                var sqls = [];
+                var rti = {};
+                data.forEach(function(r) {rti[r.roomtypeid] = true;});
+                roomtypeids.forEach(function(r) {
+                    var qs = "UPDATE `think_room` SET ";
+                    qs += "`status` = ";
+                    qs += (rti[r.roomtypeid] ? 128 : 1);
+                    qs += " WHERE `roomtypeid` = " + r.roomtypeid;
+                    sqls.push(db(qs));
+                });
+
+                return Promise.all(sqls);
             })["catch"](function(e) {console.log(e);});
             promises.push(promise);
         })(params);
@@ -207,7 +208,7 @@ db(qs).then(function(hotels) {
 
     Promise.all(promises).then(function(result) {
         var now = +(new Date());
-        console.log("hotel success:", total1, "room success:", total2, ",time:", now - start, "milliseconds");
+        console.log("hotel matched:", total1, ",room matched:", total2, ",time:", now - start, "milliseconds");
         connection.end();
     });
 })["catch"](function(e) {console.log(e);});
