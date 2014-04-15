@@ -30,6 +30,7 @@ var db = function(querystring) {
 connection.connect();
 
 var fields1 = "`hid`,`hotelid`,`original`";
+var fields2 = "`rid`,`hid`,`roomtypeid`";
 var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
 qs += "ORDER BY `hotelid` LIMIT 1";
 db(qs).then(function(hotels) {
@@ -136,13 +137,52 @@ db(qs).then(function(hotels) {
                 });
                 if (data.length === 0) throw "NO_ROOM_TYPE " + hotel.namechn;
 
-                console.log(JSON.stringify(result[1], null, 4));
-            //     result.forEach(function(r) {roomtypes[r.name] = r.rid;});
-            //     return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
-            // }).then(function(result) {
-            //     result = result || [];
+                var rooms = {};
+                var rids = [];
+                (result[1] || []).forEach(function(r) {rooms[r.namechn] = r.roomtypeid;});
+                data = data.filter(function(r) {
+                    if (rooms[r.name]) {
+                        r.roomtypeid = rooms[r.name];
+                        return true;
+                    }
+                    return false;
+                });
+                rids = data.map(function(r) {return r.rid});
+                if (rids.length === 0) throw "NO_MATCHED " + hotel.namechn;
 
-            //     var sqls = [];
+                return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
+            }).then(function(result) {
+                var ids = result.map(function(r) {return r.rid;});
+                var sqls = [];
+
+                var values = data.map(function(r) {
+                    var v = [];
+                    v.push(r.rid);
+                    v.push(r.hid);
+                    v.push(r.roomtypeid);
+
+                    if (ids.indexOf(r.rid) > -1) {
+                        var qs = "UPDATE `think_taobaoroom` SET ";
+                        var f = fields2.split(",");
+                        v.forEach(function(value, index) {
+                            if (index === 0) return null;
+                            if (index > 1) qs += ",";
+                            qs += f[index];
+                            qs += "=";
+                            qs += value;
+                        });
+                        qs += " WHERE `rid`=" + r.rid;
+                        sqls.push(db(qs));
+                    }
+                    return v;
+                });
+
+                values = values.filter(function(r) {return ids.indexOf(r[0]) < 0;});
+                inserted = values.map(function(r) {return r[0];});
+                values = values.map(function(r) {return "(" + r.join(",") + ")";});
+                if (values.length > 0)
+                    sqls.push(db("INSERT INTO `think_taobaoroom` (" + fields2 + ") VALUES " + values.join(",")));
+                return Promise.all(sqls);
             //     result.forEach(function(r, i) {
             //         var rid = roomtypes[r.namechn];
             //         var qs = "UPDATE `think_room` SET ";
@@ -157,10 +197,9 @@ db(qs).then(function(hotels) {
             //     });
             //     roomtypes = result;
             //     return Promise.all(sqls);
-            // }).then(function(result) {
-            //     roomtypes.forEach(function(r, i) {
-            //         if (r.matched && result[i]) total2 += 1;
-            //     });
+            }).then(function(result) {
+                if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
+                total2 += data.length;
             })["catch"](function(e) {console.log(e);});
             promises.push(promise);
         })(params);
