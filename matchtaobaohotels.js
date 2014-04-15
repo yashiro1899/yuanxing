@@ -53,7 +53,7 @@ db(qs).then(function(hotels) {
             var data = [],
                 inserted = [];
             var promise = oauth.accessProtectedResource(null, null, params, token);
-            promise = promise.then(function(result) {
+            promise = promise.then(function(result) { // taobao.hotels.search
                 var total;
                 var hids = [];
 
@@ -75,7 +75,7 @@ db(qs).then(function(hotels) {
 
                 data = result.filter(function(h) {return hids.indexOf(h.hid) > -1;});
                 return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
-            }).then(function(result) {
+            }).then(function(result) { // think_taobaohotel
                 var ids = result.map(function(h) {return h.hid;});
                 var sqls = [];
 
@@ -107,26 +107,36 @@ db(qs).then(function(hotels) {
                 if (values.length > 0)
                     sqls.push(db("INSERT INTO `think_taobaohotel` (" + fields1 + ") VALUES " + values.join(",")));
                 return Promise.all(sqls);
-            }).then(function(result) {
+            }).then(function(result) { // think_taobaohotel
                 if (inserted.length > 0 && !result.pop()) console.log("HOTEL_ERROR", inserted.join(","));
 
                 total1 += data.length;
-            //     if (result) total1 += 1;
+                var promises = [];
+                var model;
 
-            //     return oauth.accessProtectedResource(null, null, {
-            //         "hid": taobao_hid,
-            //         "method": "taobao.hotel.get",
-            //         "need_room_type": true
-            //     }, token);
-            //     if (result && result["hotel_get_response"]) {
-            //         result = result["hotel_get_response"]["hotel"];
-            //         result = result["room_types"];
-            //         result = (result ? result["room_type"] : []);
-            //     } else {
-            //         result = [];
-            //     }
+                data.forEach(function(h) {
+                    promises.push(oauth.accessProtectedResource(null, null, {
+                        "hid": h.hid,
+                        "method": "taobao.hotel.get",
+                        "need_room_type": true
+                    }, token));
+                });
+                model = db("SELECT `roomtypeid`, `namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
+                return Promise.all([Promise.all(promises), model]);
+            }).then(function(result) { // taobao.hotel.get
+                data = [];
+                result[0].forEach(function(h) {
+                    var roomtypes = [];
+                    if (h && h["hotel_get_response"]) {
+                        h = h["hotel_get_response"]["hotel"];
+                        roomtypes = h.room_types["room_type"] || [];
+                        roomtypes.forEach(function(r, i) {roomtypes[i]["hid"] = h.hid;});
+                        data = data.concat(roomtypes);
+                    }
+                });
+                if (data.length === 0) throw "NO_ROOM_TYPE " + hotel.namechn;
 
-            //     if (result.length === 0) throw "NO_ROOM_TYPE " + hotel.namechn;
+                console.log(JSON.stringify(result[1], null, 4));
             //     result.forEach(function(r) {roomtypes[r.name] = r.rid;});
             //     return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
             // }).then(function(result) {
