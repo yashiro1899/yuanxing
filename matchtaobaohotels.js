@@ -185,7 +185,7 @@ db(qs).then(function(hotels) {
                 if (values.length > 0)
                     sqls.push(db("INSERT INTO `think_taobaoroom` (" + fields2 + ") VALUES " + values.join(",")));
                 return Promise.all(sqls);
-            }).then(function(result) {
+            }).then(function(result) { // think_taobaoroom
                 if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
                 total2 += data.length;
 
