@@ -79,8 +79,8 @@ module.exports = Controller("Home/BaseController", function() {
                 that.assign('pagination', pagination);
 
                 var ids = goods.map(function(g, i) {
-                    goods[i]["goodstatus"] = 0;
-                    goods[i]["goodstatusicon"] = mapping.goodstatus[0];
+                    g["goodstatus"] = 0;
+                    g["goodstatusicon"] = mapping.goodstatus[0];
                     return g.gid;
                 });
                 if (ids.length === 0) {
@@ -95,8 +95,8 @@ module.exports = Controller("Home/BaseController", function() {
                 result.forEach(function(g) {exists[g.gid] = g.status;});
                 goods.forEach(function(g, i) {
                     if (exists[g.gid] && exists[g.gid] == 4) {
-                        goods[i]["goodstatus"] = 2;
-                        goods[i]["goodstatusicon"] = mapping.goodstatus[2];
+                        g["goodstatus"] = 2;
+                        g["goodstatusicon"] = mapping.goodstatus[2];
                     }
                 });
 
@@ -107,17 +107,21 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                ids = "taobao_hid in (" + ids.join(",") + ")";
-                return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
-            }).then(function(result) { // think_hotel
+
+                var temp = {};
+                ids.forEach(function(i) {temp[i] = true;});
+                ids = Object.keys(temp);
+                ids = "hid in (" + ids.join(",") + ")";
+                return D("Taobaohotel").field("hid,hotelid").where(ids).select();
+            }).then(function(result) { // think_taobaohotel
                 var exists = {};
                 result = result || [];
-                result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
+                result.forEach(function(h) {exists[h.hid] = h.hotelid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.hid]) {
-                        goods[i]["goodstatus"] = 1;
-                        goods[i]["goodstatusicon"] = mapping.goodstatus[1];
-                        goods[i]["hotelid"] = exists[g.hid];
+                        g["goodstatus"] = 1;
+                        g["goodstatusicon"] = mapping.goodstatus[1];
+                        g["hotelid"] = exists[g.hid];
                     }
                 });
 
@@ -128,34 +132,36 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                ids = "taobao_rid in (" + ids.join(",") + ")";
-                return D("Room").field("roomtypeid,taobao_rid,no_price_expires").where(ids).select();
-            }).then(function(result) { // think_room
+
+                ids = "rid in (" + ids.join(",") + ")";
+                return D("Room").join("`think_taobaoroom` on `think_taobaoroom`.`roomtypeid` = `think_room`.`roomtypeid`").field("rid,think_room.roomtypeid,no_price_expires").where(ids).select();
+            }).then(function(result) { // think_room, think_taobaoroom
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = r;});
+                result.forEach(function(r) {exists[r.rid] = r;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
-                        goods[i]["goodstatus"] = 128;
-                        goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
-                        goods[i]["roomtypeid"] = exists[g.rid]["roomtypeid"];
+                        g["goodstatus"] = 128;
+                        g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
+                        g["roomtypeid"] = exists[g.rid]["roomtypeid"];
 
                         if (exists[g.rid]["no_price_expires"] > Date.now()) {
-                            goods[i]["goodstatus"] = 4;
-                            goods[i]["goodstatusicon"] = mapping.goodstatus[4];
+                            g["goodstatus"] = 4;
+                            g["goodstatusicon"] = mapping.goodstatus[4];
                         }
                     }
                 });
                 that.assign("list", goods);
                 that.display();
             });
-
             return promise;
         },
         inventoryAction: function(sold_out) {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
+
+            this.assign("message", null);
 
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
@@ -216,8 +222,8 @@ module.exports = Controller("Home/BaseController", function() {
                 that.assign('pagination', pagination);
 
                 var ids = goods.map(function(g, i) {
-                    goods[i]["goodstatus"] = 0;
-                    goods[i]["goodstatusicon"] = mapping.goodstatus[0];
+                    g["goodstatus"] = 0;
+                    g["goodstatusicon"] = mapping.goodstatus[0];
                     return g.gid;
                 });
                 if (ids.length === 0) {
@@ -232,8 +238,8 @@ module.exports = Controller("Home/BaseController", function() {
                 result.forEach(function(g) {exists[g.gid] = g.status;});
                 goods.forEach(function(g, i) {
                     if (exists[g.gid] && exists[g.gid] == 4) {
-                        goods[i]["goodstatus"] = 2;
-                        goods[i]["goodstatusicon"] = mapping.goodstatus[2];
+                        g["goodstatus"] = 2;
+                        g["goodstatusicon"] = mapping.goodstatus[2];
                     }
                 });
 
@@ -244,17 +250,21 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                ids = "taobao_hid in (" + ids.join(",") + ")";
-                return D("Hotel").field("hotelid,taobao_hid").where(ids).select();
-            }).then(function(result) { // think_hotel
+
+                var temp = {};
+                ids.forEach(function(i) {temp[i] = true;});
+                ids = Object.keys(temp);
+                ids = "hid in (" + ids.join(",") + ")";
+                return D("Taobaohotel").field("hid,hotelid").where(ids).select();
+            }).then(function(result) { // think_taobaohotel
                 var exists = {};
                 result = result || [];
-                result.forEach(function(h) {exists[h.taobao_hid] = h.hotelid;});
+                result.forEach(function(h) {exists[h.hid] = h.hotelid;});
                 goods.forEach(function(g, i) {
                     if (exists[g.hid]) {
-                        goods[i]["goodstatus"] = 1;
-                        goods[i]["goodstatusicon"] = mapping.goodstatus[1];
-                        goods[i]["hotelid"] = exists[g.hid];
+                        g["goodstatus"] = 1;
+                        g["goodstatusicon"] = mapping.goodstatus[1];
+                        g["hotelid"] = exists[g.hid];
                     }
                 });
 
@@ -265,28 +275,28 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                ids = "taobao_rid in (" + ids.join(",") + ")";
-                return D("Room").field("roomtypeid,taobao_rid,no_price_expires").where(ids).select();
-            }).then(function(result) { // think_room
+
+                ids = "rid in (" + ids.join(",") + ")";
+                return D("Room").join("`think_taobaoroom` on `think_taobaoroom`.`roomtypeid` = `think_room`.`roomtypeid`").field("rid,think_room.roomtypeid,no_price_expires").where(ids).select();
+            }).then(function(result) { // think_room, think_taobaoroom
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.taobao_rid] = r;});
+                result.forEach(function(r) {exists[r.rid] = r;});
                 goods.forEach(function(g, i) {
                     if (exists[g.rid]) {
-                        goods[i]["goodstatus"] = 128;
-                        goods[i]["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
-                        goods[i]["roomtypeid"] = exists[g.rid]["roomtypeid"];
+                        g["goodstatus"] = 128;
+                        g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
+                        g["roomtypeid"] = exists[g.rid]["roomtypeid"];
 
                         if (exists[g.rid]["no_price_expires"] > Date.now()) {
-                            goods[i]["goodstatus"] = 3;
-                            goods[i]["goodstatusicon"] = mapping.goodstatus[3];
+                            g["goodstatus"] = 3;
+                            g["goodstatusicon"] = mapping.goodstatus[3];
                         }
                     }
                 });
                 that.assign("list", goods);
                 that.display("connect:index");
             });
-
             return promise;
         },
         soldoutAction: function() {
