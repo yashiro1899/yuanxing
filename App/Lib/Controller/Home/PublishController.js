@@ -139,8 +139,8 @@ module.exports = Controller("Home/BaseController", function() {
                     var tr = taobaorooms[r.roomtypeid];
                     roomstatus[r.roomtypeid] = {};
 
-                    if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
-                    if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
+                    // if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
+                    // if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
 
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
                         '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
@@ -223,13 +223,22 @@ module.exports = Controller("Home/BaseController", function() {
                 }
 
                 var gid = 0, iid = 0;
-                var promise = D("Hotel").join("`think_room` on `think_room`.`hotelid` = `think_hotel`.`hotelid`");
-                promise = promise.field("think_hotel.taobao_hid,think_room.taobao_rid,think_room.original");
-                promise = promise.where({"think_room.roomtypeid": data.roomtypeId}).select();
-                promise.then(function(result) { // think_hotel, think_room
-                    result = result[0];
+                var promises = [],
+                    model;
+                model = D("Room").field("original").where({"roomtypeid": data.roomtypeId}).select();
+                promises.push(model);
+                model = D("Taobaoroom").where({"roomtypeid": data.roomtypeId}).order("rid desc").select();
+                promises.push(model);
+                model = D("User").field("pic_path,guide");
+                model = model.where("id = " + that.userInfo["taobao_user_id"]).select();
+                promises.push(model);
 
-                    var original = JSON.parse(result["original"]);
+                return Promise.all(promises).then(function(result) {
+                    var room = result[0][0];
+                    var taobaoroom = result[1][1];
+                    var usermeta = result[2][0];
+
+                    var original = JSON.parse(room["original"]);
                     var detail = data.roomPriceDetail[0];
                     var title = data.hotelName + " " + data.roomtypeName;
                     var bedtype = mapping.bedtype[original.bedtype] || "B";
@@ -268,10 +277,10 @@ module.exports = Controller("Home/BaseController", function() {
                     if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
                     else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
 
-                    return oauth.accessProtectedResource(req, res, {
+                    var params = {
                         "method": "taobao.hotel.room.add",
-                        "hid": result.taobao_hid,
-                        "rid": result.taobao_rid,
+                        "hid": taobaoroom.hid,
+                        "rid": taobaoroom.rid,
                         "title": title,
                         "area": area, // optional
                         "size": size, // optional
@@ -282,8 +291,22 @@ module.exports = Controller("Home/BaseController", function() {
                         "payment_type": "A",
                         "desc": title,
                         "room_quotas": JSON.stringify(quotas),
-                        "pic": __dirname + "/../../../../www/static/img/placeholder.jpg"
-                    });
+                        "has_receipt": false, // TODO
+                        "refund_policy_info": JSON.stringify({t: 2}) // TODO
+                    };
+
+                    if (usermeta.pic_path) {
+                        temp = usermeta.pic_path.split("/");
+                        i = "/" + temp.pop();
+                        i = "/" + temp.pop() + i;
+                        i = temp.pop() + i;
+                        params["pic_path"] = i;
+                    } else {
+                        params["pic"] = __dirname + "/../../../../www/static/img/placeholder.jpg";
+                    }
+
+                    if (usermeta.guide) params["guide"] = usermeta.guide;
+                    return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) { // taobao.hotel.room.add
                     if (!result || result["error_response"]) {
                         that.end({
@@ -319,7 +342,6 @@ module.exports = Controller("Home/BaseController", function() {
                         gid: gid
                     });
                 });
-                return promise;
             } else {
                 this.end(null);
             }
