@@ -45,6 +45,7 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("formdata", formdata);
 
             var rooms = [];
+            var taobaorooms = {};
             var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) { // think_hotel
                 result = result || [];
@@ -60,60 +61,84 @@ module.exports = Controller("Home/BaseController", function() {
                 range = data.length;
                 that.assign("list", data);
 
-                var promises = [], model;
-                model = D("Room").field("roomtypeid,status,taobao_rid,no_price_expires");
+                var promises = [],
+                    model;
+                model = D("Room").field("roomtypeid,status,no_price_expires");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
+
                 model = "userid = " + that.userInfo["taobao_user_id"];
                 model += " and roomtypeid in (" + rids.join(",") + ")";
                 model = D("Goods").field("roomtypeid,status").where(model).select();
                 promises.push(model);
-                return Promise.all(promises);
-            }).then(function(result) { // think_room, think_goods
-                var promises = [];
-                var goods = result[1] || [];
-                var rids = {};
-                goods.forEach(function(g) {rids[g.roomtypeid] = g;});
-                goods = rids;
 
-                rids = [];
+                model = D("Taobaoroom").where("roomtypeid in (" + rids.join(",") + ")").select();
+                promises.push(model);
+
+                return Promise.all(promises);
+            }).then(function(result) { // think_room, think_goods, think_taobaoroom
+                var promises = [];
+
+                var goods = result[1] || [];
+                var temp = {};
+                goods.forEach(function(g) {
+                    if (!temp[g.roomtypeid]) temp[g.roomtypeid] = [];
+                    temp[g.roomtypeid].push(g);
+                });
+                goods = temp;
+
+                taobaorooms = result[2] || [];
+                temp = {};
+                taobaorooms.forEach(function(tr) {
+                    if (!temp[tr.roomtypeid]) temp[tr.roomtypeid] = [];
+                    temp[tr.roomtypeid].push(tr);
+                });
+                taobaorooms = temp;
+
+                var hids = {};
                 rooms = result[0] || [];
                 rooms.forEach(function(r, i) {
-                    if (goods[r.roomtypeid]) rooms[i]["status"] = goods[r.roomtypeid]["status"];
-                    else if (r.taobao_rid > 0) rids.push(r.taobao_rid);
+                    var gd = goods[r.roomtypeid];
+                    var tr = taobaorooms[r.roomtypeid];
 
-                    if (rids.length == 20) {
+                    if (gd) {
+                        var connected = gd.some(function(g) {return g.status == 4;});
+                        r["status"] = connected ? 4 : 3;
+                    } else if (tr) {
+                        tr.forEach(function(r) {hids[r.hid] = true;});
+                    }
+
+                });
+
+                temp = [];
+                hids = Object.keys(hids);
+                hids.forEach(function(h) {
+                    temp.push(h);
+                    if (temp.length == 5) {
                         promises.push(oauth.accessProtectedResource(req, res, {
                             "method": "taobao.hotel.rooms.search",
-                            "rids": rids.join(",")
+                            "hids": temp.join(",")
                         }));
-                        rids = [];
+                        temp = [];
                     }
                 });
-                if (rids.length > 0) {
-                    promises.push(oauth.accessProtectedResource(req, res, {
-                        "method": "taobao.hotel.rooms.search",
-                        "rids": rids.join(",")
-                    }));
-                }
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.rooms.search
-                var goods = {};
                 var roomstatus = {};
+                var goods = {};
+
                 result.forEach(function(g) {
                     if (g && g["hotel_rooms_search_response"]) {
                         g = g["hotel_rooms_search_response"]["rooms"];
                         g = g ? g["room"] : [];
-                        g.forEach(function(r) {
-                            goods[r.rid] = r.iid;
-                        });
+                        g.forEach(function(r) {goods[r.rid] = r.iid;});
                     }
                 });
 
                 rooms.forEach(function(r) {
                     var status = r.status;
-                    roomstatus[r.roomtypeid] = {};
 
+                    roomstatus[r.roomtypeid] = {};
                     if (goods[r.taobao_rid]) status = 2;
                     if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
 
