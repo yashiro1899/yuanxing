@@ -31,8 +31,8 @@ connection.connect();
 
 var fields1 = "`hid`,`hotelid`,`original`";
 var fields2 = "`rid`,`hid`,`roomtypeid`";
-var qs = "SELECT `hotelid`,`namechn`,`country`,`state` FROM `think_hotel` ";
-qs += "ORDER BY `hotelid` LIMIT 1";
+var qs = "SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `think_hotel` ";
+qs += "WHERE `namechn` LIKE '%新加坡%' ORDER BY `hotelid` LIMIT 1";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
@@ -45,12 +45,18 @@ db(qs).then(function(hotels) {
         if (mapping.province[hotel.state]) {
             params["domestic"] = true;
             params["province"] = mapping.province[hotel.state] && mapping.province[hotel.state][1];
+            pushPromise(params);
         } else {
             params["domestic"] = false;
             params["country"] = mapping.country[hotel.country] && mapping.country[hotel.country][1];
+            pushPromise(params);
+
+            var another = Object.create(params);
+            another["name"] = hotel.nameeng;
+            pushPromise(another);
         }
 
-        (function(params) {
+        function pushPromise(params) {
             var data = [],
                 inserted = [],
                 roomtypeids = [];
@@ -62,18 +68,18 @@ db(qs).then(function(hotels) {
                 if (result && result["hotels_search_response"]) {
                     total = result["hotels_search_response"]["total_results"];
                     result = total > 0 ? result["hotels_search_response"]["hotels"]["hotel"] : [];
-                    if (total > 20) console.log("GREATER THAN 20,", total, hotel.namechn);
+                    if (total > 20) console.log("GREATER THAN 20,", total, params.name);
                 } else if (result["error_response"]) {
                     console.log(result["error_response"]["msg"]);
                     result = [];
                 }
 
                 result.forEach(function(h) {
-                    var a = h.name.indexOf(hotel.namechn);
-                    var b = hotel.namechn.indexOf(h.name);
+                    var a = h.name.indexOf(params.name);
+                    var b = params.name.indexOf(h.name);
                     if (a > -1 || b > -1) hids.push(h.hid);
                 });
-                if (hids.length === 0) throw "NO_MATCHED " + hotel.namechn;
+                if (hids.length === 0) throw "NO_MATCHED " + params.name;
 
                 data = result.filter(function(h) {return hids.indexOf(h.hid) > -1;});
                 return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
@@ -136,7 +142,7 @@ db(qs).then(function(hotels) {
                         data = data.concat(roomtypes);
                     }
                 });
-                if (data.length === 0) throw "NO_ROOM_TYPE " + hotel.namechn;
+                if (data.length === 0) throw "NO_ROOM_TYPE " + params.name;
 
                 var rooms = {};
                 var rids = [];
@@ -150,7 +156,7 @@ db(qs).then(function(hotels) {
                     return false;
                 });
                 rids = data.map(function(r) {return r.rid;});
-                if (rids.length === 0) throw "NO_MATCHED " + hotel.namechn;
+                if (rids.length === 0) throw "NO_MATCHED " + params.name;
 
                 return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
             }).then(function(result) { // think_taobaoroom
@@ -203,7 +209,7 @@ db(qs).then(function(hotels) {
                 return Promise.all(sqls);
             })["catch"](function(e) {console.log(e);});
             promises.push(promise);
-        })(params);
+        }
     });
 
     Promise.all(promises).then(function(result) {
