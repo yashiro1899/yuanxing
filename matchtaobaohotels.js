@@ -51,7 +51,8 @@ db(qs).then(function(hotels) {
             params["country"] = mapping.country[hotel.country] && mapping.country[hotel.country][1];
             pushPromise(params);
 
-            var another = Object.create(params);
+            var another = {};
+            Object.keys(params).forEach(function(k) {return another[k] = params[k];});
             another["name"] = hotel.nameeng;
             pushPromise(another);
         }
