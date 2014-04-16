@@ -75,9 +75,7 @@ db(qs).then(function(hotels) {
                 }
 
                 result.forEach(function(h) {
-                    var a = h.name.indexOf(params.name);
-                    var b = params.name.indexOf(h.name);
-                    if (a > -1 || b > -1) hids.push(h.hid);
+                    if (params.name == h.name) hids.push(h.hid);
                 });
                 if (hids.length === 0) throw "NO_MATCHED " + params.name;
 
@@ -129,16 +127,17 @@ db(qs).then(function(hotels) {
                         "need_room_type": true
                     }, token));
                 });
-                model = db("SELECT `roomtypeid`, `namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
+                model = db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
                 return Promise.all([Promise.all(promises), model]);
             }).then(function(result) { // taobao.hotel.get, think_room
                 data = [];
                 result[0].forEach(function(h) {
-                    var roomtypes = [];
                     if (h && h["hotel_get_response"]) {
                         h = h["hotel_get_response"]["hotel"];
-                        roomtypes = (h.room_types ? (h.room_types["room_type"] || []) : []);
-                        roomtypes.forEach(function(r, i) {roomtypes[i]["hid"] = h.hid;});
+                        var hid = h.hid;
+
+                        h = (h.room_types ? (h.room_types["room_type"] || []) : []);
+                        h.forEach(function(r, i) {r.hid = hid;});
                         data = data.concat(roomtypes);
                     }
                 });
