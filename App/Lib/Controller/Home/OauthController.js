@@ -27,7 +27,6 @@ module.exports = Controller(function() {
                     values.nick = decodeURIComponent(result["taobao_user_nick"]);
                     values.token = result["access_token"];
                     values.expires = +(new Date(result["expires_in"] * 1000 + Date.now()));
-                    values.guide = "";
                     return model;
                 } else {
                     that.logoutAction();
@@ -41,6 +40,7 @@ module.exports = Controller(function() {
                     model = D("User").update(values);
                     values = (result[0]["pic_path"] && result[0]["guide"]);
                 } else {
+                    values.guide = "";
                     model = D("User").add(values);
                     values = false;
                 }
