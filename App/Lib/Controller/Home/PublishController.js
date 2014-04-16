@@ -139,8 +139,8 @@ module.exports = Controller("Home/BaseController", function() {
                     var tr = taobaorooms[r.roomtypeid];
                     roomstatus[r.roomtypeid] = {};
 
-                    // if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
-                    // if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
+                    if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
+                    if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
 
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
                         '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
@@ -235,7 +235,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 return Promise.all(promises).then(function(result) {
                     var room = result[0][0];
-                    var taobaoroom = result[1][1];
+                    var taobaoroom = result[1][0];
                     var usermeta = result[2][0];
 
                     var original = JSON.parse(room["original"]);
