@@ -139,7 +139,7 @@ db(qs).then(function(hotels) {
 
                         h = (h.room_types ? (h.room_types["room_type"] || []) : []);
                         h.forEach(function(r, i) {r.hid = hid;});
-                        data = data.concat(roomtypes);
+                        data = data.concat(h);
                     }
                 });
                 if (data.length === 0) throw "NO_ROOM_TYPE " + params.name;
