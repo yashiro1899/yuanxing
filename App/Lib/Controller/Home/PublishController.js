@@ -124,9 +124,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.rooms.search
-                var roomstatus = {};
                 var goods = {};
-
                 result.forEach(function(g) {
                     if (g && g["hotel_rooms_search_response"]) {
                         g = g["hotel_rooms_search_response"]["rooms"];
@@ -135,11 +133,13 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                 });
 
+                var roomstatus = {};
                 rooms.forEach(function(r) {
                     var status = r.status;
-
+                    var tr = taobaorooms[r.roomtypeid];
                     roomstatus[r.roomtypeid] = {};
-                    if (goods[r.taobao_rid]) status = 2;
+
+                    if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
                     if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
 
                     roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
