@@ -5,3 +5,4 @@ auth.conf
 logs/
 node_modules/
 www/bower_components/
+www/index.js
