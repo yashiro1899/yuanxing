@@ -25,7 +25,7 @@ function rot13(s) {
 }
 module.exports = Controller(function() {
     return {
-        callbackAction: function() {
+        cookieAction: function() {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
@@ -45,6 +45,14 @@ module.exports = Controller(function() {
 
             res.setHeader("Set-Cookie", data);
             this.end("haha");
+        },
+        callbackAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            console.log(JSON.stringify(this.http.post, null, 4));
+            this.end(JSON.stringify(this.http.post, null, 4));
         }
     };
 });
