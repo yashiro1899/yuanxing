@@ -631,8 +631,36 @@ module.exports = Controller("Home/BaseController", function() {
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
 
-            // var model1 = D("Hotel");
-            // var model2 = D("Hotel");
+            var model1, model2;
+            var troom = oauth.accessProtectedResource(req, res, {
+                "gid": gid,
+                "method": "taobao.hotel.room.get",
+                "need_hotel": true,
+                "need_room_type": true
+            // }).then(function(result) {
+            });
+
+            if (hotelid) {
+                model1 = D("Hotel").where("hotelid=" + hotelid).select();
+                model2 = Promise.resolve(1);
+            } else {
+                model1 = D("Hotel").where("namechn like '%" + query + "%'").select();
+                model2 = D("Hotel").where("namechn like '%" + query + "%'").count();
+            }
+
+            return Promise.all([ troom, model1, model2 ]).then(function(result) {
+                var taobao = result[0]["hotel_room_get_response"]["room"];
+
+                that.assign("taobao", {
+                    hotel: result.hotel.name,
+                    room: result.room_type.name,
+                    address: result.hotel.address,
+                    bedtype: mapping.bedtypestrings[result.bed_type],
+                    area: mapping.area[result.area]
+                });
+
+                that.display();
+            });
         }
     };
 });
