@@ -618,6 +618,21 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 that.end({success: 1});
             });
+        },
+        matchAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var gid = this.post("gid");
+            var hotelid = parseInt(this.param("hotelid"), 10);
+            var query = this.param("q").trim();
+
+            var range = 0, total = 0;
+            var page = parseInt(this.param("p"), 10) || 1;
+
+            // var model1 = D("Hotel");
+            // var model2 = D("Hotel");
         }
     };
 });
