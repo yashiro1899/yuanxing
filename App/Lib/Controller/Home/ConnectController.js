@@ -637,7 +637,6 @@ module.exports = Controller("Home/BaseController", function() {
                 "method": "taobao.hotel.room.get",
                 "need_hotel": true,
                 "need_room_type": true
-            // }).then(function(result) {
             });
 
             if (hotelid) {
@@ -648,15 +647,23 @@ module.exports = Controller("Home/BaseController", function() {
                 model2 = D("Hotel").where("namechn like '%" + query + "%'").count();
             }
 
-            return Promise.all([ troom, model1, model2 ]).then(function(result) {
-                var taobao = result[0]["hotel_room_get_response"]["room"];
+            return Promise.all([troom, model1, model2]).then(function(result) {
+                // var taobao = result[0]["hotel_room_get_response"]["room"];
+
+                // that.assign("taobao", {
+                //     hotel: result.hotel.name,
+                //     room: result.room_type.name,
+                //     address: result.hotel.address,
+                //     bedtype: mapping.bedtypestrings[result.bed_type],
+                //     area: mapping.area[result.area]
+                // });
 
                 that.assign("taobao", {
-                    hotel: result.hotel.name,
-                    room: result.room_type.name,
-                    address: result.hotel.address,
-                    bedtype: mapping.bedtypestrings[result.bed_type],
-                    area: mapping.area[result.area]
+                    hotel: "深圳阳光酒店",
+                    room: "豪单",
+                    address: "深圳市罗湖区嘉宾路1号",
+                    bedtype: "大床",
+                    area: "16 - 30"
                 });
 
                 that.display();
