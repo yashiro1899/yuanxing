@@ -10,7 +10,7 @@
         <th><b>酒店：</b></th>
         <td><%=taobao.hotel%></td>
         <th style="text-align:left">
-            <% if (!formdata.hotelid) { %><%=list[0]["namechn"]%><% } else { %>?<% } %>
+            <% if (formdata.hotelid) { %><%=list[0]["namechn"]%><% } else { %>?<% } %>
         </th>
     </tr>
     <tr>

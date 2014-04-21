@@ -676,8 +676,8 @@ module.exports = Controller("Home/BaseController", function() {
                     model1 = model1.where("namechn like '%" + query + "%'");
                     model2 = model2.where("namechn like '%" + query + "%'");
                 }
-                model1.select();
-                model2.count();
+                model1 = model1.page(page).select();
+                model2 = model2.page(page).count();
             }
             formdata["gid"] = gid;
             this.assign("formdata", formdata);
