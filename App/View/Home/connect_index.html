@@ -62,9 +62,9 @@
                 <% if (v.goodstatus == 128) { %>
                     <a href="javascript:void(0)" class="precisely-connect" data-gid="<%=v.gid%>" data-roomtypeid="<%=v.roomtypeid%>">关联</a>
                 <% } else if (v.goodstatus == 1) { %>
-                    <a href="javascript:void(0)" class="roomtype-connect" data-gid="<%=v.gid%>" data-hotelid="<%=v.hotelid%>">匹配/关联</a>
+                    <a href="/connect/match/?gid=<%=v.gid%>&hotelid=<%=v.hotelid%>">匹配/关联</a>
                 <% } else if (v.goodstatus === 0) { %>
-                    <a href="javascript:void(0)" class="hotel-connect" data-gid="<%=v.gid%>">匹配/关联</a>
+                <a href="/connect/match/?gid=<%=v.gid%>&q=<%=v.hotel.name%>">匹配/关联</a>
                 <% } %>
                 </td>
         <% }); %>
