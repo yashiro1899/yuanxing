@@ -627,6 +627,7 @@ module.exports = Controller("Home/BaseController", function() {
             var gid = this.post("gid");
             var hotelid = parseInt(this.param("hotelid"), 10);
             var query = this.param("q").trim();
+            var formdata = {};
 
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
@@ -637,17 +638,7 @@ module.exports = Controller("Home/BaseController", function() {
                 "method": "taobao.hotel.room.get",
                 "need_hotel": true,
                 "need_room_type": true
-            });
-
-            if (hotelid) {
-                model1 = D("Hotel").where("hotelid=" + hotelid).select();
-                model2 = Promise.resolve(1);
-            } else {
-                model1 = D("Hotel").where("namechn like '%" + query + "%'").select();
-                model2 = D("Hotel").where("namechn like '%" + query + "%'").count();
-            }
-
-            return Promise.all([troom, model1, model2]).then(function(result) {
+            }).then(function(result) {
                 // var taobao = result[0]["hotel_room_get_response"]["room"];
 
                 // that.assign("taobao", {
@@ -665,7 +656,32 @@ module.exports = Controller("Home/BaseController", function() {
                     bedtype: "大床",
                     area: "16 - 30"
                 });
+            });
 
+            if (hotelid) {
+                model1 = D("Hotel").where("hotelid=" + hotelid).select();
+                model2 = Promise.resolve(1);
+            } else {
+                model1 = D("Hotel");
+                model2 = D("Hotel");
+
+                if (query.length > 0) {
+                    formdata["q"] = query;
+                    model1 = model1.where("namechn like '%" + query + "%'");
+                    model2 = model2.where("namechn like '%" + query + "%'");
+                }
+                model1.select();
+                model2.count();
+            }
+
+            model1 = model1.then(function(result) {
+            });
+            model2 = model2.then(function(result) {total = result || 0;});
+
+            return Promise.all([troom, model1, model2]).then(function(result) {
+                var qs = querystring.stringify(formdata);
+                var pagination = that.pagination(total, range, page, qs);
+                that.assign('pagination', pagination);
                 that.display();
             });
         }
