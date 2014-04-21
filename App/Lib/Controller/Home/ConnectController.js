@@ -689,7 +689,13 @@ module.exports = Controller("Home/BaseController", function() {
                     var original = JSON.parse(h.original);
                     original["namechn"] = h.namechn;
                     original["website"] = h.website;
-                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
+                    original.rooms.forEach(function(r) {
+                        var bedtype = mapping.bedtype[r.bedtype] || "B";
+                        var area = parseInt(r["acreages"].replace(/^\D/, ""), 10) || 20;
+                        rids.push(r.roomtypeid);
+                        r.bedtype = mapping.bedtypestrings[bedtype];
+                        r.area = area;
+                    });
                     return original;
                 });
 

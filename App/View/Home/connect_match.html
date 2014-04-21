@@ -9,7 +9,9 @@
     <tr>
         <th><b>酒店：</b></th>
         <td><%=taobao.hotel%></td>
-        <th style="text-align:left">TODO</th>
+        <th style="text-align:left">
+            <% if (!formdata.hotelid) { %><%=list[0]["namechn"]%><% } else { %>?<% } %>
+        </th>
     </tr>
     <tr>
         <th><b>房型：</b></th>
@@ -32,7 +34,7 @@
         <th style="text-align:left">?</th>
     </tr>
 </table>
-<h2 class="legend">酒店列表</h2>
+<h2 class="legend">货源列表</h2>
 <% if (!formdata.hotelid) { %>
 <div class="toolbar-content clearfix">
     <div id="toolbar" class="clearfix">
@@ -56,6 +58,12 @@
                 </th>
                 <th scope="col" width="240">
                     <div class="text">房型</div>
+                </th>
+                <th scope="col" width="60">
+                    <div class="text">床型</div>
+                </th>
+                <th scope="col" width="60">
+                    <div class="text">面积</div>
                 </th>
                 <th scope="col" width="14"></th>
                 <th scope="col" width="100">
@@ -82,18 +90,22 @@
             <tr>
         <% } %>
                 <td style="border-left:0"><%=r.namechn%></td>
+                <td><%=r.bedtype%></td>
+                <td><%=r.area%> &#13217;</td>
                 <% if (roomstatus[r.roomtypeid]) { %>
                 <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
                 <td></td>
                 <% } else { %>
-                    <td></td>
-                    <td>
-                        <a href="javascript:void(0)" class="precisely-connect" data-gid="<%=formdata.gid%>" data-roomtypeid="<%=r.roomtypeid%>">关联</a>
-                    </td>
+                <td></td>
+                <td>
+                    <a href="javascript:void(0)" class="precisely-connect" data-gid="<%=formdata.gid%>" data-roomtypeid="<%=r.roomtypeid%>">关联</a>
+                </td>
                 <% } %>
             </tr>
         <% }); %>
         <% } else { %>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
