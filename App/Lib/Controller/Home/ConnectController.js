@@ -675,6 +675,30 @@ module.exports = Controller("Home/BaseController", function() {
             }
 
             model1 = model1.then(function(result) {
+                result = result || [];
+                var rids = [];
+                var data = result.map(function(h) {
+                    var original = JSON.parse(h.original);
+                    original["namechn"] = h.namechn;
+                    original["website"] = h.website;
+                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
+                    return original;
+                });
+
+                range = data.length;
+                that.assign("list", data);
+                return D("Room").field("roomtypeid,no_price_expires").where("roomtypeid in (" + rids.join(",") + ")").select();
+            }).then(function(result) {
+                result = result || [];
+
+                var roomstatus = {};
+                result.forEach(function(r) {
+                    if (r.no_price_expires > Date.now()) roomstatus[r.roomtypeid] = {
+                        status: 5,
+                        icon: mapping.roomstatus[5]
+                    };
+                });
+                that.assign("roomstatus", roomstatus);
             });
             model2 = model2.then(function(result) {total = result || 0;});
 
