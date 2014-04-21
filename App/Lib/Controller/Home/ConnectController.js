@@ -624,10 +624,15 @@ module.exports = Controller("Home/BaseController", function() {
             var req = this.http.req;
             var res = this.http.res;
 
-            var gid = this.post("gid");
+            var gid = this.param("gid");
             var hotelid = parseInt(this.param("hotelid"), 10);
             var query = this.param("q").trim();
             var formdata = {};
+
+            if (!gid) {
+                this.end(null);
+                return null;
+            }
 
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
@@ -661,6 +666,7 @@ module.exports = Controller("Home/BaseController", function() {
             if (hotelid) {
                 model1 = D("Hotel").where("hotelid=" + hotelid).select();
                 model2 = Promise.resolve(1);
+                formdata["hotelid"] = hotelid;
             } else {
                 model1 = D("Hotel");
                 model2 = D("Hotel");
@@ -673,6 +679,8 @@ module.exports = Controller("Home/BaseController", function() {
                 model1.select();
                 model2.count();
             }
+            formdata["gid"] = gid;
+            this.assign("formdata", formdata);
 
             model1 = model1.then(function(result) {
                 result = result || [];
