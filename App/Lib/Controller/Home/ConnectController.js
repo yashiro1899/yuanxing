@@ -677,7 +677,7 @@ module.exports = Controller("Home/BaseController", function() {
                     model2 = model2.where("namechn like '%" + query + "%'");
                 }
                 model1 = model1.page(page).select();
-                model2 = model2.page(page).count();
+                model2 = model2.count();
             }
             formdata["gid"] = gid;
             this.assign("formdata", formdata);
@@ -701,6 +701,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 range = data.length;
                 that.assign("list", data);
+                if (rids.length === 0) return [];
                 return D("Room").field("roomtypeid,no_price_expires").where("roomtypeid in (" + rids.join(",") + ")").select();
             }).then(function(result) {
                 result = result || [];

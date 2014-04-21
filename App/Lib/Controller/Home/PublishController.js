@@ -61,6 +61,15 @@ module.exports = Controller("Home/BaseController", function() {
                 range = data.length;
                 that.assign("list", data);
 
+                if (rids.length === 0) {
+                    total = 0;
+                    var qs = querystring.stringify(formdata);
+                    var pagination = that.pagination(total, range, page, qs);
+                    that.assign('pagination', pagination);
+                    that.display();
+                    return getDefer().promise;
+                };
+
                 var promises = [],
                     model;
                 model = D("Room").field("roomtypeid,status,no_price_expires");
