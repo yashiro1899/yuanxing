@@ -1,10 +1,14 @@
 Country:
+70016  Argentina             阿根廷
 70017  United Arab Emirates  阿联酋
 70030  Austria               奥地利
 70031  Australia             澳大利亚
+70039  Panama                巴拿马
+70040  Brazil                巴西
 70046  Belgium               比利时
 70062  Denmark               丹麦
 70063  Germany               德国
+70068  Russia                俄罗斯
 70071  France                法国
 70077  Philippines           菲律宾
 70079  Finland               芬兰
@@ -17,6 +21,8 @@ Country:
 70139  Malaysia              马来西亚
 70147  United States         美国
 70154  Myanmar               缅甸
+70159  Mexico                墨西哥
+70161  S.Africa              南非
 70176  Japan                 日本
 70177  Sweden                瑞典
 70205  Thailand              泰国
@@ -68,11 +74,3 @@ State:
 70555  710000  台湾
 70001  810000  香港
 70050  820000  澳门
-
-
-26	70040	巴西利亚皇家金煦酒店
-24	70068	莫斯科世贸中心皇冠假日酒店
-5	70159	墨西哥城艾美酒店
-1	70161	约翰内斯堡桑顿伍德米德智选假日酒店
-1	70039	巴拿马米拉马尔洲际酒店
-1	70016	布宜诺斯艾利斯喜来登会议中心酒店
