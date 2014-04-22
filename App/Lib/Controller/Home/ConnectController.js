@@ -402,6 +402,7 @@ module.exports = Controller("Home/BaseController", function() {
                             "status": 2 // TODO: LISTING
                         });
                     }).then(function(result) {
+                        result = result["hotel_room_update_response"]["room"];
                         var time = "[" + result.modified + "]";
                         console.log(time, result.gid, result.room_quotas);
                     });
@@ -529,6 +530,7 @@ module.exports = Controller("Home/BaseController", function() {
                         "status": 2 // TODO: LISTING
                     });
                 }).then(function(result) {
+                    result = result["hotel_room_update_response"]["room"];
                     var time = "[" + result.modified + "]";
                     console.log(time, result.gid, result.room_quotas);
                 });
