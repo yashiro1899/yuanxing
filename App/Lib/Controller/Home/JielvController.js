@@ -59,7 +59,6 @@ module.exports = Controller(function() {
             });
 
             var data = Object.keys(this.http.post || {})[0];
-            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
             if (!data) return null;
 
             try {
@@ -96,6 +95,9 @@ module.exports = Controller(function() {
                     }));
                     promises.push(D("User").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
+                }).then(function(result) {
+                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, result);
                 });
             } catch (e) {console.log(e);}
         }
