@@ -644,22 +644,14 @@ module.exports = Controller("Home/BaseController", function() {
                 "need_hotel": true,
                 "need_room_type": true
             }).then(function(result) {
-                // var taobao = result[0]["hotel_room_get_response"]["room"];
-
-                // that.assign("taobao", {
-                //     hotel: result.hotel.name,
-                //     room: result.room_type.name,
-                //     address: result.hotel.address,
-                //     bedtype: mapping.bedtypestrings[result.bed_type],
-                //     area: mapping.area[result.area]
-                // });
+                var taobao = result[0]["hotel_room_get_response"]["room"];
 
                 that.assign("taobao", {
-                    hotel: "深圳阳光酒店",
-                    room: "豪单",
-                    address: "深圳市罗湖区嘉宾路1号",
-                    bedtype: "大床",
-                    area: "16 - 30"
+                    hotel: result.hotel.name,
+                    room: result.room_type.name,
+                    address: result.hotel.address,
+                    bedtype: mapping.bedtypestrings[result.bed_type],
+                    area: mapping.area[result.area]
                 });
             });
 
