@@ -59,13 +59,29 @@ module.exports = Controller(function() {
             });
 
             var data = Object.keys(this.http.post || {})[0];
-            var time = dateformat(new Date(), "[ yyyy-mm-dd HH:MM:ss ]");
+            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
             if (!data) return null;
 
             try {
                 data = JSON.parse(data);
+
+                var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
+                if (roomtypeids.length === 0) return null;
+
+                var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ")");
+                roomtypeids = {};
+                model.select().then(function(result) {
+                    result = result || [];
+                    if (result.length === 0) return getDefer().promise;
+
+                    var users = {};
+                    result.forEach(function(g) {
+                        roomtypeids[g.roomtypeid] = true;
+                        if (!users[g.userid]) users[g.userid] = [];
+                        userid[g.userid].push(g);
+                    });
+                });
             } catch (e) {console.log(e);}
-            console.log(time, data);
         }
     };
 });
