@@ -402,7 +402,8 @@ module.exports = Controller("Home/BaseController", function() {
                             "status": 2 // TODO: LISTING
                         });
                     }).then(function(result) {
-                        console.log(result);
+                        var time = "[" + result.modified + "]";
+                        console.log(time, result.gid, result.room_quotas);
                     });
                     return model;
                 }
@@ -528,7 +529,8 @@ module.exports = Controller("Home/BaseController", function() {
                         "status": 2 // TODO: LISTING
                     });
                 }).then(function(result) {
-                    console.log(result);
+                    var time = "[" + result.modified + "]";
+                    console.log(time, result.gid, result.room_quotas);
                 });
             } else {
                 promise = D("Goods").where({gid: gid}).select();
