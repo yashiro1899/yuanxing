@@ -80,6 +80,22 @@ module.exports = Controller(function() {
                         if (!users[g.userid]) users[g.userid] = [];
                         userid[g.userid].push(g);
                     });
+
+                    var promises, start, end;
+                    start = +(new Date());
+                    end = start + 30 * 24 * 60 * 60 * 1000;
+                    start = new Date(start);
+                    end = new Date(end);
+                    start = dateformat(start, "yyyy-mm-dd");
+                    end = dateformat(end, "yyyy-mm-dd");
+                    promises.push(jielvapi({
+                        "QueryType": "hotelpriceall",
+                        "roomtypeids": Object.keys(roomtypeids).join("/"),
+                        "checkInDate": start,
+                        "checkOutDate": end
+                    }));
+                    promises.push(D("User").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    return Promise.all(promises);
                 });
             } catch (e) {console.log(e);}
         }
