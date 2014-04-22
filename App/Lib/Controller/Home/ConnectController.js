@@ -644,7 +644,7 @@ module.exports = Controller("Home/BaseController", function() {
                 "need_hotel": true,
                 "need_room_type": true
             }).then(function(result) {
-                var taobao = result[0]["hotel_room_get_response"]["room"];
+                result = result["hotel_room_get_response"]["room"];
 
                 that.assign("taobao", {
                     hotel: result.hotel.name,
