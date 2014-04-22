@@ -3,6 +3,7 @@
  * @return
  */
 var cookie = require("cookie");
+var dateformat = require("dateformat");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
 function rot13(s) {
@@ -51,8 +52,20 @@ module.exports = Controller(function() {
             var req = this.http.req;
             var res = this.http.res;
 
-            console.log(JSON.stringify(this.http.post, null, 4));
-            this.end(JSON.stringify(this.http.post, null, 4));
+            this.end({
+                "Usercd": "SZ2747",
+                "Authno": "123456",
+                "msg": "成功"
+            });
+
+            var data = Object.keys(this.http.post || {})[0];
+            var time = dateformat(new Date(), "[ yyyy-mm-dd HH:MM:ss ]");
+            if (!data) return null;
+
+            try {
+                data = JSON.parse(data);
+            } catch (e) {console.log(e);}
+            console.log(time, data);
         }
     };
 });

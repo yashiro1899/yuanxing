@@ -33,7 +33,7 @@ var start = +(new Date());
 var promises = [];
 var hotelIds;
 var i = 0, j;
-for (; i < 520; i += 1) {
+for (; i < 900; i += 1) {
     hotelIds = [];
     for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) hotelIds.push(j);
     hotelIds = hotelIds.join("/");
