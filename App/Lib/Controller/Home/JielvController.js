@@ -70,7 +70,7 @@ module.exports = Controller(function() {
                 if (roomtypeids.length === 0) return null;
 
                 var users = {};
-                var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ")");
+                var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
                 model.select().then(function(result) {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
