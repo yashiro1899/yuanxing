@@ -259,7 +259,7 @@ module.exports = Controller("Home/BaseController", function() {
                         quotas[night] = {
                             date: night,
                             price: 9999999,
-                            num: rpd.qtyable
+                            num: 0
                         };
                     });
                     var temp = [], i;
