@@ -63,6 +63,7 @@ module.exports = Controller(function() {
 
             try {
                 data = JSON.parse(data);
+                console.log(data);
 
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
