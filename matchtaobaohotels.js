@@ -54,7 +54,7 @@ db(qs).then(function(hotels) {
             var another = {};
             Object.keys(params).forEach(function(k) {return another[k] = params[k];});
             another["name"] = hotel.nameeng;
-            pushPromise(another);
+            if (another.name) pushPromise(another);
         }
 
         function pushPromise(params) {
