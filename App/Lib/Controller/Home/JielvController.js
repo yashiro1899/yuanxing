@@ -82,7 +82,8 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    var promises, start, end;
+                    var promises = [];
+                    var start, end;
                     start = +(new Date());
                     end = start + 30 * 24 * 60 * 60 * 1000;
                     start = new Date(start);
