@@ -63,22 +63,22 @@ module.exports = Controller(function() {
 
             try {
                 data = JSON.parse(data);
-                console.log(data);
+                console.log(data); // TODO: remove it
 
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
 
+                var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ")");
-                roomtypeids = {};
                 model.select().then(function(result) {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    var users = {};
+                    roomtypeids = {};
                     result.forEach(function(g) {
                         roomtypeids[g.roomtypeid] = true;
                         if (!users[g.userid]) users[g.userid] = [];
-                        userid[g.userid].push(g);
+                        users[g.userid].push(g);
                     });
 
                     var promises, start, end;
@@ -94,11 +94,18 @@ module.exports = Controller(function() {
                         "checkInDate": start,
                         "checkOutDate": end
                     }));
-                    promises.push(D("User").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
-                }).then(function(result) {
-                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, result);
+                }).then(function(result) { // hotelpriceall, think_user
+                    var data = [];
+                    if (result[0] && result[0].success == 1) data = result[0].data;
+                    if (data.length === 0) return getDefer().promise;
+
+                    var list = result[1] || [];
+                    if (list.length === 0) return getDefer().promise;
+
+                    // var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    // console.log(time, result);
                 });
             } catch (e) {console.log(e);}
         }
