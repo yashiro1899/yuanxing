@@ -113,7 +113,7 @@ module.exports = Controller(function() {
 
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                     console.log(time, data, users);
-                });
+                })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
     };
