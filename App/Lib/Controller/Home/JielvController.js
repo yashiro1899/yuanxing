@@ -4,6 +4,7 @@
  */
 var cookie = require("cookie");
 var dateformat = require("dateformat");
+var jielvapi = require("./jielv-api.js");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
 function rot13(s) {
