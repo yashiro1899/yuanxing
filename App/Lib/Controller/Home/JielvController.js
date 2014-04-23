@@ -103,9 +103,15 @@ module.exports = Controller(function() {
 
                     var list = result[1] || [];
                     if (list.length === 0) return getDefer().promise;
+                    list.forEach(function(u) {
+                        if (users[u.id]) {
+                            users[u.id]["token"] = u.token;
+                            users[u.id]["expires"] = u.expires;
+                        }
+                    });
 
-                    // var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    // console.log(time, result);
+                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, result);
                 });
             } catch (e) {console.log(e);}
         }
