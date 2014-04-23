@@ -322,7 +322,7 @@ module.exports = Controller("Home/BaseController", function() {
                             success: 8,
                             message: result["error_response"]["sub_msg"] || "暂无价格！"
                         });
-                        return null;
+                        return getDefer().promise;
                     }
 
                     result = result["hotel_room_add_response"]["room"];
