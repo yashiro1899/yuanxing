@@ -46,6 +46,7 @@ for (; i < 900; i += 1) {
             "hotelIds": hids
         }).then(function(result) {
             if (result && result.success == 1) data = result.data;
+            data = data.filter(function(h) {return h.active == 1;});
             total1 += data.length;
 
             var ids = data.map(function(h) {return h.hotelid;});
