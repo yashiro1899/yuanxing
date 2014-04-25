@@ -136,13 +136,13 @@ module.exports = Controller(function() {
                         gid_room_quota_map = [];
                         u.forEach(function(g) {
                             if (!roomtypeids[g.roomtypeid]) return null;
-                            if (!roomtypeid[g.roomtypeid][g.ratetype]) return null;
+                            if (!roomtypeids[g.roomtypeid][g.ratetype]) return null;
 
                             var quotas = [];
                             var n, night;
                             var price, num;
-                            for (n in roomtypeid[g.roomtypeid][g.ratetype]) {
-                                night = roomtypeid[g.roomtypeid][g.ratetype][n];
+                            for (n in roomtypeids[g.roomtypeid][g.ratetype]) {
+                                night = roomtypeids[g.roomtypeid][g.ratetype][n];
                                 price = night.price;
                                 num = night.num;
 
