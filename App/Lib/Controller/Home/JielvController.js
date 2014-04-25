@@ -126,9 +126,13 @@ module.exports = Controller(function() {
                         }
                     });
 
+                    var i;
+                    var promises = [];
+                    for (i in users) {
+                        console.log(users[i]['token']);
+                    }
+
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(JSON.stringify(roomtypeids, null, 4));
-                    console.log(JSON.stringify(users, null, 4));
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
