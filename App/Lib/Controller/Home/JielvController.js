@@ -110,7 +110,6 @@ module.exports = Controller(function() {
 
                             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                                date: night,
                                 price: rpd.preeprice,
                                 num: rpd.qtyable
                             };
@@ -126,10 +125,43 @@ module.exports = Controller(function() {
                         }
                     });
 
-                    var i;
+                    var i, u;
+                    var gid_room_quota_map;
                     var promises = [];
+                    var now = Date.now();
                     for (i in users) {
-                        console.log(users[i]['token']);
+                        u = users[i];
+                        if (u.expires < now) continue;
+
+                        gid_room_quota_map = [];
+                        u.forEach(function(g) {
+                            if (!roomtypeids[g.roomtypeid]) return null;
+                            if (!roomtypeid[g.roomtypeid][g.ratetype]) return null;
+
+                            var quotas = [];
+                            var n, night;
+                            var price, num;
+                            for (n in roomtypeid[g.roomtypeid][g.ratetype]) {
+                                night = roomtypeid[g.roomtypeid][g.ratetype][n];
+                                price = night.price;
+                                num = night.num;
+
+                                if (num < 0) num = 0;
+                                if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
+                                else if (g.ptype == 2) price = Math.ceil((g.price + g.profit)) * 100;
+
+                                quotas.push({
+                                    date: n,
+                                    price: price,
+                                    num: num
+                                });
+                            }
+                            gid_room_quota_map.push({
+                                gid: g.gid,
+                                roomQuota: quotas
+                            });
+                        });
+                        console.log(JSON.stringify(gid_room_quota_map, null, 4));
                     }
 
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
