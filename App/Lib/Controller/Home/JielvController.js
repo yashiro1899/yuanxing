@@ -102,6 +102,20 @@ module.exports = Controller(function() {
                     var data = [];
                     if (result[0] && result[0].success == 1) data = result[0].data;
                     if (data.length === 0) return getDefer().promise;
+                    roomtypeids = {};
+                    data.forEach(function(r) {
+                        roomtypeids[r.roomtypeId] = {};
+                        r.roomPriceDetail.forEach(function(rpd) {
+                            if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+
+                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
+                                date: night,
+                                price: rpd.preeprice,
+                                num: rpd.qtyable
+                            };
+                        });
+                    });
 
                     var list = result[1] || [];
                     if (list.length === 0) return getDefer().promise;
@@ -113,7 +127,8 @@ module.exports = Controller(function() {
                     });
 
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, data, users);
+                    console.log(JSON.stringify(roomtypeids, null, 4));
+                    console.log(JSON.stringify(users, null, 4));
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
