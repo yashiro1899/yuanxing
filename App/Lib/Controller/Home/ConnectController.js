@@ -532,7 +532,7 @@ module.exports = Controller("Home/BaseController", function() {
                 }).then(function(result) {
                     result = result["hotel_room_update_response"]["room"];
                     var time = "[" + result.modified + "]";
-                    console.log(time, result.gid, result.room_quotas);
+                    console.log(time, "taobao.hotel.room.update", result.gid);
                 });
             } else {
                 promise = D("Goods").where({gid: gid}).select();
