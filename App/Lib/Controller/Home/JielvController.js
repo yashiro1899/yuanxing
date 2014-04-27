@@ -64,7 +64,6 @@ module.exports = Controller(function() {
 
             try {
                 data = JSON.parse(data);
-                console.log(data); // TODO: remove it
 
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
@@ -96,7 +95,7 @@ module.exports = Controller(function() {
                         "checkInDate": start,
                         "checkOutDate": end
                     }));
-                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    promises.push(D("User").field("id,nick,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = [];
@@ -120,6 +119,7 @@ module.exports = Controller(function() {
                     if (list.length === 0) return getDefer().promise;
                     list.forEach(function(u) {
                         if (users[u.id]) {
+                            users[u.id]["nick"] = u.nick;
                             users[u.id]["token"] = u.token;
                             users[u.id]["expires"] = u.expires;
                         }
@@ -170,7 +170,14 @@ module.exports = Controller(function() {
                     return Promise.all(promises);
                 }).then(function(result) {
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(result);
+                    var gids = [];
+                    var i, u;
+
+                    for (i in users) {
+                        u = users[i];
+                        gids = u.map(function(g) {return g.gid;});
+                        console.log(time, JSON.stringify(u.nick), gids.join(","));
+                    }
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
