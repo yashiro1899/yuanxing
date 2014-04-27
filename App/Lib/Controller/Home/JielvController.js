@@ -148,7 +148,7 @@ module.exports = Controller(function() {
 
                                 if (num < 0) num = 0;
                                 if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
-                                else if (g.ptype == 2) price = Math.ceil((g.price + g.profit)) * 100;
+                                else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
 
                                 quotas.push({
                                     date: n,
