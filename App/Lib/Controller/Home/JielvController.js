@@ -161,10 +161,16 @@ module.exports = Controller(function() {
                                 roomQuota: quotas
                             });
                         });
-                        console.log(JSON.stringify(gid_room_quota_map, null, 4));
+                        promises.push(oauth.accessProtectedResource(null, null, {
+                            "method": "taobao.hotel.rooms.update",
+                            "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
+                        }, u.token));
                     }
 
+                    return Promise.all(promises);
+                }).then(function(result) {
                     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(result);
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
