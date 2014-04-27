@@ -95,7 +95,7 @@ module.exports = Controller(function() {
                         "checkInDate": start,
                         "checkOutDate": end
                     }));
-                    promises.push(D("User").field("id,nick,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = [];
@@ -119,7 +119,6 @@ module.exports = Controller(function() {
                     if (list.length === 0) return getDefer().promise;
                     list.forEach(function(u) {
                         if (users[u.id]) {
-                            users[u.id]["nick"] = u.nick;
                             users[u.id]["token"] = u.token;
                             users[u.id]["expires"] = u.expires;
                         }
@@ -176,7 +175,7 @@ module.exports = Controller(function() {
                     for (i in users) {
                         u = users[i];
                         gids = u.map(function(g) {return g.gid;});
-                        console.log(time, JSON.stringify(u.nick), gids.join(","));
+                        console.log(time, "taobao.hotel.rooms.update", gids.join(","));
                     }
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
