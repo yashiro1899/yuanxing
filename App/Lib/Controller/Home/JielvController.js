@@ -62,6 +62,9 @@ module.exports = Controller(function() {
             var data = Object.keys(this.http.post || {})[0];
             if (!data) return null;
 
+            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+            console.log(time, "jielv.callback", roomtypeids.join(","));
+
             try {
                 data = JSON.parse(data);
 
@@ -168,7 +171,7 @@ module.exports = Controller(function() {
 
                     return Promise.all(promises);
                 }).then(function(result) {
-                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                     var gids = [];
                     var i, u;
 
