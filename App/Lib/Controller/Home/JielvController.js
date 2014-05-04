@@ -62,13 +62,13 @@ module.exports = Controller(function() {
             var data = Object.keys(this.http.post || {})[0];
             if (!data) return null;
 
-            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
 
             try {
                 data = JSON.parse(data);
-
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
+
+                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.join(","));
 
                 var users = {};
