@@ -63,13 +63,13 @@ module.exports = Controller(function() {
             if (!data) return null;
 
             var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-            console.log(time, "jielv.callback", roomtypeids.join(","));
 
             try {
                 data = JSON.parse(data);
 
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
+                console.log(time, "jielv.callback", roomtypeids.join(","));
 
                 var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
