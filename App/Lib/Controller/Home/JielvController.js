@@ -62,7 +62,6 @@ module.exports = Controller(function() {
             var data = Object.keys(this.http.post || {})[0];
             if (!data) return null;
 
-
             try {
                 data = JSON.parse(data);
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
@@ -84,102 +83,102 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    var promises = [];
-                    var start, end;
-                    start = +(new Date());
-                    end = start + 30 * 24 * 60 * 60 * 1000;
-                    start = new Date(start);
-                    end = new Date(end);
-                    start = dateformat(start, "yyyy-mm-dd");
-                    end = dateformat(end, "yyyy-mm-dd");
-                    promises.push(jielvapi({
-                        "QueryType": "hotelpriceall",
-                        "roomtypeids": Object.keys(roomtypeids).join("/"),
-                        "checkInDate": start,
-                        "checkOutDate": end
-                    }));
-                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
-                    return Promise.all(promises);
-                }).then(function(result) { // hotelpriceall, think_user
-                    var data = [];
-                    if (result[0] && result[0].success == 1) data = result[0].data;
-                    if (data.length === 0) return getDefer().promise;
-                    roomtypeids = {};
-                    data.forEach(function(r) {
-                        roomtypeids[r.roomtypeId] = {};
-                        r.roomPriceDetail.forEach(function(rpd) {
-                            if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                    // var promises = [];
+                    // var start, end;
+                    // start = +(new Date());
+                    // end = start + 30 * 24 * 60 * 60 * 1000;
+                    // start = new Date(start);
+                    // end = new Date(end);
+                    // start = dateformat(start, "yyyy-mm-dd");
+                    // end = dateformat(end, "yyyy-mm-dd");
+                    // promises.push(jielvapi({
+                    //     "QueryType": "hotelpriceall",
+                    //     "roomtypeids": Object.keys(roomtypeids).join("/"),
+                    //     "checkInDate": start,
+                    //     "checkOutDate": end
+                    // }));
+                    // promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    // return Promise.all(promises);
+                // }).then(function(result) { // hotelpriceall, think_user
+                    // var data = [];
+                    // if (result[0] && result[0].success == 1) data = result[0].data;
+                    // if (data.length === 0) return getDefer().promise;
+                    // roomtypeids = {};
+                    // data.forEach(function(r) {
+                    //     roomtypeids[r.roomtypeId] = {};
+                    //     r.roomPriceDetail.forEach(function(rpd) {
+                    //         if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
 
-                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                            roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                                price: rpd.preeprice,
-                                num: rpd.qtyable
-                            };
-                        });
-                    });
+                    //         var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                    //         roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
+                    //             price: rpd.preeprice,
+                    //             num: rpd.qtyable
+                    //         };
+                    //     });
+                    // });
 
-                    var list = result[1] || [];
-                    if (list.length === 0) return getDefer().promise;
-                    list.forEach(function(u) {
-                        if (users[u.id]) {
-                            users[u.id]["token"] = u.token;
-                            users[u.id]["expires"] = u.expires;
-                        }
-                    });
+                    // var list = result[1] || [];
+                    // if (list.length === 0) return getDefer().promise;
+                    // list.forEach(function(u) {
+                    //     if (users[u.id]) {
+                    //         users[u.id]["token"] = u.token;
+                    //         users[u.id]["expires"] = u.expires;
+                    //     }
+                    // });
 
-                    var i, u;
-                    var gid_room_quota_map;
-                    var promises = [];
-                    var now = Date.now();
-                    for (i in users) {
-                        u = users[i];
-                        if (u.expires < now) continue;
+                    // var i, u;
+                    // var gid_room_quota_map;
+                    // var promises = [];
+                    // var now = Date.now();
+                    // for (i in users) {
+                    //     u = users[i];
+                    //     if (u.expires < now) continue;
 
-                        gid_room_quota_map = [];
-                        u.forEach(function(g) {
-                            if (!roomtypeids[g.roomtypeid]) return null;
-                            if (!roomtypeids[g.roomtypeid][g.ratetype]) return null;
+                    //     gid_room_quota_map = [];
+                    //     u.forEach(function(g) {
+                    //         if (!roomtypeids[g.roomtypeid]) return null;
+                    //         if (!roomtypeids[g.roomtypeid][g.ratetype]) return null;
 
-                            var quotas = [];
-                            var n, night;
-                            var price, num;
-                            for (n in roomtypeids[g.roomtypeid][g.ratetype]) {
-                                night = roomtypeids[g.roomtypeid][g.ratetype][n];
-                                price = night.price;
-                                num = night.num;
+                    //         var quotas = [];
+                    //         var n, night;
+                    //         var price, num;
+                    //         for (n in roomtypeids[g.roomtypeid][g.ratetype]) {
+                    //             night = roomtypeids[g.roomtypeid][g.ratetype][n];
+                    //             price = night.price;
+                    //             num = night.num;
 
-                                if (num < 0) num = 0;
-                                if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
-                                else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
+                    //             if (num < 0) num = 0;
+                    //             if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
+                    //             else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
 
-                                quotas.push({
-                                    date: n,
-                                    price: price,
-                                    num: num
-                                });
-                            }
-                            gid_room_quota_map.push({
-                                gid: g.gid,
-                                roomQuota: quotas
-                            });
-                        });
-                        promises.push(oauth.accessProtectedResource(null, null, {
-                            "method": "taobao.hotel.rooms.update",
-                            "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
-                        }, u.token));
-                    }
+                    //             quotas.push({
+                    //                 date: n,
+                    //                 price: price,
+                    //                 num: num
+                    //             });
+                    //         }
+                    //         gid_room_quota_map.push({
+                    //             gid: g.gid,
+                    //             roomQuota: quotas
+                    //         });
+                    //     });
+                    //     promises.push(oauth.accessProtectedResource(null, null, {
+                    //         "method": "taobao.hotel.rooms.update",
+                    //         "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
+                    //     }, u.token));
+                    // }
 
-                    return Promise.all(promises);
-                }).then(function(result) {
-                    time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    var gids = [];
-                    var i, u;
+                    // return Promise.all(promises);
+                // }).then(function(result) {
+                    // time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    // var gids = [];
+                    // var i, u;
 
-                    for (i in users) {
-                        u = users[i];
-                        gids = u.map(function(g) {return g.gid;});
-                        console.log(time, "taobao.hotel.rooms.update", gids.join(","));
-                    }
+                    // for (i in users) {
+                    //     u = users[i];
+                    //     gids = u.map(function(g) {return g.gid;});
+                    //     console.log(time, "taobao.hotel.rooms.update", gids.join(","));
+                    // }
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }

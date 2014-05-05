@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `think_goods` (
     `userid`     INT(11) UNSIGNED NOT NULL,
     `hotelid`    INT(11) UNSIGNED NOT NULL,
     `roomtypeid` INT(11) UNSIGNED NOT NULL,
-    `status`     INT(11) UNSIGNED NOT NULL DEFAULT 3,
+    `status`     INT(11) UNSIGNED NOT NULL DEFAULT 3, -- 3: published, 4: connected
     `iid`        BIGINT(12) UNSIGNED NOT NULL,
     `ptype`      INT(11) UNSIGNED NOT NULL DEFAULT 0,
     `profit`     INT(11) UNSIGNED NOT NULL DEFAULT 0,
