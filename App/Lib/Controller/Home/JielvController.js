@@ -131,7 +131,8 @@ module.exports = Controller(function() {
                         users[u.id]["token"] = u.token;
                         users[u.id]["expires"] = u.expires;
                     });
-                    console.log(JSON.stringify(roomtypeids));
+
+                    console.log(Object.keys(roomtypeids["64"]["1"]).join("\n"));
 
                     // var i, u;
                     // var gid_room_quota_map;
