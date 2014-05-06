@@ -105,14 +105,13 @@ module.exports = Controller(function() {
                         });
                     });
 
-                    // var list = result[1] || [];
-                    // if (list.length === 0) return getDefer().promise;
-                    // list.forEach(function(u) {
-                    //     if (users[u.id]) {
-                    //         users[u.id]["token"] = u.token;
-                    //         users[u.id]["expires"] = u.expires;
-                    //     }
-                    // });
+                    data = result[3] || [];
+                    if (data.length === 0) return getDefer().promise;
+                    data.forEach(function(u) {
+                        if (!users[u.id]) return null;
+                        users[u.id]["token"] = u.token;
+                        users[u.id]["expires"] = u.expires;
+                    });
 
                     // var i, u;
                     // var gid_room_quota_map;
