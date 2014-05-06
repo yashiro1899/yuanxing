@@ -28,7 +28,7 @@ function rot13(s) {
 function prices(roomtypeids) {
     var promises = [];
     var start = Date.now();
-    var end = start + 29 * 24 * 60 * 60 * 1000;
+    var end = start + 28 * 24 * 60 * 60 * 1000;
 
     for (var i = 0; i < 3; i += 1) {
         promises.push(jielvapi({
@@ -38,9 +38,8 @@ function prices(roomtypeids) {
             "checkOutDate": dateformat(end, "yyyy-mm-dd")
         }));
 
-        console.log(dateformat(start, "yyyy-mm-dd"), dateformat(end, "yyyy-mm-dd"));
         start = end + 24 * 60 * 60 * 1000;
-        end = start + 29 * 24 * 60 * 60 * 1000;
+        end = start + 28 * 24 * 60 * 60 * 1000;
     }
     return promises;
 }
@@ -122,7 +121,8 @@ module.exports = Controller(function() {
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                                 console.log(night);
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
-                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
+                                // roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
+                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = true;
                             });
                         });
                     });
@@ -135,7 +135,7 @@ module.exports = Controller(function() {
                         users[u.id]["expires"] = u.expires;
                     });
 
-                    console.log(Object.keys(roomtypeids["64"]).join("\n"));
+                    console.log(Object.keys(roomtypeids);
 
                     // var i, u;
                     // var gid_room_quota_map;
