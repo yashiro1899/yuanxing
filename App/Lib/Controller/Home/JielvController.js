@@ -118,23 +118,19 @@ module.exports = Controller(function() {
                             if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                                console.log(night);
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
-                            console.log("-----------------------------------------");
                         });
                     });
 
-                    console.log(Object.keys(roomtypeids["64"]["1"]));
-
-                    // data = result[3] || [];
-                    // if (data.length === 0) return getDefer().promise;
-                    // data.forEach(function(u) {
-                    //     if (!users[u.id]) return null;
-                    //     users[u.id]["token"] = u.token;
-                    //     users[u.id]["expires"] = u.expires;
-                    // });
+                    data = result[3] || [];
+                    if (data.length === 0) return getDefer().promise;
+                    data.forEach(function(u) {
+                        if (!users[u.id]) return null;
+                        users[u.id]["token"] = u.token;
+                        users[u.id]["expires"] = u.expires;
+                    });
 
                     // var i, u;
                     // var gid_room_quota_map;

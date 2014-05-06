@@ -76,7 +76,7 @@ module.exports = Controller(function() {
                     "checkOutDate": dateformat(end, "yyyy-mm-dd")
                 }));
 
-                start = end + 24 * 60 * 60 * 1000;
+                start = end;
                 end = start + 30 * 24 * 60 * 60 * 1000;
             }
             return promises;
