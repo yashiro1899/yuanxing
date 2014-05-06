@@ -126,6 +126,7 @@ module.exports = Controller(function() {
 
                     data = result[3] || [];
                     if (data.length === 0) return getDefer().promise;
+
                     data.forEach(function(u) {
                         if (!users[u.id]) return null;
                         users[u.id]["token"] = u.token;
