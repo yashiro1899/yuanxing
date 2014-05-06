@@ -135,7 +135,7 @@ module.exports = Controller(function() {
                         users[u.id]["expires"] = u.expires;
                     });
 
-                    console.log(Object.keys(roomtypeids);
+                    console.log(JSON.stringify(roomtypeids));
 
                     // var i, u;
                     // var gid_room_quota_map;
