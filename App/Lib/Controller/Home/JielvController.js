@@ -38,6 +38,7 @@ function prices(roomtypeids) {
             "checkOutDate": dateformat(end, "yyyy-mm-dd")
         }));
 
+        console.log(dateformat(start, "yyyy-mm-dd"), dateformat(end, "yyyy-mm-dd"));
         start = end + 24 * 60 * 60 * 1000;
         end = start + 29 * 24 * 60 * 60 * 1000;
     }
@@ -134,7 +135,7 @@ module.exports = Controller(function() {
                         users[u.id]["expires"] = u.expires;
                     });
 
-                    console.log(Object.keys(roomtypeids["64"]["1"]).join("\n"));
+                    console.log(Object.keys(roomtypeids["64"]).join("\n"));
 
                     // var i, u;
                     // var gid_room_quota_map;
