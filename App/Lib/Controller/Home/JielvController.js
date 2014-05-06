@@ -87,22 +87,23 @@ module.exports = Controller(function() {
                     promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
-                    // var data = [];
-                    // if (result[0] && result[0].success == 1) data = result[0].data;
-                    // if (data.length === 0) return getDefer().promise;
-                    // roomtypeids = {};
-                    // data.forEach(function(r) {
-                    //     roomtypeids[r.roomtypeId] = {};
-                    //     r.roomPriceDetail.forEach(function(rpd) {
-                    //         if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                    var data = [];
+                    if (result[0] && result[0].success == 1) data.push(result[0].data);
+                    if (result[1] && result[1].success == 1) data.push(result[1].data);
+                    if (result[2] && result[2].success == 1) data.push(result[2].data);
+                    if (data.length === 0) return getDefer().promise;
 
-                    //         var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                    //         roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                    //             price: rpd.preeprice,
-                    //             num: rpd.qtyable
-                    //         };
-                    //     });
-                    // });
+                    roomtypeids = {};
+                    data.forEach(function(period) {
+                        period.forEach(function(r) {
+                            roomtypeids[r.roomtypeId] = {};
+                            r.roomPriceDetail.forEach(function(rpd) {
+                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
+                            });
+                        });
+                    });
 
                     // var list = result[1] || [];
                     // if (list.length === 0) return getDefer().promise;
