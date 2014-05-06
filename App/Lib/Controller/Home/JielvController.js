@@ -79,6 +79,7 @@ module.exports = Controller(function() {
                     roomtypeids = {};
                     result.forEach(function(g) {
                         roomtypeids[g.roomtypeid] = true;
+
                         if (!users[g.userid]) users[g.userid] = [];
                         users[g.userid].push(g);
                     });
@@ -98,8 +99,8 @@ module.exports = Controller(function() {
                         period.forEach(function(r) {
                             roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
-                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
                         });
@@ -112,6 +113,7 @@ module.exports = Controller(function() {
                         users[u.id]["token"] = u.token;
                         users[u.id]["expires"] = u.expires;
                     });
+                    console.log(JSON.stringify(roomtypeids));
 
                     // var i, u;
                     // var gid_room_quota_map;
