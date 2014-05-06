@@ -68,7 +68,7 @@ module.exports = Controller(function() {
                 if (roomtypeids.length === 0) return null;
 
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                console.log(time, "jielv.callback", roomtypeids.join(","));
+                console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
                 var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
@@ -83,23 +83,23 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    // var promises = [];
-                    // var start, end;
-                    // start = +(new Date());
-                    // end = start + 30 * 24 * 60 * 60 * 1000;
-                    // start = new Date(start);
-                    // end = new Date(end);
-                    // start = dateformat(start, "yyyy-mm-dd");
-                    // end = dateformat(end, "yyyy-mm-dd");
-                    // promises.push(jielvapi({
-                    //     "QueryType": "hotelpriceall",
-                    //     "roomtypeids": Object.keys(roomtypeids).join("/"),
-                    //     "checkInDate": start,
-                    //     "checkOutDate": end
-                    // }));
-                    // promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
-                    // return Promise.all(promises);
-                // }).then(function(result) { // hotelpriceall, think_user
+                    var promises = [];
+                    var start, end;
+                    start = +(new Date());
+                    end = start + 30 * 24 * 60 * 60 * 1000;
+                    start = new Date(start);
+                    end = new Date(end);
+                    start = dateformat(start, "yyyy-mm-dd");
+                    end = dateformat(end, "yyyy-mm-dd");
+                    promises.push(jielvapi({
+                        "QueryType": "hotelpriceall",
+                        "roomtypeids": Object.keys(roomtypeids).join("/"),
+                        "checkInDate": start,
+                        "checkOutDate": end
+                    }));
+                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    return Promise.all(promises);
+                }).then(function(result) { // hotelpriceall, think_user
                     // var data = [];
                     // if (result[0] && result[0].success == 1) data = result[0].data;
                     // if (data.length === 0) return getDefer().promise;
