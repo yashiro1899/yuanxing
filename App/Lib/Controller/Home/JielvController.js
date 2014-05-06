@@ -25,6 +25,24 @@ function rot13(s) {
     }
     return rotated;
 }
+function prices(roomtypeids) {
+    var promises = [];
+    var start = Date.now();
+    var end = start + 30 * 24 * 60 * 60 * 1000;
+
+    for (var i = 0; i < 3; i += 1) {
+        promises.push(jielvapi({
+            "QueryType": "hotelpriceall",
+            "roomtypeids": roomtypeids,
+            "checkInDate": dateformat(start, "yyyy-mm-dd"),
+            "checkOutDate": dateformat(end, "yyyy-mm-dd")
+        }));
+
+        start = end + 24 * 60 * 60 * 1000;
+        end = start + 30 * 24 * 60 * 60 * 1000;
+    }
+    return promises;
+}
 module.exports = Controller(function() {
     return {
         cookieAction: function() {
@@ -84,7 +102,7 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    var promises = that.prices(Object.keys(roomtypeids).join("/"));
+                    var promises = prices(Object.keys(roomtypeids).join("/"));
                     promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
