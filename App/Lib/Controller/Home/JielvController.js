@@ -114,14 +114,15 @@ module.exports = Controller(function() {
 
                     roomtypeids = {};
                     data.forEach(function(period) {
-                        roomtypeids[r.roomtypeId] = {};
                         period.forEach(function(r) {
+                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                                 console.log(night);
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
+                            console.log("-----------------------------------------");
                         });
                     });
 
