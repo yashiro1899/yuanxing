@@ -28,7 +28,7 @@ function rot13(s) {
 function prices(roomtypeids) {
     var promises = [];
     var start = Date.now();
-    var end = start + 30 * 24 * 60 * 60 * 1000;
+    var end = start + 29 * 24 * 60 * 60 * 1000;
 
     for (var i = 0; i < 3; i += 1) {
         promises.push(jielvapi({
@@ -39,7 +39,7 @@ function prices(roomtypeids) {
         }));
 
         start = end + 24 * 60 * 60 * 1000;
-        end = start + 30 * 24 * 60 * 60 * 1000;
+        end = start + 29 * 24 * 60 * 60 * 1000;
     }
     return promises;
 }
@@ -114,11 +114,12 @@ module.exports = Controller(function() {
 
                     roomtypeids = {};
                     data.forEach(function(period) {
-                        console.log("period");
                         period.forEach(function(r) {
                             roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
+                                console.log(rpd.night);
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                console.log(night);
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
