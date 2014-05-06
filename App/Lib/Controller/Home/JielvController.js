@@ -31,12 +31,15 @@ function prices(roomtypeids) {
     var end = start + 30 * 24 * 60 * 60 * 1000;
 
     for (var i = 0; i < 3; i += 1) {
-        promises.push(jielvapi({
-            "QueryType": "hotelpriceall",
-            "roomtypeids": roomtypeids,
-            "checkInDate": dateformat(start, "yyyy-mm-dd"),
-            "checkOutDate": dateformat(end, "yyyy-mm-dd")
-        }));
+        (function(s, e) {
+            promises.push(jielvapi({
+                "QueryType": "hotelpriceall",
+                "roomtypeids": roomtypeids,
+                "checkInDate": dateformat(s, "yyyy-mm-dd"),
+                "checkOutDate": dateformat(e, "yyyy-mm-dd")
+            }));
+            console.log(dateformat(s, "yyyy-mm-dd"), dateformat(e, "yyyy-mm-dd"));
+        })(start, end);
 
         start = end + 24 * 60 * 60 * 1000;
         end = start + 30 * 24 * 60 * 60 * 1000;
