@@ -28,7 +28,7 @@ function rot13(s) {
 function prices(roomtypeids) {
     var promises = [];
     var start = Date.now();
-    var end = start + 28 * 24 * 60 * 60 * 1000;
+    var end = start + 30 * 24 * 60 * 60 * 1000;
 
     for (var i = 0; i < 3; i += 1) {
         promises.push(jielvapi({
@@ -38,8 +38,8 @@ function prices(roomtypeids) {
             "checkOutDate": dateformat(end, "yyyy-mm-dd")
         }));
 
-        start = end + 24 * 60 * 60 * 1000;
-        end = start + 28 * 24 * 60 * 60 * 1000;
+        start = end;
+        end = start + 30 * 24 * 60 * 60 * 1000;
     }
     return promises;
 }
@@ -114,28 +114,26 @@ module.exports = Controller(function() {
 
                     roomtypeids = {};
                     data.forEach(function(period) {
+                        roomtypeids[r.roomtypeId] = {};
                         period.forEach(function(r) {
-                            roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
-                                console.log(rpd.night);
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                                 console.log(night);
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
-                                // roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
-                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = true;
+                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
                         });
                     });
 
-                    data = result[3] || [];
-                    if (data.length === 0) return getDefer().promise;
-                    data.forEach(function(u) {
-                        if (!users[u.id]) return null;
-                        users[u.id]["token"] = u.token;
-                        users[u.id]["expires"] = u.expires;
-                    });
+                    console.log(Object.keys(roomtypeids["64"]["1"]));
 
-                    console.log(JSON.stringify(roomtypeids));
+                    // data = result[3] || [];
+                    // if (data.length === 0) return getDefer().promise;
+                    // data.forEach(function(u) {
+                    //     if (!users[u.id]) return null;
+                    //     users[u.id]["token"] = u.token;
+                    //     users[u.id]["expires"] = u.expires;
+                    // });
 
                     // var i, u;
                     // var gid_room_quota_map;
