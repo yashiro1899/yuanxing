@@ -3,6 +3,7 @@
  * @return {[type]} [description]
  */
 var oauth = require("../../../../taobao-oauth");
+var jielvapi = require("../../../../jielv-api.js");
 module.exports = Controller(function() {
     return {
         userInfo: {},
@@ -61,6 +62,24 @@ module.exports = Controller(function() {
                 if (querystring) pagination["querystring"] = "&" + querystring;
             }
             return pagination;
+        },
+        prices: function(roomtypeids) {
+            var promises = [];
+            var start = Date.now();
+            var end = start + 30 * 24 * 60 * 60 * 1000;
+
+            for (var i = 0; i < 3; i += 1) {
+                promises.push(jielvapi({
+                    "QueryType": "hotelpriceall",
+                    "roomtypeids": roomtypeids,
+                    "checkInDate": dateformat(start, "yyyy-mm-dd"),
+                    "checkOutDate": dateformat(end, "yyyy-mm-dd")
+                }));
+
+                start += 24 * 60 * 60 * 1000;
+                end = start + 30 * 24 * 60 * 60 * 1000;
+            }
+            return promises;
         }
     };
 });
