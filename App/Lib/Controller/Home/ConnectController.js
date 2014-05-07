@@ -498,7 +498,7 @@ module.exports = Controller("Home/BaseController", function() {
                         path: "/",
                         expires: (new Date(24 * 60 * 60 * 1000 + now))
                     }));
-                    that.redirect("/");
+                    that.redirect(req.url);
 
                     data = JSON.parse(that.post("data"));
                     var ratetype = that.post("ratetype");
@@ -540,7 +540,7 @@ module.exports = Controller("Home/BaseController", function() {
                     data = result[0];
 
                     var promises = [];
-                    var model, start, end;
+                    var model;
                     promises.push(oauth.accessProtectedResource(req, res, {
                         "gid": gid,
                         "method": "taobao.hotel.room.get",
@@ -553,18 +553,7 @@ module.exports = Controller("Home/BaseController", function() {
                     model = model.where({"think_room.roomtypeid": data.roomtypeid}).select();
                     promises.push(model);
 
-                    start = +(new Date());
-                    end = start + 30 * 24 * 60 * 60 * 1000;
-                    start = new Date(start);
-                    end = new Date(end);
-                    start = dateformat(start, "yyyy-mm-dd");
-                    end = dateformat(end, "yyyy-mm-dd");
-                    promises.push(jielvapi({
-                        "QueryType": "hotelpriceall",
-                        "roomtypeids": data.roomtypeid,
-                        "checkInDate": start,
-                        "checkOutDate": end
-                    }));
+                    promises = promises.concat(that.prices(data.roomtypeid));
                     return Promise.all(promises);
                 }).then(function(result) {
                     var taobao = result[0]["hotel_room_get_response"]["room"];
@@ -591,7 +580,12 @@ module.exports = Controller("Home/BaseController", function() {
                     that.assign("list", list);
 
                     var ratetypes = {};
-                    result[2]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                    if (result[2] && result[2].data.length)
+                        result[2]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                    if (result[3] && result[3].data.length)
+                        result[3]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                    if (result[4] && result[4].data.length)
+                        result[4]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
                     ratetypes = Object.keys(ratetypes);
                     ratetypes = ratetypes.map(function(rt) {
                         return [rt, mapping.ratetype[rt]];
