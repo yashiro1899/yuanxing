@@ -377,6 +377,7 @@ module.exports = Controller("Home/BaseController", function() {
                         that.redirect("/");
 
                         var quotas = {};
+                        var temp = [], i;
                         data.roomPriceDetail.forEach(function(rpd) {
                             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             var price = rpd.preeprice;
@@ -391,7 +392,6 @@ module.exports = Controller("Home/BaseController", function() {
                                 num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
                             };
                         });
-                        var temp = [], i;
                         for (i in quotas) temp.push(quotas[i]);
                         quotas = temp;
 
@@ -399,7 +399,7 @@ module.exports = Controller("Home/BaseController", function() {
                             "method": "taobao.hotel.room.update",
                             "gid": gid,
                             "room_quotas": JSON.stringify(quotas),
-                            "status": 2 // TODO: LISTING
+                            "status": 1
                         });
                     }).then(function(result) {
                         result = result["hotel_room_update_response"]["room"];
@@ -505,6 +505,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var ptype = that.post("ptype");
                     var profit = parseInt(that.post("profit"), 10) || 0;
                     var quotas = {};
+                    var temp = [], i;
                     data.roomPriceDetail.forEach(function(rpd) {
                         var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                         var price = rpd.preeprice;
@@ -519,7 +520,6 @@ module.exports = Controller("Home/BaseController", function() {
                             num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
                         };
                     });
-                    var temp = [], i;
                     for (i in quotas) temp.push(quotas[i]);
                     quotas = temp;
 
