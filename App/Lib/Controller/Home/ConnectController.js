@@ -388,7 +388,7 @@ module.exports = Controller("Home/BaseController", function() {
                             quotas[night] = {
                                 date: night,
                                 price: price,
-                                num: rpd.qtyable
+                                num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
                             };
                         });
                         var temp = [], i;
@@ -516,7 +516,7 @@ module.exports = Controller("Home/BaseController", function() {
                         quotas[night] = {
                             date: night,
                             price: price,
-                            num: rpd.qtyable
+                            num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
                         };
                     });
                     var temp = [], i;
