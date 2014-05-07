@@ -523,12 +523,19 @@ module.exports = Controller("Home/BaseController", function() {
                     for (i in quotas) temp.push(quotas[i]);
                     quotas = temp;
 
-                    return oauth.accessProtectedResource(req, res, {
+                    var params = {
                         "method": "taobao.hotel.room.update",
                         "gid": gid,
-                        "room_quotas": JSON.stringify(quotas),
-                        "status": 2 // TODO: LISTING
-                    });
+                    };
+
+                    if (quotas.length > 0) {
+                        params["room_quotas"] = JSON.stringify(quotas);
+                        params["status"] = 1;
+                    } else {
+                        params["status"] = 2;
+                    }
+
+                    return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
                     result = result["hotel_room_update_response"]["room"];
                     var time = "[" + result.modified + "]";
