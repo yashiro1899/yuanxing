@@ -197,7 +197,14 @@ module.exports = Controller("Home/BaseController", function() {
                             no_price_expires: Date.now() + 7 * 24 * 60 * 60 * 1000
                         });
                     }
-                    that.end(data[0]);
+
+                    var result = data[0];
+                    var rpd = [];
+                    data.forEach(function(period) {
+                        rpd = rpds.concat(period[0].roomPriceDetail);
+                    });
+                    result.roomPriceDetail = rpd;
+                    that.end(result);
                 });
             } else {
                 this.end(null);
