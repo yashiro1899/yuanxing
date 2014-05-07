@@ -272,13 +272,11 @@ module.exports = Controller("Home/BaseController", function() {
                     if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
                     else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
 
-                    var quotas = {};
-                    var night = dateformat(Date.now(), "");
-                    quotas[night] = {
-                        date: night,
+                    var quotas = [{
+                        date: dateformat(Date.now(), "yyyy-mm-dd"),
                         price: 9999999,
                         num: 0
-                    };
+                    }];
 
                     var params = {
                         "method": "taobao.hotel.room.add",
