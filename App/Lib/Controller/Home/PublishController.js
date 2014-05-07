@@ -200,7 +200,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                     var rpd = [];
                     data.forEach(function(period) {
-                        if (period[0].roomPriceDetail) rpd = rpd.concat(period[0].roomPriceDetail);
+                        if (period[0] && period[0].roomPriceDetail) rpd = rpd.concat(period[0].roomPriceDetail);
                     });
                     data[0][0]["roomPriceDetail"] = rpd;
                     that.end(data[0][0]);
