@@ -198,13 +198,12 @@ module.exports = Controller("Home/BaseController", function() {
                         });
                     }
 
-                    var result = data[0];
                     var rpd = [];
                     data.forEach(function(period) {
-                        rpd = rpd.concat(period[0].roomPriceDetail);
+                        if (period[0].roomPriceDetail) rpd = rpd.concat(period[0].roomPriceDetail);
                     });
-                    result.roomPriceDetail = rpd;
-                    that.end(result);
+                    data[0][0]["roomPriceDetail"] = rpd;
+                    that.end(data[0][0]);
                 });
             } else {
                 this.end(null);
@@ -319,9 +318,10 @@ module.exports = Controller("Home/BaseController", function() {
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) { // taobao.hotel.room.add
                     if (!result || result["error_response"]) {
+                        var message = result["error_response"] ? result["error_response"]["sub_msg"] : "暂无价格！";
                         that.end({
                             success: 8,
-                            message: result["error_response"]["sub_msg"] || "暂无价格！"
+                            message: message
                         });
                         return getDefer().promise;
                     }
