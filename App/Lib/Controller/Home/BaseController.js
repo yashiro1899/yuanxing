@@ -2,6 +2,7 @@
  * 后台controller基类
  * @return {[type]} [description]
  */
+var dateformat = require("dateformat");
 var oauth = require("../../../../taobao-oauth");
 var jielvapi = require("../../../../jielv-api.js");
 module.exports = Controller(function() {
