@@ -273,18 +273,12 @@ module.exports = Controller("Home/BaseController", function() {
                     else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
 
                     var quotas = {};
-                    var temp = [], i;
-                    data.roomPriceDetail.forEach(function(rpd) {
-                        var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                        if (rpd.ratetype != detail.ratetype) return null;
-                        quotas[night] = {
-                            date: night,
-                            price: 9999999,
-                            num: 0
-                        };
-                    });
-                    for (i in quotas) temp.push(quotas[i]);
-                    quotas = temp;
+                    var night = dateformat(Date.now(), "");
+                    quotas[night] = {
+                        date: night,
+                        price: 9999999,
+                        num: 0
+                    };
 
                     var params = {
                         "method": "taobao.hotel.room.add",
