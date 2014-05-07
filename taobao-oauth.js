@@ -138,9 +138,9 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
     }
     if (params.room_quotas) {
         body += util.format('\r\n--%s\r\n', boundary);
-        body += util.format('Content-Disposition: form-data; name="room_quotas"\r\n', params.room_quotas);
+        body += 'Content-Disposition: form-data; name="room_quotas"\r\n\r\n';
         body = new Buffer(body);
-        body = Buffer.concat([body, new Buffer(util.format('\r\n--%s--', boundary))]);
+        body = Buffer.concat([body, new Buffer(params.room_quotas), new Buffer(util.format('\r\n--%s--', boundary))]);
         delete params.room_quotas;
     }
     if (access_token) params["access_token"] = access_token;
