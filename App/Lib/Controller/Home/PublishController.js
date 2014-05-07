@@ -317,8 +317,10 @@ module.exports = Controller("Home/BaseController", function() {
                     if (usermeta.guide) params["guide"] = usermeta.guide;
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) { // taobao.hotel.room.add
-                    if (!result || result["error_response"]) {
-                        var message = result["error_response"] ? result["error_response"]["sub_msg"] : "暂无价格！";
+                    var message = "暂无价格！";
+
+                    if (!result || (result && result["error_response"])) {
+                        if (resul && result["error_response"]) message = result["error_response"]["sub_msg"];
                         that.end({
                             success: 8,
                             message: message
