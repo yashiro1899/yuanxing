@@ -600,7 +600,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetypes[data.ratetype]]);
                     that.assign("ratetypes", ratetypes);
 
-                    data["data"] = JSON.stringify(result[2]["data"][0]);
+                    data["data"] = JSON.stringify(result[2]["data"][0]); // TODO
                     that.assign("formdata", data);
                     that.display("connect:create");
                 });
