@@ -276,6 +276,14 @@ module.exports = Controller("Home/BaseController", function() {
                         date: dateformat(Date.now(), "yyyy-mm-dd"),
                         price: 9999999,
                         num: 0
+                    }, {
+                        date: dateformat(Date.now() + 24 * 60 * 60 * 1000, "yyyy-mm-dd"),
+                        price: 9999999,
+                        num: 0
+                    }, {
+                        date: dateformat(Date.now() + 48 * 60 * 60 * 1000, "yyyy-mm-dd"),
+                        price: 9999999,
+                        num: 0
                     }];
 
                     var params = {
