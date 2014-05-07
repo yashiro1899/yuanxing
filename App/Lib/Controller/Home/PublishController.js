@@ -201,7 +201,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var result = data[0];
                     var rpd = [];
                     data.forEach(function(period) {
-                        rpd = rpds.concat(period[0].roomPriceDetail);
+                        rpd = rpd.concat(period[0].roomPriceDetail);
                     });
                     result.roomPriceDetail = rpd;
                     that.end(result);
