@@ -314,7 +314,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var message = "暂无价格！";
 
                     if (!result || (result && result["error_response"])) {
-                        if (resul && result["error_response"]) message = result["error_response"]["sub_msg"];
+                        if (result && result["error_response"]) message = result["error_response"]["sub_msg"];
                         that.end({
                             success: 8,
                             message: message
