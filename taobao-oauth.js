@@ -136,6 +136,13 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
         body = Buffer.concat([body, fs.readFileSync(params.pic), new Buffer(util.format('\r\n--%s--', boundary))]);
         delete params.pic;
     }
+    if (params.room_quotas) {
+        body += util.format('\r\n--%s\r\n', boundary);
+        body += util.format('Content-Disposition: form-data; name="room_quotas"\r\n', params.room_quotas);
+        body = new Buffer(body);
+        body = Buffer.concat([body, new Buffer(util.format('\r\n--%s--', boundary))]);
+        delete params.room_quotas;
+    }
     if (access_token) params["access_token"] = access_token;
 
     headers['Host'] = parsed.host;
