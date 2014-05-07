@@ -68,7 +68,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.assign('pagination', pagination);
                     that.display();
                     return getDefer().promise;
-                };
+                }
 
                 var promises = [],
                     model;
@@ -174,26 +174,16 @@ module.exports = Controller("Home/BaseController", function() {
 
             if (this.isPost()) {
                 var roomtypeid = this.post("roomtypeid");
-                var promise, start, end;
                 if (!roomtypeid) {
                     this.end(null);
                     return null;
                 }
 
-                start = +(new Date());
-                end = start + 30 * 24 * 60 * 60 * 1000;
-                start = new Date(start);
-                end = new Date(end);
-                start = dateformat(start, "yyyy-mm-dd");
-                end = dateformat(end, "yyyy-mm-dd");
-                promise = jielvapi({
-                    "QueryType": "hotelpriceall",
-                    "roomtypeids": roomtypeid,
-                    "checkInDate": start,
-                    "checkOutDate": end
-                }).then(function(result) {
+                return Promise.all(this.prices(roomtypeid)).then(function(result) {
                     var data = [];
-                    if (result && result.success == 1) data = result.data;
+                    if (result[0] && result[0].success == 1) data.push(result[0].data);
+                    if (result[1] && result[1].success == 1) data.push(result[1].data);
+                    if (result[2] && result[2].success == 1) data.push(result[2].data);
                     if (data.length === 0) {
                         that.end({
                             success: 8,
@@ -234,6 +224,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var gid = 0, iid = 0;
                 var promises = [],
                     model;
+
                 model = D("Room").field("original").where({"roomtypeid": data.roomtypeId}).select();
                 promises.push(model);
                 model = D("Taobaoroom").where({"roomtypeid": data.roomtypeId}).order("rid desc").select();
@@ -242,17 +233,41 @@ module.exports = Controller("Home/BaseController", function() {
                 model = model.where("id = " + that.userInfo["taobao_user_id"]).select();
                 promises.push(model);
 
-                return Promise.all(promises).then(function(result) {
+                return Promise.all(promises).then(function(result) { // think_room, think_taobaoroom, think_user
                     var room = result[0][0];
                     var taobaoroom = result[1][0];
                     var usermeta = result[2][0];
 
                     var original = JSON.parse(room["original"]);
                     var detail = data.roomPriceDetail[0];
+
                     var title = data.hotelName + " " + data.roomtypeName;
+
+                    var area = parseInt(original["acreages"].replace(/^\D/, ""), 10) || 20;
+                    if (area <= 15) area = "A";
+                    else if (area > 15 && area <= 30) area = "B";
+                    else if (area > 30 && area <= 50) area = "C";
+                    else area = "D";
+
+                    var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
+                    if (size <= 1) size = "A";
+                    else if (size > 2.2) size = "H";
+                    else if (mapping.bedsize[size]) size = mapping.bedsize[size];
+                    else size = "E";
+
                     var bedtype = mapping.bedtype[original.bedtype] || "B";
                     var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
+
+                    var breakfast = "A";
+                    if (detail.ratetype == 16 || detail.ratetype == 56) breakfast = "B";
+                    else if (detail.ratetype == 9) breakfast = "C";
+
+                    var bbn = "A";
+                    if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
+                    else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
+
                     var quotas = {};
+                    var temp = [], i;
                     data.roomPriceDetail.forEach(function(rpd) {
                         var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                         if (rpd.ratetype != detail.ratetype) return null;
@@ -262,29 +277,8 @@ module.exports = Controller("Home/BaseController", function() {
                             num: 0
                         };
                     });
-                    var temp = [], i;
                     for (i in quotas) temp.push(quotas[i]);
                     quotas = temp;
-
-                    var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
-                    if (size <= 1) size = "A";
-                    else if (size > 2.2) size = "H";
-                    else if (mapping.bedsize[size]) size = mapping.bedsize[size];
-                    else size = "E";
-
-                    var area = parseInt(original["acreages"].replace(/^\D/, ""), 10) || 20;
-                    if (area <= 15) area = "A";
-                    else if (area > 15 && area <= 30) area = "B";
-                    else if (area > 30 && area <= 50) area = "C";
-                    else area = "D";
-
-                    var breakfast = "A";
-                    if (detail.ratetype == 16 || detail.ratetype == 56) breakfast = "B";
-                    else if (detail.ratetype == 9) breakfast = "C";
-
-                    var bbn = "A";
-                    if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
-                    else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
 
                     var params = {
                         "method": "taobao.hotel.room.add",
