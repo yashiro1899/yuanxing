@@ -25,6 +25,7 @@ $(function() {
                 return false;
             }
 
+            response.roomPriceDetail = [response.roomPriceDetail[0]];
             var data = JSON.stringify(response);
             td.html("发布中…");
             $.ajax("/publish/create/", {
