@@ -143,6 +143,13 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
         body = Buffer.concat([body, new Buffer(params.room_quotas), new Buffer(util.format('\r\n--%s--', boundary))]);
         delete params.room_quotas;
     }
+    if (params.gid_room_quota_map) {
+        body += util.format('\r\n--%s\r\n', boundary);
+        body += 'Content-Disposition: form-data; name="gid_room_quota_map"\r\n\r\n';
+        body = new Buffer(body);
+        body = Buffer.concat([body, new Buffer(params.gid_room_quota_map), new Buffer(util.format('\r\n--%s--', boundary))]);
+        delete params.gid_room_quota_map;
+    }
     if (access_token) params["access_token"] = access_token;
 
     headers['Host'] = parsed.host;

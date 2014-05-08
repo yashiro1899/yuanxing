@@ -525,7 +525,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                     var params = {
                         "method": "taobao.hotel.room.update",
-                        "gid": gid,
+                        "gid": gid
                     };
 
                     if (quotas.length > 0) {
@@ -587,12 +587,19 @@ module.exports = Controller("Home/BaseController", function() {
                     that.assign("list", list);
 
                     var ratetypes = {};
-                    if (result[2] && result[2].data.length)
+                    var prices = [];
+                    if (result[2] && result[2].data.length) {
                         result[2]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
-                    if (result[3] && result[3].data.length)
+                        prices.push(result[2]["data"][0]);
+                    }
+                    if (result[3] && result[3].data.length) {
                         result[3]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
-                    if (result[4] && result[4].data.length)
+                        prices.push(result[3]["data"][0]);
+                    }
+                    if (result[4] && result[4].data.length) {
                         result[4]["data"][0].roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
+                        prices.push(result[4]["data"][0]);
+                    }
                     ratetypes = Object.keys(ratetypes);
                     ratetypes = ratetypes.map(function(rt) {
                         return [rt, mapping.ratetype[rt]];
