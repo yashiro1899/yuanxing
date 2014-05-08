@@ -504,21 +504,24 @@ module.exports = Controller("Home/BaseController", function() {
                     var ratetype = that.post("ratetype");
                     var ptype = that.post("ptype");
                     var profit = parseInt(that.post("profit"), 10) || 0;
+
                     var quotas = {};
                     var temp = [], i;
-                    data.roomPriceDetail.forEach(function(rpd) {
-                        var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                        var price = rpd.preeprice;
-                        profit = parseInt(profit, 10) || 0;
-                        if (rpd.ratetype != ratetype) return null;
-                        if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
-                        else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+                    data.forEach(function(period) {
+                        period.roomPriceDetail.forEach(function(rpd) {
+                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            var price = rpd.preeprice;
+                            profit = parseInt(profit, 10) || 0;
+                            if (rpd.ratetype != ratetype) return null;
+                            if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
+                            else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
 
-                        quotas[night] = {
-                            date: night,
-                            price: price,
-                            num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
-                        };
+                            quotas[night] = {
+                                date: night,
+                                price: price,
+                                num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
+                            };
+                        });
                     });
                     for (i in quotas) temp.push(quotas[i]);
                     quotas = temp;
@@ -607,7 +610,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetypes[data.ratetype]]);
                     that.assign("ratetypes", ratetypes);
 
-                    data["data"] = JSON.stringify(result[2]["data"][0]); // TODO
+                    data["data"] = JSON.stringify(prices);
                     that.assign("formdata", data);
                     that.display("connect:create");
                 });

@@ -107,9 +107,9 @@ module.exports = Controller(function() {
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = [];
-                    if (result[0] && result[0].success == 1) data.push(result[0].data);
-                    if (result[1] && result[1].success == 1) data.push(result[1].data);
-                    if (result[2] && result[2].success == 1) data.push(result[2].data);
+                    if (result[0] && result[0].data.length) data.push(result[0].data);
+                    if (result[1] && result[1].data.length) data.push(result[1].data);
+                    if (result[2] && result[2].data.length) data.push(result[2].data);
                     if (data.length === 0) return getDefer().promise;
 
                     roomtypeids = {};
