@@ -402,6 +402,10 @@ module.exports = Controller("Home/BaseController", function() {
                             "status": 1
                         });
                     }).then(function(result) {
+                        if (result["error_response"]) {
+                            console.log(result["error_response"]);
+                            return null;
+                        }
                         result = result["hotel_room_update_response"]["room"];
                         var time = "[" + result.modified + "]";
                         console.log(time, "taobao.hotel.room.update", result.gid);
@@ -540,6 +544,10 @@ module.exports = Controller("Home/BaseController", function() {
 
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
+                    if (result["error_response"]) {
+                        console.log(result["error_response"]);
+                        return null;
+                    }
                     result = result["hotel_room_update_response"]["room"];
                     var time = "[" + result.modified + "]";
                     console.log(time, "taobao.hotel.room.update", result.gid);
