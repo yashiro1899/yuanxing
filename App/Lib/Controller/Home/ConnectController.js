@@ -384,7 +384,14 @@ module.exports = Controller("Home/BaseController", function() {
                         }));
 
                         var referer = that.post("referer");
-                        if (/\/publish|\/connect\/match/.test(referer)) that.redirect("/");
+                        if (/\/publish/.test(referer)) that.redirect("/");
+                        if (/\/connect\/match/.test(referer)) {
+                            referer = that.cookie("jump." + gid) || "/";
+                            res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, "", {
+                                path: "/",
+                                expires: Date.now()
+                            }));
+                        }
                         else that.redirect(referer);
 
                         var quotas = {};
@@ -781,6 +788,11 @@ module.exports = Controller("Home/BaseController", function() {
                 var qs = querystring.stringify(formdata);
                 var pagination = that.pagination(total, range, page, qs);
                 that.assign('pagination', pagination);
+
+                res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, (req.headers["referer"] || ""), {
+                    path: "/",
+                    expires: (new Date(60 * 60 * 1000 + Date.now()))
+                }));
                 that.display();
             });
         }
