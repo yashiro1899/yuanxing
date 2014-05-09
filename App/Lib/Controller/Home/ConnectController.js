@@ -389,7 +389,7 @@ module.exports = Controller("Home/BaseController", function() {
                             referer = that.cookie("jump." + gid) || "/";
                             res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, "", {
                                 path: "/",
-                                expires: Date.now()
+                                expires: (new Date())
                             }));
                         }
                         else that.redirect(referer);
