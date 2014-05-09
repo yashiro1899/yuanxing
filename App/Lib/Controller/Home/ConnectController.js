@@ -419,7 +419,7 @@ module.exports = Controller("Home/BaseController", function() {
                         });
                     }).then(function(result) {
                         if (result["error_response"]) {
-                            console.log(result["error_response"]["sub_msg"]);
+                            console.log("ERROR", gid, result["error_response"]["sub_msg"]);
                             return null;
                         }
                         result = result["hotel_room_update_response"]["room"];
@@ -577,7 +577,7 @@ module.exports = Controller("Home/BaseController", function() {
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
                     if (result["error_response"]) {
-                        console.log(result["error_response"]["sub_msg"]);
+                        console.log("ERROR", gid, result["error_response"]["sub_msg"]);
                         return null;
                     }
                     result = result["hotel_room_update_response"]["room"];
