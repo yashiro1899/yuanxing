@@ -384,7 +384,7 @@ module.exports = Controller("Home/BaseController", function() {
                         }));
 
                         var referer = that.post("referer");
-                        if (/\/publish/.test(referer)) that.redirect("/");
+                        if (/\/publish/.test(referer)) referer = "/";
                         if (/\/connect\/match/.test(referer)) {
                             referer = that.cookie("jump." + gid) || "/";
                             res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, "", {
@@ -392,7 +392,7 @@ module.exports = Controller("Home/BaseController", function() {
                                 expires: (new Date())
                             }));
                         }
-                        else that.redirect(referer);
+                        that.redirect(referer);
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
