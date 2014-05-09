@@ -374,7 +374,7 @@ module.exports = Controller("Home/BaseController", function() {
                             path: "/",
                             expires: (new Date(24 * 60 * 60 * 1000 + now))
                         }));
-                        that.redirect("/");
+                        that.redirect(req.headers["referer"] || "");
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
@@ -518,7 +518,7 @@ module.exports = Controller("Home/BaseController", function() {
                         path: "/",
                         expires: (new Date(24 * 60 * 60 * 1000 + now))
                     }));
-                    that.redirect(req.url);
+                    that.redirect(req.headers["referer"] || "");
 
                     data = JSON.parse(that.post("data"));
                     var ratetype = that.post("ratetype");
