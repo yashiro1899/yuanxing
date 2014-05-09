@@ -324,6 +324,7 @@ module.exports = Controller("Home/BaseController", function() {
                 formdata["data"] = data;
                 formdata["gid"] = gid;
                 formdata["roomtypeid"] = roomtypeid;
+                formdata["referer"] = req.headers["referer"] || "";
 
                 data = JSON.parse(data);
                 var model;
@@ -376,9 +377,9 @@ module.exports = Controller("Home/BaseController", function() {
                             expires: (new Date(24 * 60 * 60 * 1000 + now))
                         }));
 
-                        var referer = "";
-                        if (req.headers["referer"]) referer = url.parse(req.headers["referer"], true)["path"];
-                        that.redirect(referer);
+                        var referer = this.post("referer");
+                        if (/\/publish/.test(referer)) that.redirect("/");
+                        else that.redirect(referer);
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
@@ -523,9 +524,7 @@ module.exports = Controller("Home/BaseController", function() {
                         expires: (new Date(24 * 60 * 60 * 1000 + now))
                     }));
 
-                    var referer = "";
-                    if (req.headers["referer"]) referer = url.parse(req.headers["referer"], true)["path"];
-                    that.redirect(referer);
+                    that.redirect(that.post("referer") || "/");
 
                     data = JSON.parse(that.post("data"));
                     var ratetype = that.post("ratetype");
@@ -658,6 +657,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.assign("ratetypes", ratetypes);
 
                     data["data"] = JSON.stringify(prices);
+                    data["referer"] = req.headers["referer"] || "";
                     that.assign("formdata", data);
                     that.display("connect:create");
                 });
