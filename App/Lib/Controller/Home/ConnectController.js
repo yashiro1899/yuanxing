@@ -384,7 +384,7 @@ module.exports = Controller("Home/BaseController", function() {
                         }));
 
                         var referer = that.post("referer");
-                        if (/\/publish/.test(referer)) that.redirect("/");
+                        if (/\/publish|\/connect\/match/.test(referer)) that.redirect("/");
                         else that.redirect(referer);
 
                         var quotas = {};
