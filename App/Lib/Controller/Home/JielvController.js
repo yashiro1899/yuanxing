@@ -203,6 +203,13 @@ module.exports = Controller(function() {
                                 }
                                 return null;
                             }
+                            if (goods[g.gid] && goods[g.gid]["status"] == 2) {
+                                promises.push(oauth.accessProtectedResource(req, res, {
+                                    "method": "taobao.hotel.room.update",
+                                    "gid": g.gid,
+                                    "status": 2
+                                }));
+                            }
 
                             var temp = [];
                             var quotas = roomtypeids[g.roomtypeid][g.ratetype];
