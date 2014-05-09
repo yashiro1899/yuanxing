@@ -399,7 +399,7 @@ module.exports = Controller("Home/BaseController", function() {
                         for (; i < 90; i += 1) {
                             timestamp += i * 24 * 60 * 60 * 1000;
                             night = dateformat(timestamp, "yyyy-mm-dd");
-                            if (quotas(night)) {
+                            if (quotas[night]) {
                                 temp.push(quotas[night]);
                             } else {
                                 temp.push({
@@ -550,7 +550,7 @@ module.exports = Controller("Home/BaseController", function() {
                     for (; i < 90; i += 1) {
                         timestamp += i * 24 * 60 * 60 * 1000;
                         night = dateformat(timestamp, "yyyy-mm-dd");
-                        if (quotas(night)) {
+                        if (quotas[night]) {
                             temp.push(quotas[night]);
                         } else {
                             temp.push({
