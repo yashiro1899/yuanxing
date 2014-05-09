@@ -8,6 +8,7 @@ var jielvapi = require("../../../../jielv-api");
 var mapping = require("../../../../define.conf");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
+var url = require("url");
 module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "connect",
@@ -374,7 +375,10 @@ module.exports = Controller("Home/BaseController", function() {
                             path: "/",
                             expires: (new Date(24 * 60 * 60 * 1000 + now))
                         }));
-                        that.redirect(req.headers["referer"] || "");
+
+                        var referer = "";
+                        if (req.headers["referer"]) referer = url.parse(req.headers["referer"], true)["path"];
+                        that.redirect(referer);
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
@@ -518,7 +522,10 @@ module.exports = Controller("Home/BaseController", function() {
                         path: "/",
                         expires: (new Date(24 * 60 * 60 * 1000 + now))
                     }));
-                    that.redirect(req.headers["referer"] || "");
+
+                    var referer = "";
+                    if (req.headers["referer"]) referer = url.parse(req.headers["referer"], true)["path"];
+                    that.redirect(referer);
 
                     data = JSON.parse(that.post("data"));
                     var ratetype = that.post("ratetype");
