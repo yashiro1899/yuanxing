@@ -377,7 +377,6 @@ module.exports = Controller("Home/BaseController", function() {
                         that.redirect("/");
 
                         var quotas = {};
-                        var temp = [], i;
                         data.roomPriceDetail.forEach(function(rpd) {
                             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             var price = rpd.preeprice;
@@ -392,7 +391,24 @@ module.exports = Controller("Home/BaseController", function() {
                                 num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
                             };
                         });
-                        for (i in quotas) temp.push(quotas[i]);
+
+                        var temp = [];
+                        var timestamp = Date.now();
+                        var night;
+                        var i = 0;
+                        for (; i < 90; i += 1) {
+                            timestamp += i * 24 * 60 * 60 * 1000;
+                            night = dateformat(timestamp, "yyyy-mm-dd");
+                            if (quotas(night)) {
+                                temp.push(quotas[night]);
+                            } else {
+                                temp.push({
+                                    date: night,
+                                    price: 9999999,
+                                    num: 0
+                                });
+                            }
+                        }
                         quotas = temp;
 
                         return oauth.accessProtectedResource(req, res, {
@@ -510,7 +526,6 @@ module.exports = Controller("Home/BaseController", function() {
                     var profit = parseInt(that.post("profit"), 10) || 0;
 
                     var quotas = {};
-                    var temp = [], i;
                     data.forEach(function(period) {
                         period.roomPriceDetail.forEach(function(rpd) {
                             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
@@ -527,7 +542,24 @@ module.exports = Controller("Home/BaseController", function() {
                             };
                         });
                     });
-                    for (i in quotas) temp.push(quotas[i]);
+
+                    var temp = [];
+                    var timestamp = Date.now();
+                    var night;
+                    var i = 0;
+                    for (; i < 90; i += 1) {
+                        timestamp += i * 24 * 60 * 60 * 1000;
+                        night = dateformat(timestamp, "yyyy-mm-dd");
+                        if (quotas(night)) {
+                            temp.push(quotas[night]);
+                        } else {
+                            temp.push({
+                                date: night,
+                                price: 9999999,
+                                num: 0
+                            });
+                        }
+                    }
                     quotas = temp;
 
                     var params = {
