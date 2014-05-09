@@ -133,15 +133,34 @@ module.exports = Controller(function() {
                         users[u.id]["expires"] = u.expires;
                     });
 
-                    // var i, u;
-                    // var gid_room_quota_map;
-                    // var promises = [];
-                    // var now = Date.now();
-                    // for (i in users) {
-                    //     u = users[i];
-                    //     if (u.expires < now) continue;
+                    var i, u, temp;
+                    var promises = [];
+                    for (i in users) {
+                        u = users[i];
+                        if (u.expires < Date.now()) continue;
 
-                    //     gid_room_quota_map = [];
+                        temp = [];
+                        u.forEach(function(g) {
+                            temp.push(g.gid);
+                            if (temp.length == 20) {
+                                promises.push(oauth.accessProtectedResource(null, null, {
+                                    "method": "taobao.hotel.rooms.search",
+                                    "gids": temp.join(",")
+                                }, u.token));
+                                temp = [];
+                            }
+                        });
+                        if (temp.length > 0) {
+                            promises.push(oauth.accessProtectedResource(null, null, {
+                                "method": "taobao.hotel.rooms.search",
+                                "gids": temp.join(",")
+                            }, u.token));
+                        }
+                    }
+
+                    return Promise.all(promises);
+                }).then(function(result) {
+                    console.log(JSON.stringify(result, null, 4));
                     //     u.forEach(function(g) {
                     //         if (!roomtypeids[g.roomtypeid]) return null;
                     //         if (!roomtypeids[g.roomtypeid][g.ratetype]) return null;
@@ -174,9 +193,6 @@ module.exports = Controller(function() {
                     //         "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
                     //     }, u.token));
                     // }
-
-                    // return Promise.all(promises);
-                // }).then(function(result) {
                     // time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                     // var gids = [];
                     // var i, u;

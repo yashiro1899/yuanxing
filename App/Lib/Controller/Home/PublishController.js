@@ -131,6 +131,12 @@ module.exports = Controller("Home/BaseController", function() {
                         temp = [];
                     }
                 });
+                if (temp.length > 0) {
+                    promises.push(oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.rooms.search",
+                        "hids": temp.join(",")
+                    }));
+                }
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.rooms.search
                 var goods = {};
