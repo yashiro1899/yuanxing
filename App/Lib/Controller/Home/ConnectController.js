@@ -791,7 +791,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, (req.headers["referer"] || ""), {
                     path: "/",
-                    expires: (new Date(60 * 60 * 1000 + Date.now()))
+                    expires: (new Date(10 * 60 * 1000 + Date.now()))
                 }));
                 that.display();
             });
