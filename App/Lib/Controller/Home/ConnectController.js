@@ -397,7 +397,6 @@ module.exports = Controller("Home/BaseController", function() {
                         var night;
                         var i = 0;
                         for (; i < 90; i += 1) {
-                            timestamp += i * 24 * 60 * 60 * 1000;
                             night = dateformat(timestamp, "yyyy-mm-dd");
                             if (quotas[night]) {
                                 temp.push(quotas[night]);
@@ -408,6 +407,7 @@ module.exports = Controller("Home/BaseController", function() {
                                     num: 0
                                 });
                             }
+                            timestamp += 24 * 60 * 60 * 1000;
                         }
                         quotas = temp;
 
@@ -419,7 +419,7 @@ module.exports = Controller("Home/BaseController", function() {
                         });
                     }).then(function(result) {
                         if (result["error_response"]) {
-                            console.log(result["error_response"]);
+                            console.log(result["error_response"]["sub_msg"]);
                             return null;
                         }
                         result = result["hotel_room_update_response"]["room"];
@@ -548,7 +548,6 @@ module.exports = Controller("Home/BaseController", function() {
                     var night;
                     var i = 0;
                     for (; i < 90; i += 1) {
-                        timestamp += i * 24 * 60 * 60 * 1000;
                         night = dateformat(timestamp, "yyyy-mm-dd");
                         if (quotas[night]) {
                             temp.push(quotas[night]);
@@ -559,6 +558,7 @@ module.exports = Controller("Home/BaseController", function() {
                                 num: 0
                             });
                         }
+                        timestamp += 24 * 60 * 60 * 1000;
                     }
                     quotas = temp;
 
@@ -577,7 +577,7 @@ module.exports = Controller("Home/BaseController", function() {
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
                     if (result["error_response"]) {
-                        console.log(result["error_response"]);
+                        console.log(result["error_response"]["sub_msg"]);
                         return null;
                     }
                     result = result["hotel_room_update_response"]["room"];
