@@ -377,7 +377,7 @@ module.exports = Controller("Home/BaseController", function() {
                             expires: (new Date(24 * 60 * 60 * 1000 + now))
                         }));
 
-                        var referer = this.post("referer");
+                        var referer = that.post("referer");
                         if (/\/publish/.test(referer)) that.redirect("/");
                         else that.redirect(referer);
 
