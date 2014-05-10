@@ -185,30 +185,30 @@ module.exports = Controller(function() {
                         u.forEach(function(g) {
                             if (!roomtypeids[g.roomtypeid]) {
                                 if (goods[g.gid] == 1) {
-                                    promises.push(oauth.accessProtectedResource(req, res, {
+                                    promises.push(oauth.accessProtectedResource(null, null, {
                                         "method": "taobao.hotel.room.update",
                                         "gid": g.gid,
                                         "status": 2
-                                    }));
+                                    }, u.token));
                                 }
                                 return null;
                             }
                             if (!roomtypeids[g.roomtypeid][g.ratetype]) {
                                 if (goods[g.gid] == 1) {
-                                    promises.push(oauth.accessProtectedResource(req, res, {
+                                    promises.push(oauth.accessProtectedResource(null, null, {
                                         "method": "taobao.hotel.room.update",
                                         "gid": g.gid,
                                         "status": 2
-                                    }));
+                                    }, u.token));
                                 }
                                 return null;
                             }
                             if (goods[g.gid] == 2) {
-                                promises.push(oauth.accessProtectedResource(req, res, {
+                                promises.push(oauth.accessProtectedResource(null, null, {
                                     "method": "taobao.hotel.room.update",
                                     "gid": g.gid,
                                     "status": 1
-                                }));
+                                }, u.token));
                             }
 
                             var temp = [];
