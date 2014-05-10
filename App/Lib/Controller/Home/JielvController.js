@@ -184,30 +184,30 @@ module.exports = Controller(function() {
                         gid_room_quota_map = [];
                         u.forEach(function(g) {
                             if (!roomtypeids[g.roomtypeid]) {
-                                if (goods[g.gid] && goods[g.gid]["status"] == 1) {
+                                if (goods[g.gid] == 1) {
                                     promises.push(oauth.accessProtectedResource(req, res, {
                                         "method": "taobao.hotel.room.update",
                                         "gid": g.gid,
-                                        "status": 1
+                                        "status": 2
                                     }));
                                 }
                                 return null;
                             }
                             if (!roomtypeids[g.roomtypeid][g.ratetype]) {
-                                if (goods[g.gid] && goods[g.gid]["status"] == 1) {
+                                if (goods[g.gid] == 1) {
                                     promises.push(oauth.accessProtectedResource(req, res, {
                                         "method": "taobao.hotel.room.update",
                                         "gid": g.gid,
-                                        "status": 1
+                                        "status": 2
                                     }));
                                 }
                                 return null;
                             }
-                            if (goods[g.gid] && goods[g.gid]["status"] == 2) {
+                            if (goods[g.gid] == 2) {
                                 promises.push(oauth.accessProtectedResource(req, res, {
                                     "method": "taobao.hotel.room.update",
                                     "gid": g.gid,
-                                    "status": 2
+                                    "status": 1
                                 }));
                             }
 
