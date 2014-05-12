@@ -270,12 +270,11 @@ module.exports = Controller(function() {
                             time = "[" + i.modified + "]";
                             if (i.room["status"] == 2) {
                                 console.log(time, "taobao.hotel.room.update(delisting)", i.gid);
-                            } else {
-                                console.log(time, "taobao.hotel.room.update", i.gid);
+                            } else if (i.room["status"]) {
+                                console.log(time, "taobao.hotel.room.update(listing)", i.gid);
                             }
                         }
                     });
-                    console.log(JSON.stringify(result, null, 4));
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
