@@ -259,7 +259,7 @@ module.exports = Controller(function() {
                             if (!i.gids) return null;
 
                             i = i.gids;
-                            if (i.string) return null;
+                            if (!i.string) return null;
 
                             time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                             console.log(time, "taobao.hotel.rooms.update", string.join(","));
