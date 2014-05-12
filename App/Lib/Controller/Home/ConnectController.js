@@ -437,12 +437,16 @@ module.exports = Controller("Home/BaseController", function() {
                         });
                     }).then(function(result) {
                         if (result["error_response"]) {
-                            console.log("ERROR", gid, result["error_response"]["sub_msg"]);
+                            console.log("ERROR", result["error_response"]["sub_msg"], gid);
                             return null;
                         }
                         result = result["hotel_room_update_response"]["room"];
                         var time = "[" + result.modified + "]";
-                        console.log(time, "taobao.hotel.room.update", result.gid);
+                        if (result.status == 2) {
+                            console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
+                        } else {
+                            console.log(time, "taobao.hotel.room.update", result.gid);
+                        }
                     });
                     return model;
                 }
@@ -596,12 +600,16 @@ module.exports = Controller("Home/BaseController", function() {
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
                     if (result["error_response"]) {
-                        console.log("ERROR", gid, result["error_response"]["sub_msg"]);
+                        console.log("ERROR", result["error_response"]["sub_msg"], gid);
                         return null;
                     }
                     result = result["hotel_room_update_response"]["room"];
                     var time = "[" + result.modified + "]";
-                    console.log(time, "taobao.hotel.room.update", result.gid);
+                    if (result.status == 2) {
+                        console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
+                    } else {
+                        console.log(time, "taobao.hotel.room.update", result.gid);
+                    }
                 });
             } else {
                 promise = D("Goods").where({gid: gid}).select();
