@@ -253,6 +253,28 @@ module.exports = Controller(function() {
                     }
                     return Promise.all(promises);
                 }).then(function(result) {
+                    result.forEach(function(i) {
+                        if (i.hotel_rooms_update_response) {
+                            i = i.hotel_rooms_update_response;
+                            if (!i.gids) return null;
+
+                            i = i.gids;
+                            if (i.string) return null;
+
+                            time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                            console.log(time, "taobao.hotel.rooms.update", string.join(","));
+                        } else if (i.hotel_room_update_response) {
+                            i = i.hotel_room_update_response;
+                            if (!i.room) return null;
+
+                            time = "[" + i.modified + "]";
+                            if (i.room["status"] == 2) {
+                                console.log(time, "taobao.hotel.room.update(delisting)", i.gid);
+                            } else {
+                                console.log(time, "taobao.hotel.room.update", i.gid);
+                            }
+                        }
+                    });
                     console.log(JSON.stringify(result, null, 4));
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
