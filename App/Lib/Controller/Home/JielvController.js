@@ -262,7 +262,7 @@ module.exports = Controller(function() {
                             if (!i.string) return null;
 
                             time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                            console.log(time, "taobao.hotel.rooms.update", string.join(","));
+                            console.log(time, "taobao.hotel.rooms.update", i.string.join(","));
                         } else if (i.hotel_room_update_response) {
                             i = i.hotel_room_update_response;
                             if (!i.room) return null;
