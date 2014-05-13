@@ -86,7 +86,7 @@ module.exports = Controller(function() {
                 if (roomtypeids.length === 0) return null;
 
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                console.log(time, "jielv.callback", roomtypeids.sort().join(","), "roomtypeids");
+                console.log(time, "jielv.callback", roomtypeids.sort().join(","));
 
                 var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
