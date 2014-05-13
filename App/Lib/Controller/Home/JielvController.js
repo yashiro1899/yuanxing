@@ -267,11 +267,11 @@ module.exports = Controller(function() {
                             i = i.hotel_room_update_response;
                             if (!i.room) return null;
 
-                            time = "[" + i.modified + "]";
+                            time = "[" + i.room.modified + "]";
                             if (i.room["status"] == 2) {
-                                console.log(time, "taobao.hotel.room.update(delisting)", i.gid);
-                            } else if (i.room["status"]) {
-                                console.log(time, "taobao.hotel.room.update(listing)", i.gid);
+                                console.log(time, "taobao.hotel.room.update(delisting)", i.room.gid);
+                            } else if (i.room["status"] == 1) {
+                                console.log(time, "taobao.hotel.room.update(listing)", i.room.gid);
                             }
                         }
                     });
