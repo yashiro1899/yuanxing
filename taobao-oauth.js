@@ -1,4 +1,5 @@
 var cookie = require("cookie");
+var dateformat = require("dateformat");
 var fs = require("fs");
 var https = require('https');
 var path = require('path');
@@ -111,7 +112,8 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params, token) {
 
         try {
             var result = JSON.parse(data);
-            if (result && result["error_response"]) console.log("ERROR taobao", result["error_response"]["sub_msg"]);
+            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+            if (result && result["error_response"]) console.log(time, "ERROR.taobao", result["error_response"]["sub_msg"]);
 
             deferred.resolve(result);
         } catch(e) {

@@ -1,3 +1,4 @@
+var dateformat = require("dateformat");
 var http = require('http');
 var Promise = require('es6-promise').Promise;
 
@@ -24,7 +25,7 @@ module.exports = function(data) {
         host: host,
         port: port,
         path: "/commonQueryServlet",
-        method: "POST",
+        method: "POST"
     };
 
     data = JSON.stringify(data);
@@ -45,7 +46,8 @@ module.exports = function(data) {
             try {
                 result = '(' + result + ')';
                 result = eval(result);
-                if (result && result.success == 8) console.log("ERROR jielv", result.msg);
+                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                if (result && result.success == 8) console.log(time, "ERROR.jielv", result.msg);
 
                 deferred.resolve(result);
             } catch(e) {
