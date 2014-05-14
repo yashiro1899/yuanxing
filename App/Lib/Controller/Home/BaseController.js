@@ -64,7 +64,7 @@ module.exports = Controller(function() {
             }
             return pagination;
         },
-        prices: function(roomtypeids) {
+        prices: function(roomtypeids) { // limit: roomtypeids.length <= 20
             var promises = [];
             var start = Date.now();
             var end = start + 30 * 24 * 60 * 60 * 1000;
