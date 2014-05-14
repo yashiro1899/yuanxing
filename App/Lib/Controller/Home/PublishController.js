@@ -323,18 +323,28 @@ module.exports = Controller("Home/BaseController", function() {
                     if (usermeta.guide) params["guide"] = usermeta.guide;
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) { // taobao.hotel.room.add
-                    var message = "暂无价格！";
+                    var r = {
+                        success: 8,
+                        message: "暂无价格！"
+                    };
 
-                    if (!result || (result && result["error_response"])) {
-                        if (result && result["error_response"]) message = result["error_response"]["sub_msg"];
-                        that.end({
-                            success: 8,
-                            message: message
-                        });
+                    if (!result) {
+                        that.end(r);
                         return getDefer().promise;
                     }
 
-                    result = result["hotel_room_add_response"]["room"];
+                    result = result["hotel_room_add_response"];
+                    if (!result) {
+                        that.end(r);
+                        return getDefer().promise;
+                    }
+
+                    result = result["room"];
+                    if (!result) {
+                        that.end(r);
+                        return getDefer().promise;
+                    }
+
                     gid = result.gid;
                     iid = result.iid;
                     return D("Goods").add({

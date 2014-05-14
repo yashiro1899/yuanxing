@@ -436,11 +436,14 @@ module.exports = Controller("Home/BaseController", function() {
                             "status": 1
                         });
                     }).then(function(result) {
-                        if (result["error_response"]) {
-                            console.log("ERROR", result["error_response"]["sub_msg"], gid);
-                            return null;
-                        }
-                        result = result["hotel_room_update_response"]["room"];
+                        if (!result) return null;
+
+                        result = result["hotel_room_update_response"];
+                        if (!result) return null;
+
+                        result = result["room"];
+                        if (!result) return null;
+
                         var time = "[" + result.modified + "]";
                         if (result.status == 2) {
                             console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
@@ -599,11 +602,14 @@ module.exports = Controller("Home/BaseController", function() {
 
                     return oauth.accessProtectedResource(req, res, params);
                 }).then(function(result) {
-                    if (result["error_response"]) {
-                        console.log("ERROR", result["error_response"]["sub_msg"], gid);
-                        return null;
-                    }
-                    result = result["hotel_room_update_response"]["room"];
+                    if (!result) return null;
+
+                    result = result["hotel_room_update_response"];
+                    if (!result) return null;
+
+                    result = result["room"];
+                    if (!result) return null;
+
                     var time = "[" + result.modified + "]";
                     if (result.status == 2) {
                         console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
