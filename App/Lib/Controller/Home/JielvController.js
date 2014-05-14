@@ -37,7 +37,7 @@ function prices(roomtypeids) {
         for (var j = 0; j < 3; j += 1) {
             promises.push(jielvapi({
                 "QueryType": "hotelpriceall",
-                "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20),
+                "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20).join("/"),
                 "checkInDate": dateformat(start, "yyyy-mm-dd"),
                 "checkOutDate": dateformat(end, "yyyy-mm-dd")
             }));
