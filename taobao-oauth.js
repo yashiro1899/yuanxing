@@ -111,6 +111,8 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params, token) {
 
         try {
             var result = JSON.parse(data);
+            if (result && result["error_response"]) console.log("ERROR", result["error_response"]["sub_msg"]);
+
             deferred.resolve(result);
         } catch(e) {
             deferred.resolve(null);

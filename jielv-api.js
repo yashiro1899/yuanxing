@@ -45,6 +45,8 @@ module.exports = function(data) {
             try {
                 result = '(' + result + ')';
                 result = eval(result);
+                if (result && result.success == 8) console.log("ERROR", result.msg);
+
                 deferred.resolve(result);
             } catch(e) {
                 deferred.resolve(null);
