@@ -41,8 +41,6 @@ function prices(roomtypeids) {
                 "checkInDate": dateformat(start, "yyyy-mm-dd"),
                 "checkOutDate": dateformat(end, "yyyy-mm-dd")
             }));
-            console.log(roomtypeids.slice(i * 20, (i + 1) * 20));
-            console.log(dateformat(start, "yyyy-mm-dd"));
 
             start = end;
             end = start + 30 * 24 * 60 * 60 * 1000;
@@ -111,27 +109,27 @@ module.exports = Controller(function() {
 
                     var promises = [];
                     promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
-                    promises = promises.concat(prices(roomtypeids));
+                    promises = promises.concat(prices(Object.keys(roomtypeids)));
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
-                    console.log(result.length);
-                //     var data = [];
-                //     if (result[0] && result[0].data.length) data.push(result[0].data);
-                //     if (result[1] && result[1].data.length) data.push(result[1].data);
-                //     if (result[2] && result[2].data.length) data.push(result[2].data);
-                //     if (data.length === 0) return getDefer().promise;
+                    var data = [];
+                    result.slice(1).forEach(function(p) {
+                        if (p && p.data.length) data.push(p.data);
+                    });
+                    if (data.length === 0) return getDefer().promise;
 
-                //     roomtypeids = {};
-                //     data.forEach(function(period) {
-                //         period.forEach(function(r) {
-                //             if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
-                //             r.roomPriceDetail.forEach(function(rpd) {
-                //                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                //                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
-                //                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
-                //             });
-                //         });
-                //     });
+                    roomtypeids = {};
+                    data.forEach(function(period) {
+                        period.forEach(function(r) {
+                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
+                            r.roomPriceDetail.forEach(function(rpd) {
+                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
+                            });
+                        });
+                    });
+                    console.log(Object.keys(roomtypeids));
 
                 //     data = result[3] || [];
                 //     if (data.length === 0) return getDefer().promise;
