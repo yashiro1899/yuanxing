@@ -44,9 +44,7 @@ module.exports = Controller("Home/BaseController", function() {
                         model1 = model1.where(ids);
                         model2 = model2.where(ids);
                     } else {
-                        ids = "userid = " + that.userInfo["taobao_user_id"];
-                        model1 = model1.where(ids);
-                        model2 = model2.where(ids);
+                        return [null, null];
                     }
 
                     model1 = model1.order("updated_at desc").page(page).select();
