@@ -95,7 +95,7 @@ module.exports = Controller(function() {
 
                 var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
-                model.select().then(function(result) {
+                model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
@@ -165,7 +165,7 @@ module.exports = Controller(function() {
                     }
 
                     return Promise.all(promises);
-                }).then(function(result) {
+                }).then(function(result) { // taobao.hotel.rooms.search
                     var goods = {};
                     result.forEach(function(r) {
                         r = r["hotel_rooms_search_response"];
@@ -180,7 +180,7 @@ module.exports = Controller(function() {
                         r.forEach(function(g) {goods[g.gid] = g.status;});
                     });
 
-                    var i, u, temp;
+                    var i, u;
                     var promises = [];
                     var gid_room_quota_map;
                     for (i in users) {
@@ -252,13 +252,16 @@ module.exports = Controller(function() {
                             });
                         });
 
-                        promises.push(oauth.accessProtectedResource(null, null, {
-                            "method": "taobao.hotel.rooms.update",
-                            "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
-                        }, u.token));
+                        var length = Math.ceil(gid_room_quota_map / 30);
+                        for (var j = 0; j < length; j += 1) {
+                            promises.push(oauth.accessProtectedResource(null, null, {
+                                "method": "taobao.hotel.rooms.update",
+                                "gid_room_quota_map": JSON.stringify(gid_room_quota_map.slice(j * 30, (j + 1) * 30))
+                            }, u.token));
+                        }
                     }
                     return Promise.all(promises);
-                }).then(function(result) {
+                }).then(function(result) { // taobao.hotel.rooms.update
                     result.forEach(function(i) {
                         if (i.hotel_rooms_update_response) {
                             i = i.hotel_rooms_update_response;
