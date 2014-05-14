@@ -45,7 +45,7 @@ module.exports = function(data) {
             try {
                 result = '(' + result + ')';
                 result = eval(result);
-                if (result && result.success == 8) console.log("ERROR", result.msg);
+                if (result && result.success == 8) console.log("ERROR jielv", result.msg);
 
                 deferred.resolve(result);
             } catch(e) {
