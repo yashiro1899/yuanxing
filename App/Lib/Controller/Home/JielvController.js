@@ -114,175 +114,176 @@ module.exports = Controller(function() {
                     promises = promises.concat(prices(roomtypeids));
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
-                    var data = [];
-                    if (result[0] && result[0].data.length) data.push(result[0].data);
-                    if (result[1] && result[1].data.length) data.push(result[1].data);
-                    if (result[2] && result[2].data.length) data.push(result[2].data);
-                    if (data.length === 0) return getDefer().promise;
+                    console.log(result.length);
+                //     var data = [];
+                //     if (result[0] && result[0].data.length) data.push(result[0].data);
+                //     if (result[1] && result[1].data.length) data.push(result[1].data);
+                //     if (result[2] && result[2].data.length) data.push(result[2].data);
+                //     if (data.length === 0) return getDefer().promise;
 
-                    roomtypeids = {};
-                    data.forEach(function(period) {
-                        period.forEach(function(r) {
-                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
-                            r.roomPriceDetail.forEach(function(rpd) {
-                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
-                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
-                            });
-                        });
-                    });
+                //     roomtypeids = {};
+                //     data.forEach(function(period) {
+                //         period.forEach(function(r) {
+                //             if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
+                //             r.roomPriceDetail.forEach(function(rpd) {
+                //                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                //                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                //                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
+                //             });
+                //         });
+                //     });
 
-                    data = result[3] || [];
-                    if (data.length === 0) return getDefer().promise;
+                //     data = result[3] || [];
+                //     if (data.length === 0) return getDefer().promise;
 
-                    data.forEach(function(u) {
-                        if (!users[u.id]) return null;
-                        users[u.id]["token"] = u.token;
-                        users[u.id]["expires"] = u.expires;
-                    });
+                //     data.forEach(function(u) {
+                //         if (!users[u.id]) return null;
+                //         users[u.id]["token"] = u.token;
+                //         users[u.id]["expires"] = u.expires;
+                //     });
 
-                    var i, u, temp;
-                    var promises = [];
-                    for (i in users) {
-                        u = users[i];
-                        if (u.expires < Date.now()) continue;
+                //     var i, u, temp;
+                //     var promises = [];
+                //     for (i in users) {
+                //         u = users[i];
+                //         if (u.expires < Date.now()) continue;
 
-                        temp = [];
-                        u.forEach(function(g) {
-                            temp.push(g.gid);
-                            if (temp.length == 20) {
-                                promises.push(oauth.accessProtectedResource(null, null, {
-                                    "method": "taobao.hotel.rooms.search",
-                                    "gids": temp.join(",")
-                                }, u.token));
-                                temp = [];
-                            }
-                        });
-                        if (temp.length > 0) {
-                            promises.push(oauth.accessProtectedResource(null, null, {
-                                "method": "taobao.hotel.rooms.search",
-                                "gids": temp.join(",")
-                            }, u.token));
-                        }
-                    }
+                //         temp = [];
+                //         u.forEach(function(g) {
+                //             temp.push(g.gid);
+                //             if (temp.length == 20) {
+                //                 promises.push(oauth.accessProtectedResource(null, null, {
+                //                     "method": "taobao.hotel.rooms.search",
+                //                     "gids": temp.join(",")
+                //                 }, u.token));
+                //                 temp = [];
+                //             }
+                //         });
+                //         if (temp.length > 0) {
+                //             promises.push(oauth.accessProtectedResource(null, null, {
+                //                 "method": "taobao.hotel.rooms.search",
+                //                 "gids": temp.join(",")
+                //             }, u.token));
+                //         }
+                //     }
 
-                    return Promise.all(promises);
-                }).then(function(result) {
-                    var goods = {};
-                    result.forEach(function(r) {
-                        r = r["hotel_rooms_search_response"];
-                        if (!r) return null;
+                //     return Promise.all(promises);
+                // }).then(function(result) {
+                //     var goods = {};
+                //     result.forEach(function(r) {
+                //         r = r["hotel_rooms_search_response"];
+                //         if (!r) return null;
 
-                        r = r["rooms"];
-                        if (!r) return null;
+                //         r = r["rooms"];
+                //         if (!r) return null;
 
-                        r = r["room"];
-                        if (!r) return null;
+                //         r = r["room"];
+                //         if (!r) return null;
 
-                        r.forEach(function(g) {goods[g.gid] = g.status;});
-                    });
+                //         r.forEach(function(g) {goods[g.gid] = g.status;});
+                //     });
 
-                    var i, u, temp;
-                    var promises = [];
-                    var gid_room_quota_map;
-                    for (i in users) {
-                        u = users[i];
-                        if (u.expires < Date.now()) continue;
+                //     var i, u, temp;
+                //     var promises = [];
+                //     var gid_room_quota_map;
+                //     for (i in users) {
+                //         u = users[i];
+                //         if (u.expires < Date.now()) continue;
 
-                        gid_room_quota_map = [];
-                        u.forEach(function(g) {
-                            if (!roomtypeids[g.roomtypeid]) {
-                                if (goods[g.gid] == 1) {
-                                    promises.push(oauth.accessProtectedResource(null, null, {
-                                        "method": "taobao.hotel.room.update",
-                                        "gid": g.gid,
-                                        "status": 2
-                                    }, u.token));
-                                }
-                                return null;
-                            }
-                            if (!roomtypeids[g.roomtypeid][g.ratetype]) {
-                                if (goods[g.gid] == 1) {
-                                    promises.push(oauth.accessProtectedResource(null, null, {
-                                        "method": "taobao.hotel.room.update",
-                                        "gid": g.gid,
-                                        "status": 2
-                                    }, u.token));
-                                }
-                                return null;
-                            }
-                            if (goods[g.gid] == 2) {
-                                promises.push(oauth.accessProtectedResource(null, null, {
-                                    "method": "taobao.hotel.room.update",
-                                    "gid": g.gid,
-                                    "status": 1
-                                }, u.token));
-                            }
+                //         gid_room_quota_map = [];
+                //         u.forEach(function(g) {
+                //             if (!roomtypeids[g.roomtypeid]) {
+                //                 if (goods[g.gid] == 1) {
+                //                     promises.push(oauth.accessProtectedResource(null, null, {
+                //                         "method": "taobao.hotel.room.update",
+                //                         "gid": g.gid,
+                //                         "status": 2
+                //                     }, u.token));
+                //                 }
+                //                 return null;
+                //             }
+                //             if (!roomtypeids[g.roomtypeid][g.ratetype]) {
+                //                 if (goods[g.gid] == 1) {
+                //                     promises.push(oauth.accessProtectedResource(null, null, {
+                //                         "method": "taobao.hotel.room.update",
+                //                         "gid": g.gid,
+                //                         "status": 2
+                //                     }, u.token));
+                //                 }
+                //                 return null;
+                //             }
+                //             if (goods[g.gid] == 2) {
+                //                 promises.push(oauth.accessProtectedResource(null, null, {
+                //                     "method": "taobao.hotel.room.update",
+                //                     "gid": g.gid,
+                //                     "status": 1
+                //                 }, u.token));
+                //             }
 
-                            var temp = [];
-                            var quotas = roomtypeids[g.roomtypeid][g.ratetype];
-                            var timestamp = Date.now();
-                            var night, price, num;
-                            var i = 0;
-                            for (; i < 90; i += 1) {
-                                night = dateformat(timestamp, "yyyy-mm-dd");
-                                if (quotas[night]) {
-                                    price = quotas[night]["preeprice"];
-                                    if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
-                                    else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
+                //             var temp = [];
+                //             var quotas = roomtypeids[g.roomtypeid][g.ratetype];
+                //             var timestamp = Date.now();
+                //             var night, price, num;
+                //             var i = 0;
+                //             for (; i < 90; i += 1) {
+                //                 night = dateformat(timestamp, "yyyy-mm-dd");
+                //                 if (quotas[night]) {
+                //                     price = quotas[night]["preeprice"];
+                //                     if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
+                //                     else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
 
-                                    num = quotas[night]["qtyable"];
-                                    if (num < 0) num = 0;
+                //                     num = quotas[night]["qtyable"];
+                //                     if (num < 0) num = 0;
 
-                                    temp.push({
-                                        date: night,
-                                        price: price,
-                                        num: num
-                                    });
-                                } else {
-                                    temp.push({
-                                        date: night,
-                                        price: 9999999,
-                                        num: 0
-                                    });
-                                }
-                                timestamp += 24 * 60 * 60 * 1000;
-                            }
-                            gid_room_quota_map.push({
-                                gid: g.gid,
-                                roomQuota: temp
-                            });
-                        });
+                //                     temp.push({
+                //                         date: night,
+                //                         price: price,
+                //                         num: num
+                //                     });
+                //                 } else {
+                //                     temp.push({
+                //                         date: night,
+                //                         price: 9999999,
+                //                         num: 0
+                //                     });
+                //                 }
+                //                 timestamp += 24 * 60 * 60 * 1000;
+                //             }
+                //             gid_room_quota_map.push({
+                //                 gid: g.gid,
+                //                 roomQuota: temp
+                //             });
+                //         });
 
-                        promises.push(oauth.accessProtectedResource(null, null, {
-                            "method": "taobao.hotel.rooms.update",
-                            "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
-                        }, u.token));
-                    }
-                    return Promise.all(promises);
-                }).then(function(result) {
-                    result.forEach(function(i) {
-                        if (i.hotel_rooms_update_response) {
-                            i = i.hotel_rooms_update_response;
-                            if (!i.gids) return null;
+                //         promises.push(oauth.accessProtectedResource(null, null, {
+                //             "method": "taobao.hotel.rooms.update",
+                //             "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
+                //         }, u.token));
+                //     }
+                //     return Promise.all(promises);
+                // }).then(function(result) {
+                //     result.forEach(function(i) {
+                //         if (i.hotel_rooms_update_response) {
+                //             i = i.hotel_rooms_update_response;
+                //             if (!i.gids) return null;
 
-                            i = i.gids;
-                            if (!i.string) return null;
+                //             i = i.gids;
+                //             if (!i.string) return null;
 
-                            time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                            console.log(time, "taobao.hotel.rooms.update", i.string.sort().join(","));
-                        } else if (i.hotel_room_update_response) {
-                            i = i.hotel_room_update_response;
-                            if (!i.room) return null;
+                //             time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                //             console.log(time, "taobao.hotel.rooms.update", i.string.sort().join(","));
+                //         } else if (i.hotel_room_update_response) {
+                //             i = i.hotel_room_update_response;
+                //             if (!i.room) return null;
 
-                            time = "[" + i.room.modified + "]";
-                            if (i.room["status"] == 2) {
-                                console.log(time, "taobao.hotel.room.update(delisting)", i.room.gid);
-                            } else if (i.room["status"] == 1) {
-                                console.log(time, "taobao.hotel.room.update(listing)", i.room.gid);
-                            }
-                        }
-                    });
+                //             time = "[" + i.room.modified + "]";
+                //             if (i.room["status"] == 2) {
+                //                 console.log(time, "taobao.hotel.room.update(delisting)", i.room.gid);
+                //             } else if (i.room["status"] == 1) {
+                //                 console.log(time, "taobao.hotel.room.update(listing)", i.room.gid);
+                //             }
+                //         }
+                //     });
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
