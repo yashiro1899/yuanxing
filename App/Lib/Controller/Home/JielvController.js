@@ -252,7 +252,7 @@ module.exports = Controller(function() {
                             });
                         });
 
-                        var length = Math.ceil(gid_room_quota_map / 30);
+                        var length = Math.ceil(gid_room_quota_map.length / 30);
                         for (var j = 0; j < length; j += 1) {
                             promises.push(oauth.accessProtectedResource(null, null, {
                                 "method": "taobao.hotel.rooms.update",
