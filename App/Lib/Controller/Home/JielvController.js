@@ -91,7 +91,7 @@ module.exports = Controller(function() {
                 if (roomtypeids.length === 0) return null;
 
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                console.log(time, "jielv.callback", roomtypeids.sort().join(","));
+                console.log(time, "jielv.callback", roomtypeids.sort().join(","), roomtypeids.length, "roomtypeids");
 
                 var users = {};
                 var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
@@ -271,7 +271,7 @@ module.exports = Controller(function() {
                             if (!i.string) return null;
 
                             time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                            console.log(time, "taobao.hotel.rooms.update", i.string.sort().join(","));
+                            console.log(time, "taobao.hotel.rooms.update", i.string.sort().join(","), i.string.length, "gids");
                         } else if (i.hotel_room_update_response) {
                             i = i.hotel_room_update_response;
                             if (!i.room) return null;
