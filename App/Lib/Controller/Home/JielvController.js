@@ -27,19 +27,26 @@ function rot13(s) {
 }
 function prices(roomtypeids) {
     var promises = [];
-    var start = Date.now();
-    var end = start + 30 * 24 * 60 * 60 * 1000;
+    var length = Math.ceil(roomtypeids.length / 20);
+    var i = 0;
 
-    for (var i = 0; i < 3; i += 1) {
-        promises.push(jielvapi({
-            "QueryType": "hotelpriceall",
-            "roomtypeids": roomtypeids,
-            "checkInDate": dateformat(start, "yyyy-mm-dd"),
-            "checkOutDate": dateformat(end, "yyyy-mm-dd")
-        }));
+    for (; i < length; i += 1) {
+        var start = Date.now();
+        var end = start + 30 * 24 * 60 * 60 * 1000;
 
-        start = end;
-        end = start + 30 * 24 * 60 * 60 * 1000;
+        for (var j = 0; j < 3; j += 1) {
+            promises.push(jielvapi({
+                "QueryType": "hotelpriceall",
+                "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20),
+                "checkInDate": dateformat(start, "yyyy-mm-dd"),
+                "checkOutDate": dateformat(end, "yyyy-mm-dd")
+            }));
+            console.log(roomtypeids.slice(i * 20, (i + 1) * 20));
+            console.log(dateformat(start, "yyyy-mm-dd"));
+
+            start = end;
+            end = start + 30 * 24 * 60 * 60 * 1000;
+        }
     }
     return promises;
 }
@@ -102,8 +109,9 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    var promises = prices(Object.keys(roomtypeids).join("/"));
+                    var promises = [];
                     promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
+                    promises = promises.concat(prices(roomtypeids));
                     return Promise.all(promises);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = [];
