@@ -130,7 +130,7 @@ module.exports = Controller(function() {
                         });
                     });
 
-                    data = result[3] || [];
+                    data = result[0] || [];
                     if (data.length === 0) return getDefer().promise;
 
                     data.forEach(function(u) {
