@@ -131,8 +131,11 @@ module.exports = Controller(function() {
                         period.forEach(function(r) {
                             if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
                             r.roomPriceDetail.forEach(function(rpd) {
-                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+
+                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                var num = (rpd.qtyable > 0 ? rpd.qtyable : 0);
+                                if (num < 1) return null;
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
                             });
                         });
