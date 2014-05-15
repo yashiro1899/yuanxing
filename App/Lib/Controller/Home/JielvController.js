@@ -61,6 +61,14 @@ module.exports = Controller(function() {
                 "taobao_user_nick": "",
                 "access_token": ""
             };
+
+            var token = this.get("token");
+            if (token) {
+                data["taobao_user_id"] = token.slice(-9);
+                data["taobao_user_nick"] = token.slice(-9);
+                data["access_token"] = token;
+            }
+
             data = querystring.stringify(data);
             data = rot13(data);
             data = cookie.serialize("access_token.taobao", data, {
