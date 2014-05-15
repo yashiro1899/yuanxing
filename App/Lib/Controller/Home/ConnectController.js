@@ -396,17 +396,20 @@ module.exports = Controller("Home/BaseController", function() {
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
-                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             var price = rpd.preeprice;
+                            var num = (rpd.qtyable > 0 ? rpd.qtyable : 0);
+                            if (num < 1) return null;
+
                             profit = parseInt(profit, 10) || 0;
                             if (rpd.ratetype != ratetype) return null;
                             if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
                             else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
 
+                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             quotas[night] = {
                                 date: night,
                                 price: price,
-                                num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
+                                num: num
                             };
                         });
 
@@ -554,17 +557,20 @@ module.exports = Controller("Home/BaseController", function() {
                     var quotas = {};
                     data.forEach(function(period) {
                         period.roomPriceDetail.forEach(function(rpd) {
-                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             var price = rpd.preeprice;
+                            var num = (rpd.qtyable > 0 ? rpd.qtyable : 0);
+                            if (num < 1) return null;
+
                             profit = parseInt(profit, 10) || 0;
                             if (rpd.ratetype != ratetype) return null;
                             if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
                             else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
 
+                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             quotas[night] = {
                                 date: night,
                                 price: price,
-                                num: (rpd.qtyable > 0 ? rpd.qtyable : 0)
+                                num: num
                             };
                         });
                     });
