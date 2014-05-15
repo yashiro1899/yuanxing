@@ -220,7 +220,10 @@ module.exports = Controller(function() {
                                 }
                                 return null;
                             }
-                            if (goods[g.gid] == 2) {
+
+                            var temp = [];
+                            var quotas = roomtypeids[g.roomtypeid][g.ratetype];
+                            if (goods[g.gid] == 2 && Object.keys(quotas).length > 0) {
                                 promises.push(oauth.accessProtectedResource(null, null, {
                                     "method": "taobao.hotel.room.update",
                                     "gid": g.gid,
@@ -228,8 +231,6 @@ module.exports = Controller(function() {
                                 }, u.token));
                             }
 
-                            var temp = [];
-                            var quotas = roomtypeids[g.roomtypeid][g.ratetype];
                             var timestamp = Date.now();
                             var night, price, num;
                             var i = 0;
