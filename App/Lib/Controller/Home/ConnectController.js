@@ -58,6 +58,7 @@ module.exports = Controller("Home/BaseController", function() {
                 } else {
                     result = [];
                 }
+                if (result.length === 0) return null;
 
                 return oauth.accessProtectedResource(req, res, {
                     "item_ids": result.join(','),
@@ -207,6 +208,7 @@ module.exports = Controller("Home/BaseController", function() {
                 } else {
                     result = [];
                 }
+                if (result.length === 0) return null;
 
                 return oauth.accessProtectedResource(req, res, {
                     "item_ids": result.join(','),
