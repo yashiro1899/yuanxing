@@ -32,7 +32,7 @@ connection.connect();
 var fields1 = "`hid`,`hotelid`,`original`";
 var fields2 = "`rid`,`hid`,`roomtypeid`";
 var qs = "SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `think_hotel` ";
-qs += "ORDER BY `hotelid` LIMIT 1100,1000";
+qs += "ORDER BY `hotelid` LIMIT 5000";
 db(qs).then(function(hotels) {
     var total1 = 0, total2 = 0;
     var start = +(new Date());
