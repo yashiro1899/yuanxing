@@ -64,8 +64,8 @@ module.exports = Controller(function() {
 
             var token = this.get("token");
             if (token) {
-                data["taobao_user_id"] = token.slice(-9);
-                data["taobao_user_nick"] = token.slice(-9);
+                data["taobao_user_id"] = token.slice(47);
+                data["taobao_user_nick"] = token.slice(47);
                 data["access_token"] = token;
             }
 
