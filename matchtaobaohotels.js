@@ -229,7 +229,7 @@ db(qs).then(function(hotels) {
 
             return Promise.all(sqls);
         }).then(function(result) { // think_taobaoroom
-            console.log(hotel.name, result.length, "roomtypeids");
+            console.log(params.name, result.length, "roomtypeids");
         })["catch"](function(e) {console.log(e);});
     }
 })["catch"](function(e) {console.log(e);});
