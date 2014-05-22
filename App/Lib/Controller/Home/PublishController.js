@@ -306,7 +306,8 @@ module.exports = Controller("Home/BaseController", function() {
                         "payment_type": "A",
                         "desc": title,
                         "room_quotas": JSON.stringify(quotas),
-                        "has_receipt": false, // TODO
+                        "receipt_type": "A",
+                        "has_receipt": true, // TODO
                         "refund_policy_info": JSON.stringify({t: 2}) // TODO
                     };
 
