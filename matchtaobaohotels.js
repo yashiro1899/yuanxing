@@ -59,16 +59,16 @@ db(qs).then(function(hotels) {
                 if (state) {
                     params["domestic"] = true;
                     params["province"] = state[1];
-                    if (params.name) promises.push(generate(params));
+                    if (params.name) promises.push(generate(params, hotel));
                 } else if (country) {
                     params["domestic"] = false;
                     params["country"] = country[1];
-                    if (params.name) promises.push(generate(params));
+                    if (params.name) promises.push(generate(params, hotel));
 
                     var another = {};
                     Object.keys(params).forEach(function(k) {return another[k] = params[k];});
                     another["name"] = hotel.nameeng;
-                    if (params.name) promises.push(generate(params));
+                    if (params.name) promises.push(generate(params, hotel));
                 }
             });
             return Promise.all(promises);
@@ -81,7 +81,7 @@ db(qs).then(function(hotels) {
         })["catch"](function(e) {console.log(e);});
     }, Promise.resolve());
 
-    function generate(params) {
+    function generate(params, hotel) {
         var data = [],
             inserted = [],
             roomtypeids = [];
