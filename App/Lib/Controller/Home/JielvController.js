@@ -73,7 +73,7 @@ module.exports = Controller(function() {
             data = rot13(data);
             data = cookie.serialize("access_token.taobao", data, {
                 path: "/",
-                expires: (new Date(24 * 60 * 60 * 1000 + now))
+                expires: (new Date(90 * 24 * 60 * 60 * 1000 + now))
             });
 
             res.setHeader("Set-Cookie", data);
