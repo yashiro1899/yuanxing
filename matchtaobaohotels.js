@@ -80,6 +80,8 @@ db(qs).then(function(hotels) {
     }, Promise.resolve());
 
     function generate(params, hotel) {
+        console.log(params.name);
+
         var data = [],
             inserted = [],
             roomtypeids = [];
@@ -113,7 +115,7 @@ db(qs).then(function(hotels) {
                 v.push(hotel.hotelid);
                 v.push(JSON.stringify(JSON.stringify(h)));
 
-                if (ids.indexOf(h.hotelid) > -1) {
+                if (ids.indexOf(h.hid) > -1) {
                     var qs = "UPDATE `think_taobaohotel` SET ";
                     var f = fields1.split(",");
                     v.forEach(function(value, index) {
