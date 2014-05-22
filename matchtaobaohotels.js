@@ -73,11 +73,9 @@ db(qs).then(function(hotels) {
             });
             return Promise.all(promises);
         }).then(function() {
-            if (last === p) {
-                var now = +(new Date());
-                console.log("hotel matched:", total1, ",room matched:", total2, ",time:", now - start, "milliseconds");
-                connection.end();
-            }
+            var now = +(new Date());
+            console.log("hotel matched:", total1, ",room matched:", total2, ",time:", now - start, "milliseconds");
+            if (last === p) connection.end();
         })["catch"](function(e) {console.log(e);});
     }, Promise.resolve());
 
