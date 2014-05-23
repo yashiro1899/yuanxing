@@ -168,6 +168,13 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
         headers: headers
     };
 
+    if (params['grant_type']) {
+        headers['Content-Length'] = 0;
+        delete headers['Content-Type'];
+        options["path"] = parsed.pathname + "?" + querystring.stringify(params);
+        body = new Buffer("");
+    }
+
     that._executeRequest(https, options, body, callback);
 };
 
