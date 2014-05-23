@@ -135,42 +135,35 @@ OAuth2.prototype._request = function(url, params, access_token, callback) {
     var headers = {};
     var getMimeType = require('simple-mime')('application/octect-stream');
     var boundary = "----webkitformboundary";
-    var body = "";
+    var body = new Buffer("");
     boundary += (+(new Date())).toString(16);
 
-    if (params.pic) {
-        body += util.format('\r\n--%s\r\n', boundary);
-        body += util.format('Content-Disposition: form-data; name="pic"; filename="%s"\r\n', params.pic);
-        body += util.format('Content-Type: %s\r\n\r\n', getMimeType(params.pic));
-        body = new Buffer(body);
-        body = Buffer.concat([body, fs.readFileSync(params.pic), new Buffer(util.format('\r\n--%s--', boundary))]);
-        delete params.pic;
-    } else if (params.room_quotas) {
-        body += util.format('\r\n--%s\r\n', boundary);
-        body += 'Content-Disposition: form-data; name="room_quotas"\r\n\r\n';
-        body = new Buffer(body);
-        body = Buffer.concat([body, new Buffer(params.room_quotas), new Buffer(util.format('\r\n--%s--', boundary))]);
-        delete params.room_quotas;
-    }
-    if (params.gid_room_quota_map) {
-        body += util.format('\r\n--%s\r\n', boundary);
-        body += 'Content-Disposition: form-data; name="gid_room_quota_map"\r\n\r\n';
-        body = new Buffer(body);
-        body = Buffer.concat([body, new Buffer(params.gid_room_quota_map), new Buffer(util.format('\r\n--%s--', boundary))]);
-        delete params.gid_room_quota_map;
-    }
     if (access_token) params["access_token"] = access_token;
+    (Object.keys(params)).forEach(function(p) {
+        var field = util.format('\r\n--%s\r\n', boundary);
+        if (p == "pic") {
+            field += 'Content-Disposition: form-data; name="pic"; filename="placeholder.jpg"\r\n';
+            field += util.format('Content-Type: %s\r\n\r\n', getMimeType(params.pic));
+            field = new Buffer(field);
+            body = Buffer.concat([body, field, fs.readFileSync(params.pic)]);
+            return null;
+        }
+
+        field += util.format('Content-Disposition: form-data; name="%s"\r\n\r\n', p);
+        field += params[p];
+        field = new Buffer(field);
+        body = Buffer.concat([body, field]);
+    });
+    body = Buffer.concat([body, new Buffer(util.format('\r\n--%s--', boundary))]);
 
     headers['Host'] = parsed.host;
-    headers['Content-Length'] = body ? body.length : 0;
-    if (headers['Content-Length'] > 0) {
-        headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary + '';
-    }
+    headers['Content-Length'] = body.length;
+    headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary;
 
     var options = {
         host: parsed.hostname,
         port: parsed.port,
-        path: parsed.pathname + "?" + querystring.stringify(params),
+        path: parsed.pathname,
         method: "POST",
         headers: headers
     };
