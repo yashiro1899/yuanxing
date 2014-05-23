@@ -114,10 +114,11 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params, token) {
             var result = JSON.parse(data);
             var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
             var message = "";
+            var user = token.slice(47);
             if (result && result["error_response"]) {
                 message = result["error_response"]["sub_msg"];
                 message = message || result["error_response"]["msg"];
-                console.log(time, "taobao.ERROR", message, "(" + params["method"] + ")");
+                console.log(time, "taobao.ERROR", JSON.stringify(message), user, "(" + params["method"] + ")");
             }
 
             deferred.resolve(result);

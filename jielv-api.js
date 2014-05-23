@@ -47,7 +47,7 @@ module.exports = function(data) {
                 result = '(' + result + ')';
                 result = eval(result);
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                if (result && result.success == 8) console.log(time, "jielv.ERROR", result.msg);
+                if (result && result.success == 8) console.log(time, "jielv.ERROR", JSON.stringify(result.msg));
 
                 deferred.resolve(result);
             } catch(e) {
