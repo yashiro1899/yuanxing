@@ -120,7 +120,7 @@ OAuth2.prototype.accessProtectedResource = function(req, res, params, token) {
                 message = message || result["error_response"]["msg"];
                 console.log(time, "taobao.ERROR", JSON.stringify(message), user, "(" + params["method"] + ")");
 
-                if (result.code == 28 && res) {
+                if (result["error_response"]["code"] == 28 && res) {
                     res.setHeader("Set-Cookie", cookie.serialize("access_token.taobao", "", {
                         path: "/",
                         expires: (new Date())
