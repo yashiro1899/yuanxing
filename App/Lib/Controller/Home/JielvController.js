@@ -84,26 +84,31 @@ function prices2(roomtypeids) {
             return Promise.all(p.map(function(param) {return jielvapi(param);}));
         }).then(function(result) {
             var rooms = [];
-            result.forEach(function(cluster) {
+            var i = 0,
+                len = result.length;
+            var cluster;
+
+            var j, clen, room;
+
+            var k, rlen, rpd, rpds;
+            for (; i < len; i += 1) {
+                cluster = result[i];
                 if (cluster && cluster.data && cluster.data.length) {
-                    cluster.data.forEach(function(room) {
-                        var rpds = room.roomPriceDetail.map(function(rpd) {
-                            if (rpd.qtyable < 1) return null;
-                            var s = rpd.ratetype;
-                            s += "/";
-                            s += rpd.night;
-                            s += "/";
-                            s += rpd.preeprice;
-                            s += "/";
-                            s += rpd.qtyable;
-                            return s;
-                        });
-                        rpds = rpds.filter(function(rpd) {return rpd !== null;});
+                    clen = cluster.data.length;
+                    for (j = 0; j < clen; j += 1) {
+                        room = cluster.data[j];
+                        rlen = room.roomPriceDetail.length;
+                        rpds = [];
+                        for (k = 0; k < rlen; k += 1) {
+                            rpd = room.roomPriceDetail[k];
+                            if (rpd.qtyable < 1) continue;
+                            rpds.push([rpd.ratetype, rpd.night, rpd.preeprice, rpd.qtyable]);
+                        }
                         rpds.roomtypeid = room.roomtypeId;
                         rooms.push(rpds);
-                    });
+                    }
                 }
-            });
+            }
             return data.concat(rooms);
         });
     }, Promise.resolve([]));
@@ -378,7 +383,8 @@ module.exports = Controller(function() {
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
 
-                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                var before = Date.now();
+                var time = dateformat(before, "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
                 var users = {};
