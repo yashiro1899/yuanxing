@@ -376,7 +376,7 @@ module.exports = Controller(function() {
 
                     var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
                     model = D("User").field("id,token,expires").where(where).select();
-                    return Promise.all([model, prices(Object.keys(roomtypeids))]);
+                    return Promise.all([model, prices2(Object.keys(roomtypeids))]);
                 }).then(function(result) { // hotelpriceall, think_user
                     console.log(JSON.stringify(result, null, 4));
                     // var data = [];
