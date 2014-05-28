@@ -83,7 +83,26 @@ function prices2(roomtypeids) {
             data = result;
             return Promise.all(p.map(function(param) {return jielvapi(param);}));
         }).then(function(result) {
-            return data.concat(result);
+            var rooms = [];
+            result.forEach(function(cluster) {
+                if (cluster && cluster.data && cluster.data.length) {
+                    cluster.data.forEach(function(room) {
+                        var rpds = room.roomPriceDetail.map(function(rpd) {
+                            if (rpd.qtyable < 1) return null;
+                            return {
+                                price: rpd.preeprice,
+                                num: rpd.qtyable,
+                                night: rpd.night,
+                                ratetype: rpd.ratetype
+                            };
+                        });
+                        rpds = rpds.filter(function(rpd) {return !!rpd;});
+                        rpds.roomtypeid = room.roomtypeId;
+                        rooms.push(rpds);
+                    });
+                }
+            });
+            return data.concat(rooms);
         });
     }, Promise.resolve([]));
 }
@@ -378,31 +397,32 @@ module.exports = Controller(function() {
                     model = D("User").field("id,token,expires").where(where).select();
                     return Promise.all([model, prices2(Object.keys(roomtypeids))]);
                 }).then(function(result) { // hotelpriceall, think_user
-                    var data = [];
-                    result[1].forEach(function(p) {
-                        if (p && p.data.length) data.push(p.data);
-                    });
-                    if (data.length === 0) return getDefer().promise;
+                    // var data = [];
+                    // result[1].forEach(function(p) {
+                    //     if (p && p.data.length) data.push(p.data);
+                    // });
+                    // if (data.length === 0) return getDefer().promise;
 
-                    roomtypeids = {};
-                    data.forEach(function(period) {
-                        period.forEach(function(r) {
-                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
-                            r.roomPriceDetail.forEach(function(rpd) {
-                                if (rpd.qtyable < 1) return null;
-                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                    // roomtypeids = {};
+                    // data.forEach(function(period) {
+                    //     period.forEach(function(r) {
+                    //         if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
+                    //         r.roomPriceDetail.forEach(function(rpd) {
+                    //             if (rpd.qtyable < 1) return null;
+                    //             if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
 
-                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                                var rti = roomtypeids[r.roomtypeId][rpd.ratetype][night];
-                                if (rti && rti.price < rpd.preeprice) return null;
-                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                                    price: rpd.preeprice,
-                                    num: rpd.qtyable
-                                };
-                            });
-                        });
-                    });
-                    console.log(Object.keys(roomtypeids).length);
+                    //             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                    //             var rti = roomtypeids[r.roomtypeId][rpd.ratetype][night];
+                    //             if (rti && rti.price < rpd.preeprice) return null;
+                    //             roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
+                    //                 price: rpd.preeprice,
+                    //                 num: rpd.qtyable
+                    //             };
+                    //         });
+                    //     });
+                    // });
+                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, result[1].length);
 
                     // data = result[0] || [];
                     // if (data.length === 0) return getDefer().promise;
