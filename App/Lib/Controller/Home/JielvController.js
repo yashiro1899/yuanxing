@@ -474,18 +474,6 @@ module.exports = Controller(function() {
                 }).then(function(result) { // taobao.hotel.rooms.search
                     var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                     console.log(time, result["length"]);
-                    // var goods = {};
-                    // result.forEach(function(r) {
-                    //     r = r["hotel_rooms_search_response"];
-                    //     if (!r) return null;
-
-                    //     r = r["rooms"];
-                    //     if (!r) return null;
-
-                    //     r = r["room"];
-                    //     if (!r) return null;
-
-                    // });
 
                     // var i, u;
                     // var promises = [];
