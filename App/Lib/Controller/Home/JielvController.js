@@ -427,7 +427,7 @@ module.exports = Controller(function() {
 
                         glen = Math.ceil(u.length / 20);
                         for (j = 0; j < glen; j += 1) {
-                            parameters.push([u.slice(i * 20, (i + 1) * 20), u.token]);
+                            parameters.push([u.slice(j * 20, (j + 1) * 20), u.token]);
                         }
                     }
 
