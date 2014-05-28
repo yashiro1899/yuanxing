@@ -133,13 +133,13 @@ module.exports = Controller(function() {
                         users[g.userid].push(g);
                     });
 
-                    var promises = [];
-                    promises.push(D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select());
-                    promises = promises.concat(prices(Object.keys(roomtypeids)));
-                    return Promise.all(promises);
+                    var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
+                    model = D("User").field("id,token,expires").where(where).select();
+                    promises = promises.concat();
+                    return Promise.all(model, prices(Object.keys(roomtypeids)));
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = [];
-                    result.slice(1).forEach(function(p) {
+                    result[1].forEach(function(p) {
                         if (p && p.data.length) data.push(p.data);
                     });
                     if (data.length === 0) return getDefer().promise;
