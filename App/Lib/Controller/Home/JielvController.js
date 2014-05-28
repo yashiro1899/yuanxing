@@ -424,6 +424,7 @@ module.exports = Controller(function() {
                     for (; i < len; i += 1) {
                         u = uarr[i];
                         u = users[u];
+                        if (u[-1] === undefined) continue;
 
                         glen = Math.ceil(u.length / 20);
                         for (j = 0; j < glen; j += 1) {
@@ -448,7 +449,7 @@ module.exports = Controller(function() {
                             return Promise.all(p.map(function(param) {
                                 return oauth.accessProtectedResource(null, null, {
                                     "method": "taobao.hotel.rooms.search",
-                                    "gids": param[0]
+                                    "gids": param[0].join(",")
                                 }, param[1]);
                             }));
                         }).then(function(result) {
