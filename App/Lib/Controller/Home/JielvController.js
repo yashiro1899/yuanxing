@@ -383,60 +383,37 @@ module.exports = Controller(function() {
                 var roomtypeids = data.roomtypeids.replace(/\/$/, "").split('/');
                 if (roomtypeids.length === 0) return null;
 
-                var before = Date.now();
-                var time = dateformat(before, "[yyyy-mm-dd HH:MM:ss]");
+                var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
                 var users = {};
-                var model = D("Goods").where("roomtypeid in (" + roomtypeids.join(",") + ") and status = 4");
+                var model = D("Goods").field("gid,userid,roomtypeid").where("roomtypeid in status = 4 and (" + roomtypeids.join(",") + ")");
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    roomtypeids = {};
-                    result.forEach(function(g) {
-                        roomtypeids[g.roomtypeid] = true;
-
+                    var rtis = {};
+                    var i = 0,
+                        len = result.length;
+                    var g;
+                    for (; i < len; i += 1) {
+                        g = result[i];
+                        rtis[g.roomtypeid] = true;
                         if (!users[g.userid]) users[g.userid] = [];
-                        users[g.userid].push(g);
-                    });
+                        users[g.userid].push(g.gid);
+                    }
 
                     var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
-                    model = D("User").field("id,token,expires").where(where).select();
-                    return Promise.all([model, prices2(Object.keys(roomtypeids))]);
+                    var m = D("User").field("id,token,expires").where(where).select();
+                    return Promise.all([model, prices2(Object.keys(rtis))]);
                 }).then(function(result) { // hotelpriceall, think_user
-                    // var data = [];
-                    // result[1].forEach(function(p) {
-                    //     if (p && p.data.length) data.push(p.data);
-                    // });
-                    // if (data.length === 0) return getDefer().promise;
+                    var data = result[0] || [];
+                    if (data.length === 0) return getDefer().promise;
+                    if (result[1]["length"] === 0) return getDefer().promise;
 
-                    // roomtypeids = {};
-                    // data.forEach(function(period) {
-                    //     period.forEach(function(r) {
-                    //         if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
-                    //         r.roomPriceDetail.forEach(function(rpd) {
-                    //             if (rpd.qtyable < 1) return null;
-                    //             if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
-
-                    //             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                    //             var rti = roomtypeids[r.roomtypeId][rpd.ratetype][night];
-                    //             if (rti && rti.price < rpd.preeprice) return null;
-                    //             roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                    //                 price: rpd.preeprice,
-                    //                 num: rpd.qtyable
-                    //             };
-                    //         });
-                    //     });
-                    // });
-                    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, result[1].length);
-
-                    // data = result[0] || [];
-                    // if (data.length === 0) return getDefer().promise;
-
+                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, result[1]["length"]);
                     // data.forEach(function(u) {
-                    //     if (!users[u.id]) return null;
                     //     users[u.id]["token"] = u.token;
                     //     users[u.id]["expires"] = u.expires;
                     // });
