@@ -48,6 +48,29 @@ function prices(roomtypeids) {
     }
     return promises;
 }
+function prices2(roomtypeids) {
+    var promises = [];
+    var length = Math.ceil(roomtypeids.length / 20);
+    var i = 0;
+
+    for (; i < length; i += 1) {
+        var start = Date.now();
+        var end = start + 30 * 24 * 60 * 60 * 1000;
+
+        for (var j = 0; j < 3; j += 1) {
+            promises.push(jielvapi({
+                "QueryType": "hotelpriceall",
+                "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20).join("/"),
+                "checkInDate": dateformat(start, "yyyy-mm-dd"),
+                "checkOutDate": dateformat(end, "yyyy-mm-dd")
+            }));
+
+            start = end;
+            end = start + 30 * 24 * 60 * 60 * 1000;
+        }
+    }
+    return promises;
+}
 module.exports = Controller(function() {
     return {
         cookieAction: function() {
