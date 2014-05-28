@@ -404,47 +404,63 @@ module.exports = Controller(function() {
                     }
 
                     var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
-                    var m = D("User").field("id,token,expires").where(where).select();
+                    var m = D("User").field("id,token").where(where).select();
                     return Promise.all([model, prices2(Object.keys(rtis))]);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = result[0] || [];
                     if (data.length === 0) return getDefer().promise;
                     if (result[1]["length"] === 0) return getDefer().promise;
 
+                    data.forEach(function(u) {
+                        users[u.id]["token"] = u.token;
+                        users[u.id]["expires"] = u.expires;
+                    });
+
+                    var parameters = [];
+                    var uarr = Object.keys(users);
+                    var i = 0,
+                        len = uarr.length;
+                    var u, glen, j;
+                    for (; i < len; i += 1) {
+                        u = uarr[i];
+                        u = users[u];
+
+                        glen = Math.ceil(u.length / 20);
+                        for (j = 0; j < glen; j += 1) {
+                            parameters.push([u.slice(i * 20, (i + 1) * 20), u.token]);
+                        }
+                    }
+
+                    var pieces = [];
+                    var block = 500;
+                    length = Math.ceil(parameters.length / block);
+                    for (i = 0; i < length; i += 1) {
+                        pieces.push(parameters.slice(i * block, (i + 1) * block));
+                    }
+
+                    return pieces.reduce(function(sequence, p) {
+                        var data;
+                        return sequence.then(function(result) {
+                            data = result;
+                            return Promise.all(p.map(function(param) {
+                                return oauth.accessProtectedResource(null, null, {
+                                    "method": "taobao.hotel.rooms.search",
+                                    "gids": param[0]
+                                }, param[1]);
+                            }));
+                        }).then(function(result) {
+                            var goods = [];
+                            if (result["hotel_rooms_search_response"] && result["hotel_rooms_search_response"]["rooms"] && result["hotel_rooms_search_response"]["rooms"]["room"]) {
+                                result["hotel_rooms_search_response"]["rooms"]["room"].forEach(function(g) {
+                                    goods.push([g.gid, g.status]);
+                                });
+                            }
+                            return data.concat(goods);
+                        });
+                    }, Promise.resolve([]));
+                }).then(function(result) { // taobao.hotel.rooms.search
                     var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, result[1]["length"]);
-                    // data.forEach(function(u) {
-                    //     users[u.id]["token"] = u.token;
-                    //     users[u.id]["expires"] = u.expires;
-                    // });
-
-                    // var i, u, temp;
-                    // var promises = [];
-                    // for (i in users) {
-                    //     u = users[i];
-                    //     if (u.expires < Date.now()) continue;
-
-                    //     temp = [];
-                    //     u.forEach(function(g) {
-                    //         temp.push(g.gid);
-                    //         if (temp.length == 20) {
-                    //             promises.push(oauth.accessProtectedResource(null, null, {
-                    //                 "method": "taobao.hotel.rooms.search",
-                    //                 "gids": temp.join(",")
-                    //             }, u.token));
-                    //             temp = [];
-                    //         }
-                    //     });
-                    //     if (temp.length > 0) {
-                    //         promises.push(oauth.accessProtectedResource(null, null, {
-                    //             "method": "taobao.hotel.rooms.search",
-                    //             "gids": temp.join(",")
-                    //         }, u.token));
-                    //     }
-                    // }
-
-                    // return Promise.all(promises);
-                // }).then(function(result) { // taobao.hotel.rooms.search
+                    console.log(time, result["length"]);
                     // var goods = {};
                     // result.forEach(function(r) {
                     //     r = r["hotel_rooms_search_response"];
@@ -456,7 +472,6 @@ module.exports = Controller(function() {
                     //     r = r["room"];
                     //     if (!r) return null;
 
-                    //     r.forEach(function(g) {goods[g.gid] = g.status;});
                     // });
 
                     // var i, u;
