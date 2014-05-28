@@ -405,7 +405,7 @@ module.exports = Controller(function() {
 
                     var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
                     var m = D("User").field("id,token").where(where).select();
-                    return Promise.all([model, prices2(Object.keys(rtis))]);
+                    return Promise.all([m, prices2(Object.keys(rtis))]);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = result[0] || [];
                     if (data.length === 0) return getDefer().promise;
