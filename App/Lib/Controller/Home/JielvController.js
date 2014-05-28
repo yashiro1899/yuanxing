@@ -71,7 +71,7 @@ function prices2(roomtypeids) {
     }
 
     var pieces = [];
-    var block = 10;
+    var block = 500;
     length = Math.ceil(parameters.length / block);
     for (i = 0; i < length; i += 1) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
@@ -383,22 +383,26 @@ module.exports = Controller(function() {
                         if (p && p.data.length) data.push(p.data);
                     });
                     if (data.length === 0) return getDefer().promise;
-                    console.log(data.length);
 
-                    // roomtypeids = {};
-                    // data.forEach(function(period) {
-                    //     period.forEach(function(r) {
-                    //         if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
-                    //         r.roomPriceDetail.forEach(function(rpd) {
-                    //             if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+                    roomtypeids = {};
+                    data.forEach(function(period) {
+                        period.forEach(function(r) {
+                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
+                            r.roomPriceDetail.forEach(function(rpd) {
+                                if (rpd.qtyable < 1) return null;
+                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
 
-                    //             var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                    //             var num = (rpd.qtyable > 0 ? rpd.qtyable : 0);
-                    //             if (num < 1) return null;
-                    //             roomtypeids[r.roomtypeId][rpd.ratetype][night] = rpd;
-                    //         });
-                    //     });
-                    // });
+                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                var r = roomtypeids[r.roomtypeId][rpd.ratetype][night];
+                                if (r && r.price < prd.preeprice) return null;
+                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
+                                    price: prd.preeprice,
+                                    num: prd.qtyable
+                                };
+                            });
+                        });
+                    });
+                    console.log(Object.keys(roomtypeids).length);
 
                     // data = result[0] || [];
                     // if (data.length === 0) return getDefer().promise;
