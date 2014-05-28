@@ -411,7 +411,10 @@ module.exports = Controller(function() {
                     if (data.length === 0) return getDefer().promise;
                     if (result[1]["length"] === 0) return getDefer().promise;
 
-                    data.forEach(function(u) {users[u.id][-1] = u.token;});
+                    data.forEach(function(u) {
+                        if (!users[u.id]) return null;
+                        users[u.id][-1] = u.token;
+                    });
 
                     var parameters = [];
                     var uarr = Object.keys(users);
