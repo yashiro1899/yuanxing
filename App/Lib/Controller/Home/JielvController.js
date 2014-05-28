@@ -394,10 +394,10 @@ module.exports = Controller(function() {
 
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                                 var rti = roomtypeids[r.roomtypeId][rpd.ratetype][night];
-                                if (rti && rti.price < prd.preeprice) return null;
+                                if (rti && rti.price < rpd.preeprice) return null;
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
-                                    price: prd.preeprice,
-                                    num: prd.qtyable
+                                    price: rpd.preeprice,
+                                    num: rpd.qtyable
                                 };
                             });
                         });
