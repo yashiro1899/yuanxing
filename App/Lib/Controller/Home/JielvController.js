@@ -411,10 +411,7 @@ module.exports = Controller(function() {
                     if (data.length === 0) return getDefer().promise;
                     if (result[1]["length"] === 0) return getDefer().promise;
 
-                    data.forEach(function(u) {
-                        users[u.id]["token"] = u.token;
-                        users[u.id]["expires"] = u.expires;
-                    });
+                    data.forEach(function(u) {users[u.id][-1] = u.token;});
 
                     var parameters = [];
                     var uarr = Object.keys(users);
@@ -427,9 +424,10 @@ module.exports = Controller(function() {
 
                         glen = Math.ceil(u.length / 20);
                         for (j = 0; j < glen; j += 1) {
-                            parameters.push([u.slice(j * 20, (j + 1) * 20), u.token]);
+                            parameters.push([u.slice(j * 20, (j + 1) * 20), u[-1]]);
                         }
                     }
+                    console.log(parameters);
 
                     var pieces = [];
                     var block = 500;
@@ -437,6 +435,7 @@ module.exports = Controller(function() {
                     for (i = 0; i < length; i += 1) {
                         pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
+                    console.log(pieces);
 
                     roomtypeids = result[1];
                     return pieces.reduce(function(sequence, p) {
