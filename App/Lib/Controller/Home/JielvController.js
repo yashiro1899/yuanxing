@@ -430,7 +430,6 @@ module.exports = Controller(function() {
                             parameters.push([u.slice(j * 20, (j + 1) * 20), u[-1]]);
                         }
                     }
-                    console.log(parameters);
 
                     var pieces = [];
                     var block = 500;
@@ -438,7 +437,6 @@ module.exports = Controller(function() {
                     for (i = 0; i < length; i += 1) {
                         pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
-                    console.log(pieces);
 
                     roomtypeids = result[1];
                     return pieces.reduce(function(sequence, p) {
@@ -459,12 +457,13 @@ module.exports = Controller(function() {
 
                             var j, rlen, g;
                             for (; i < len; i += 1) {
-                                if (result["hotel_rooms_search_response"] &&
-                                    result["hotel_rooms_search_response"]["rooms"] &&
-                                    result["hotel_rooms_search_response"]["rooms"]["room"]) {
-                                    rlen = result["hotel_rooms_search_response"]["rooms"]["room"]["length"];
+                                cluster = result[i];
+                                if (cluster["hotel_rooms_search_response"] &&
+                                    cluster["hotel_rooms_search_response"]["rooms"] &&
+                                    cluster["hotel_rooms_search_response"]["rooms"]["room"]) {
+                                    rlen = cluster["hotel_rooms_search_response"]["rooms"]["room"]["length"];
                                     for (j = 0; j < rlen; j += 1) {
-                                        g = result["hotel_rooms_search_response"]["rooms"]["room"][j];
+                                        g = cluster["hotel_rooms_search_response"]["rooms"]["room"][j];
                                         goods.push([g.gid, g.status]);
                                     }
                                 }
