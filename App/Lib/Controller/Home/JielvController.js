@@ -438,6 +438,7 @@ module.exports = Controller(function() {
                         pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
 
+                    roomtypeids = result[1];
                     return pieces.reduce(function(sequence, p) {
                         var data;
                         return sequence.then(function(result) {
@@ -450,10 +451,21 @@ module.exports = Controller(function() {
                             }));
                         }).then(function(result) {
                             var goods = [];
-                            if (result["hotel_rooms_search_response"] && result["hotel_rooms_search_response"]["rooms"] && result["hotel_rooms_search_response"]["rooms"]["room"]) {
-                                result["hotel_rooms_search_response"]["rooms"]["room"].forEach(function(g) {
-                                    goods.push([g.gid, g.status]);
-                                });
+                            var i = 0,
+                                len = result.length;
+                            var cluster;
+
+                            var j, rlen, g;
+                            for (; i < len; i += 1) {
+                                if (result["hotel_rooms_search_response"] &&
+                                    result["hotel_rooms_search_response"]["rooms"] &&
+                                    result["hotel_rooms_search_response"]["rooms"]["room"]) {
+                                    rlen = result["hotel_rooms_search_response"]["rooms"]["room"]["length"];
+                                    for (j = 0; j < rlen; j += 1) {
+                                        g = result["hotel_rooms_search_response"]["rooms"]["room"][j];
+                                        goods.push([g.gid, g.status]);
+                                    }
+                                }
                             }
                             return data.concat(goods);
                         });
