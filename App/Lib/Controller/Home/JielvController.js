@@ -26,7 +26,7 @@ function rot13(s) {
     return rotated;
 }
 function prices(roomtypeids) {
-    var promises = [];
+    var parameters = [];
     var length = Math.ceil(roomtypeids.length / 20);
     var i = 0;
 
@@ -35,18 +35,36 @@ function prices(roomtypeids) {
         var end = start + 30 * 24 * 60 * 60 * 1000;
 
         for (var j = 0; j < 3; j += 1) {
-            promises.push(jielvapi({
+            parameters.push({
                 "QueryType": "hotelpriceall",
                 "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20).join("/"),
                 "checkInDate": dateformat(start, "yyyy-mm-dd"),
                 "checkOutDate": dateformat(end, "yyyy-mm-dd")
-            }));
+            });
 
             start = end;
             end = start + 30 * 24 * 60 * 60 * 1000;
         }
     }
-    return promises;
+
+    var pieces = [];
+    var block = 500;
+    length = Math.ceil(parameters.length / block);
+    for (i = 0; i < length; i += 1) {
+        pieces.push(parameters.slice(i * block, (i + 1) * block));
+    }
+
+    return pieces.reduce(function(sequence, p) {
+        var data;
+        return sequence.then(function(result) {
+            data = result;
+            var promises = [];
+            p.forEach(function(param) {promises.push(jielvapi(param));});
+            return Promise.all(promises);
+        }).then(function(result) {
+            return data.concat(result);
+        });
+    }, Promise.resolve([]));
 }
 module.exports = Controller(function() {
     return {

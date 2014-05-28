@@ -37,10 +37,11 @@ db(qs).then(function(hotels) {
     var start = +(new Date());
     var pieces = [];
 
-    var length = Math.ceil(hotels.length / 800);
+    var block = 800;
+    var length = Math.ceil(hotels.length / block);
     var i = 0;
     for (; i < length; i += 1) {
-        pieces.push(hotels.slice(i * 800, (i + 1) * 800));
+        pieces.push(hotels.slice(i * block, (i + 1) * block));
     }
 
     var last = pieces.length - 1;
