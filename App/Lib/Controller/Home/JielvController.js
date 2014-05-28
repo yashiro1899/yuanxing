@@ -387,7 +387,7 @@ module.exports = Controller(function() {
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
                 var users = {};
-                var model = D("Goods").field("gid,userid,roomtypeid").where("roomtypeid in status = 4 and (" + roomtypeids.join(",") + ")");
+                var model = D("Goods").field("gid,userid,roomtypeid").where("status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")");
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
