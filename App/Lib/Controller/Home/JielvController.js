@@ -378,12 +378,12 @@ module.exports = Controller(function() {
                     model = D("User").field("id,token,expires").where(where).select();
                     return Promise.all([model, prices2(Object.keys(roomtypeids))]);
                 }).then(function(result) { // hotelpriceall, think_user
-                    console.log(JSON.stringify(result, null, 4));
-                    // var data = [];
-                    // result.slice(1).forEach(function(p) {
-                    //     if (p && p.data.length) data.push(p.data);
-                    // });
-                    // if (data.length === 0) return getDefer().promise;
+                    var data = [];
+                    result[1].forEach(function(p) {
+                        if (p && p.data.length) data.push(p.data);
+                    });
+                    if (data.length === 0) return getDefer().promise;
+                    console.log(data.length);
 
                     // roomtypeids = {};
                     // data.forEach(function(period) {
