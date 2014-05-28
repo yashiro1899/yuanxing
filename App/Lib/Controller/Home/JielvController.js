@@ -403,8 +403,7 @@ module.exports = Controller(function() {
                         users[g.userid].push(g.gid);
                     }
 
-                    var where = "expires > now() and id in (" + Object.keys(users).join(",") + ")";
-                    var m = D("User").field("id,token").where(where).select();
+                    var m = D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
                     return Promise.all([m, prices2(Object.keys(rtis))]);
                 }).then(function(result) { // hotelpriceall, think_user
                     var data = result[0] || [];
@@ -412,8 +411,8 @@ module.exports = Controller(function() {
                     if (result[1]["length"] === 0) return getDefer().promise;
 
                     data.forEach(function(u) {
-                        if (!users[u.id]) return null;
                         users[u.id][-1] = u.token;
+                        users[u.id][-2] = u.expires;
                     });
 
                     var parameters = [];
@@ -424,7 +423,7 @@ module.exports = Controller(function() {
                     for (; i < len; i += 1) {
                         u = uarr[i];
                         u = users[u];
-                        if (u[-1] === undefined) continue;
+                        if (u[-2] < Date.now()) continue;
 
                         glen = Math.ceil(u.length / 20);
                         for (j = 0; j < glen; j += 1) {
