@@ -89,14 +89,16 @@ function prices2(roomtypeids) {
                     cluster.data.forEach(function(room) {
                         var rpds = room.roomPriceDetail.map(function(rpd) {
                             if (rpd.qtyable < 1) return null;
-                            return {
-                                price: rpd.preeprice,
-                                num: rpd.qtyable,
-                                night: rpd.night,
-                                ratetype: rpd.ratetype
-                            };
+                            var s = rpd.ratetype;
+                            s += "/";
+                            s += rpd.night;
+                            s += "/";
+                            s += rpd.preeprice;
+                            s += "/";
+                            s += rpd.qtyable;
+                            return s;
                         });
-                        rpds = rpds.filter(function(rpd) {return !!rpd;});
+                        rpds = rpds.filter(function(rpd) {return rpd !== null;});
                         rpds.roomtypeid = room.roomtypeId;
                         rooms.push(rpds);
                     });
