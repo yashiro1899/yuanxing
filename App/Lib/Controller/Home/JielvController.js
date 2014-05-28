@@ -393,8 +393,8 @@ module.exports = Controller(function() {
                                 if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
 
                                 var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                                var r = roomtypeids[r.roomtypeId][rpd.ratetype][night];
-                                if (r && r.price < prd.preeprice) return null;
+                                var rti = roomtypeids[r.roomtypeId][rpd.ratetype][night];
+                                if (rti && rti.price < prd.preeprice) return null;
                                 roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
                                     price: prd.preeprice,
                                     num: prd.qtyable
