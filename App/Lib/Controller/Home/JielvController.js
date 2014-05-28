@@ -378,6 +378,7 @@ module.exports = Controller(function() {
                     model = D("User").field("id,token,expires").where(where).select();
                     return Promise.all([model, prices(Object.keys(roomtypeids))]);
                 }).then(function(result) { // hotelpriceall, think_user
+                    console.log(JSON.stringify(result, null, 4));
                     // var data = [];
                     // result.slice(1).forEach(function(p) {
                     //     if (p && p.data.length) data.push(p.data);
