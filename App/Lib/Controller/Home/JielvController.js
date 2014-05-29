@@ -86,7 +86,7 @@ function prices2(roomtypeids) {
             }));
         }).then(function(result) {
             console.log(result.length);
-            return [];
+            return [99];
             // var i = 0,
             //     len = result.length,
             //     cluster;
