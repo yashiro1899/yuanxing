@@ -103,7 +103,7 @@ function prices2(roomtypeids) {
                             if (rpd.qtyable < 1) continue;
 
                             type = rpd.ratetype;
-                            if (!data[id][type]) data[id][type] = [];
+                            if (!data[id][type]) data[id][type] = {};
 
                             night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
                             price = data[id][type][night];
