@@ -76,18 +76,14 @@ function prices2(roomtypeids) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
     }
 
-    return pieces;
-    // return pieces.reduce(function(sequence, p) {
-    //     var data;
-    //     return sequence.then(function(result) {
-    //         data = result;
-    //         return Promise.all(p.map(function(param) {
-    //             param["QueryType"] = "hotelpriceall";
-    //             return jielvapi(param);
-    //         }));
-    //     }).then(function(result) {
-    //         console.log(result.length);
-    //         return [99];
+    return pieces.reduce(function(sequence, p) {
+        return sequence.then(function(result) {
+            return Promise.all(p.map(function(param) {
+                param["QueryType"] = "hotelpriceall";
+                return jielvapi(param);
+            }));
+        }).then(function(result) {
+            console.log(JSON.stringify(result, null, 4));
     //         // var i = 0,
     //         //     len = result.length,
     //         //     cluster;
@@ -122,9 +118,9 @@ function prices2(roomtypeids) {
     //         //         }
     //         //     }
     //         // }
-    //         // return data;
-    //     })["catch"](function(e) {console.log(e);});
-    // }, Promise.resolve({}));
+            return "haha";
+        })["catch"](function(e) {console.log(e);});
+    }, Promise.resolve({}));
 }
 module.exports = Controller(function() {
     return {
