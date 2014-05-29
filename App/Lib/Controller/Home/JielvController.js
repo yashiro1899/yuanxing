@@ -70,7 +70,7 @@ function prices2(roomtypeids) {
     }
 
     var pieces = [];
-    var block = 800;
+    var block = 1200;
     length = Math.ceil(parameters.length / block);
     for (i = 0; i < length; i += 1) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
