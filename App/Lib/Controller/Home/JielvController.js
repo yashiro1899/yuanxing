@@ -433,8 +433,8 @@ module.exports = Controller(function() {
                         u = users[u];
                         u = Object.keys(u);
                         u = u.filter(function(g) {
-                            if (!roomtypeids[g.roomtypeid]) return false;
-                            if (!roomtypeids[g.roomtypeid][g.ratetype]) return false;
+                            if (!result[g.roomtypeid]) return false;
+                            if (!result[g.roomtypeid][g.ratetype]) return false;
                             return true;
                         });
                         var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
