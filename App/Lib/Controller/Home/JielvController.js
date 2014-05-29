@@ -401,8 +401,8 @@ module.exports = Controller(function() {
                         roomtypeids[g.roomtypeid] = true;
                         if (!users[g.userid]) users[g.userid] = {};
                         users[g.userid][g.gid] = {
-                            roomtypeid, g.roomtypeid,
-                            ratetype, g.ratetype,
+                            roomtypeid: g.roomtypeid,
+                            ratetype: g.ratetype,
                             ptype: g.ptype,
                             profit: g.profit
                         };
