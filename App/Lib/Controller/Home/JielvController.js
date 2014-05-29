@@ -577,62 +577,63 @@ module.exports = Controller(function() {
                         })["catch"](function(e) {console.log(e);});
                     }, Promise.resolve());
                 }).then(function(result) { // taobao.hotel.rooms.search
-                    console.log(JSON.stringify(result, null, 4));
-                    // var statuses = {};
-                    // var i = 0,
-                    //     len = result[0]["length"];
-                    // var s;
-                    // for (; i < len; i += 1) {
-                    //     s = result[0][i];
-                    //     statuses[s[0]] = s[1];
-                    // }
+                    var parameters = [];
+                    var uarr = Object.keys(users);
+                    var i = 0, len = uarr.length, u;
+                    var token;
+                    for (; i < len; i += 1) {
+                        u = uarr[i];
+                        token = tokens[u];
+                        if (!token) continue;
 
-                    //     gid_room_quota_map = [];
-                    //     u.forEach(function(g) {
-                    //         if (!roomtypeids[g.roomtypeid]) {
-                    //             if (goods[g.gid] == 1) {
-                    //                 promises.push(oauth.accessProtectedResource(null, null, {
-                    //                     "method": "taobao.hotel.room.update",
-                    //                     "gid": g.gid,
-                    //                     "status": 2
-                    //                 }, u.token));
-                    //             }
-                    //             return null;
-                    //         }
-                    //         if (!roomtypeids[g.roomtypeid][g.ratetype]) {
-                    //             if (goods[g.gid] == 1) {
-                    //                 promises.push(oauth.accessProtectedResource(null, null, {
-                    //                     "method": "taobao.hotel.room.update",
-                    //                     "gid": g.gid,
-                    //                     "status": 2
-                    //                 }, u.token));
-                    //             }
-                    //             return null;
-                    //         }
+                        u = users[u];
+                        Object.keys(u).forEach(function(g) {
+                            var gid = g;
+                            g = u[gid];
 
-                    //         var temp = [];
-                    //         var quotas = roomtypeids[g.roomtypeid][g.ratetype];
-                    //         if (goods[g.gid] == 2 && Object.keys(quotas).length > 0) {
-                    //             promises.push(oauth.accessProtectedResource(null, null, {
-                    //                 "method": "taobao.hotel.room.update",
-                    //                 "gid": g.gid,
-                    //                 "status": 1
-                    //             }, u.token));
-                    //         }
+                            if (statuses[gid] == 1 && !g.status) parameters.push({
+                                gid: gid,
+                                status: 2,
+                                token: token
+                            });
+                            else if (statuses[gid] == 2 && g.status) parameters.push({
+                                gid: gid,
+                                status: 1,
+                                token: token
+                            });
+                        });
+                    }
 
-                    // result.forEach(function(i) {
-                    //     } else if (i.hotel_room_update_response) {
-                    //         i = i.hotel_room_update_response;
-                    //         if (!i.room) return null;
+                    var pieces = [];
+                    var block = 800;
+                    length = Math.ceil(parameters.length / block);
+                    for (i = 0; i < length; i += 1) {
+                        pieces.push(parameters.slice(i * block, (i + 1) * block));
+                    }
 
-                    //         time = "[" + i.room.modified + "]";
-                    //         if (i.room["status"] == 2) {
-                    //             console.log(time, "taobao.hotel.room.update(delisting)", i.room.gid);
-                    //         } else if (i.room["status"] == 1) {
-                    //             console.log(time, "taobao.hotel.room.update(listing)", i.room.gid);
-                    //         }
-                    //     }
-                    // });
+                    return pieces.reduce(function(sequence, p) {
+                        return sequence.then(function(result) {
+                            return Promise.all(p.map(function(param) {
+                                return oauth.accessProtectedResource(null, null, {
+                                    "method": "taobao.hotel.room.update",
+                                    "gid": param.gid,
+                                    "status": param.status
+                                }, param.token);
+                            }));
+                        }).then(function(result) {
+                            var i = 0, len = result.length, cluster;
+                            for (; i < len; i += 1) {
+                                cluster = result[i];
+                                if (cluster["hotel_rooms_update_response"] &&
+                                    cluster["hotel_rooms_update_response"]["room"]) {
+                                    var time = "[" + i.room.modified + "]";
+                                    var room = cluster["hotel_rooms_update_response"]["room"];
+                                    if (room["status"] == 2) console.log(time, "taobao.hotel.room.update(delisting)", room.gid);
+                                    else if (room["status"] == 1) console.log(time, "taobao.hotel.room.update(listing)", room.gid);
+                                }
+                            }
+                        })["catch"](function(e) {console.log(e);});
+                    }, Promise.resolve());
                 })["catch"](function(e) {console.log(e);});
             } catch (e) {console.log(e);}
         }
