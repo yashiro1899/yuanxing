@@ -109,6 +109,8 @@ function prices2(roomtypeids) {
                     });
                 }
             }
+            var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
+            console.log(time, Object.keys(quotas)["length"]);
             return quotas;
         })["catch"](function(e) {console.log(e);});
     }, Promise.resolve());
@@ -418,7 +420,7 @@ module.exports = Controller(function() {
                     return prices2(Object.keys(roomtypeids));
                 }).then(function(result) { // hotelpriceall
                     var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, Object.keys(result));
+                    console.log(time, Object.keys(result)["length"]);
                     roomtypeids = result;
                     // var parameters = [];
                     // var uarr = Object.keys(users);
