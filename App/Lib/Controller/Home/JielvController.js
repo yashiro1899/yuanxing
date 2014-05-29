@@ -118,7 +118,7 @@ function prices2(roomtypeids) {
                 }
             }
             return data;
-        });
+        })["catch"](function(e) {console.log(e)});
     }, Promise.resolve([]));
 }
 module.exports = Controller(function() {
