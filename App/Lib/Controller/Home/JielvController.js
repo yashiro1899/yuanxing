@@ -88,7 +88,7 @@ function prices2(roomtypeids) {
             for (; i < len; i += 1) {
                 cluster = result[i];
                 if (cluster && cluster.data && cluster.data.length) {
-                    cluster.forEach(function(room) {
+                    cluster.data.forEach(function(room) {
                         var id = room.roomtypeId;
                         if (!quotas[id]) quotas[id] = {};
 
