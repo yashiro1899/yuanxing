@@ -71,7 +71,7 @@ function prices2(roomtypeids) {
     }
 
     var pieces = [];
-    var block = 500;
+    var block = 800;
     length = Math.ceil(parameters.length / block);
     for (i = 0; i < length; i += 1) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
@@ -471,14 +471,13 @@ module.exports = Controller(function() {
                         });
                     }, Promise.resolve([])), result[1]]);
                 }).then(function(result) { // taobao.hotel.rooms.search
-                    var statuses = [[], []];
+                    var statuses = {};
                     var i = 0,
                         len = result[0]["length"];
                     var s;
                     for (; i < len; i += 1) {
                         s = result[0][i];
-                        if (s[1] == 1) statuses[0].push(s[0]);
-                        else if (s[1] == 2) statuses[1].push(s[0]);
+                        statuses[s[0]] = s[1];
                     }
 
 // +
