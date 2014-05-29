@@ -461,15 +461,41 @@ module.exports = Controller(function() {
                                 var userid = param.token.slice(47);
                                 var gid_room_quota_map = [];
                                 param.gids.forEach(function(g) {
-                                    g = users[userid][g];
-                                    console.log(g);
-                                    // var time = Date.now();
-                                    // var night, price;
-                                    // var i = 0;
-                                    // for (; i < 90; i += 1) {
-                                    //     night = dateformat(time, "yyyy-mm-dd");
-                                    // }
+                                    var gid = g;
+                                    g = users[userid][gid];
+
+                                    var roomQuota = [];
+                                    var time = Date.now();
+                                    var night, price, num;
+                                    var i = 0;
+                                    for (; i < 90; i += 1) {
+                                        night = dateformat(time, "yyyy-mm-dd");
+                                        price = quotas[g.roomtypeid][g.ratetype][night];
+                                        if (price) {
+                                            num = price.num;
+                                            price = price.price;
+                                            if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
+                                            else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
+                                            roomQuota.push({
+                                                date: night,
+                                                price: price,
+                                                num: num
+                                            });
+                                        } else {
+                                            roomQuota.push({
+                                                date: night,
+                                                price: 9999999,
+                                                num: 0
+                                            });
+                                        }
+                                        time += 24 * 60 * 60 * 1000;
+                                    }
+                                    gid_room_quota_map.push({
+                                        gid: gid,
+                                        roomQuota: roomQuota
+                                    });
                                 });
+                                console.log(JSON.stringify(gid_room_quota_map, null, 4));
                             });
                         });
                     }, Promise.resolve());
@@ -574,38 +600,6 @@ module.exports = Controller(function() {
                     //             }, u.token));
                     //         }
 
-                    //         var timestamp = Date.now();
-                    //         var night, price, num;
-                    //         var i = 0;
-                    //         for (; i < 90; i += 1) {
-                    //             night = dateformat(timestamp, "yyyy-mm-dd");
-                    //             if (quotas[night]) {
-                    //                 price = quotas[night]["preeprice"];
-                    //                 if (g.ptype == 1) price = Math.ceil(price * (g.profit + 100) / 100) * 100;
-                    //                 else if (g.ptype == 2) price = Math.ceil((price + g.profit)) * 100;
-
-                    //                 num = quotas[night]["qtyable"];
-                    //                 if (num < 0) num = 0;
-
-                    //                 temp.push({
-                    //                     date: night,
-                    //                     price: price,
-                    //                     num: num
-                    //                 });
-                    //             } else {
-                    //                 temp.push({
-                    //                     date: night,
-                    //                     price: 9999999,
-                    //                     num: 0
-                    //                 });
-                    //             }
-                    //             timestamp += 24 * 60 * 60 * 1000;
-                    //         }
-                    //         gid_room_quota_map.push({
-                    //             gid: g.gid,
-                    //             roomQuota: temp
-                    //         });
-                    //     });
 
                     //     var length = Math.ceil(gid_room_quota_map.length / 30);
                     //     for (var j = 0; j < length; j += 1) {
