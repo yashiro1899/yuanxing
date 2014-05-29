@@ -519,7 +519,7 @@ module.exports = Controller(function() {
 
                             night = dateformat((new Date(rpd[1])), "yyyy-mm-dd");
                             price = quotas[rti][rt][night];
-                            if (price && price[0] < prd[2]) continue;
+                            if (price && price[0] < rpd[2]) continue;
                             quotas[rti][rt][night] = [rpd[2], rpd[3]];
                         }
                     }
