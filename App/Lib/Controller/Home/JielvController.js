@@ -76,54 +76,55 @@ function prices2(roomtypeids) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
     }
 
-    return pieces.reduce(function(sequence, p) {
-        var data;
-        return sequence.then(function(result) {
-            data = result;
-            return Promise.all(p.map(function(param) {
-                param["QueryType"] = "hotelpriceall";
-                return jielvapi(param);
-            }));
-        }).then(function(result) {
-            console.log(result.length);
-            return [99];
-            // var i = 0,
-            //     len = result.length,
-            //     cluster;
-            // var j, clen, room;
-            // var k, rlen, rpd;
-            // var id, type, night, price;
-            // for (; i < len; i += 1) {
-            //     cluster = result[i];
-            //     if (cluster && cluster.data && cluster.data.length) {
-            //         clen = cluster.data.length;
-            //         for (j = 0; j < clen; j += 1) {
-            //             room = cluster.data[j];
-            //             id = room.roomtypeId;
-            //             if (!data[id]) data[id] = [];
-            //             rlen = room.roomPriceDetail.length;
-            //             for (k = 0; k < rlen; k += 1) {
-            //                 rpd = room.roomPriceDetail[k];
-            //                 if (rpd.qtyable < 1) continue;
+    return pieces;
+    // return pieces.reduce(function(sequence, p) {
+    //     var data;
+    //     return sequence.then(function(result) {
+    //         data = result;
+    //         return Promise.all(p.map(function(param) {
+    //             param["QueryType"] = "hotelpriceall";
+    //             return jielvapi(param);
+    //         }));
+    //     }).then(function(result) {
+    //         console.log(result.length);
+    //         return [99];
+    //         // var i = 0,
+    //         //     len = result.length,
+    //         //     cluster;
+    //         // var j, clen, room;
+    //         // var k, rlen, rpd;
+    //         // var id, type, night, price;
+    //         // for (; i < len; i += 1) {
+    //         //     cluster = result[i];
+    //         //     if (cluster && cluster.data && cluster.data.length) {
+    //         //         clen = cluster.data.length;
+    //         //         for (j = 0; j < clen; j += 1) {
+    //         //             room = cluster.data[j];
+    //         //             id = room.roomtypeId;
+    //         //             if (!data[id]) data[id] = [];
+    //         //             rlen = room.roomPriceDetail.length;
+    //         //             for (k = 0; k < rlen; k += 1) {
+    //         //                 rpd = room.roomPriceDetail[k];
+    //         //                 if (rpd.qtyable < 1) continue;
 
-            //                 type = rpd.ratetype;
-            //                 if (!data[id][type]) data[id][type] = {};
+    //         //                 type = rpd.ratetype;
+    //         //                 if (!data[id][type]) data[id][type] = {};
 
-            //                 night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-            //                 price = data[id][type][night];
-            //                 if (price && price.price < rpd.preeprice) continue;
+    //         //                 night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+    //         //                 price = data[id][type][night];
+    //         //                 if (price && price.price < rpd.preeprice) continue;
 
-            //                 data[id][type][night] = {
-            //                     price: rpd.preeprice,
-            //                     num: rpd.qtyable
-            //                 };
-            //             }
-            //         }
-            //     }
-            // }
-            // return data;
-        })["catch"](function(e) {console.log(e);});
-    }, Promise.resolve({}));
+    //         //                 data[id][type][night] = {
+    //         //                     price: rpd.preeprice,
+    //         //                     num: rpd.qtyable
+    //         //                 };
+    //         //             }
+    //         //         }
+    //         //     }
+    //         // }
+    //         // return data;
+    //     })["catch"](function(e) {console.log(e);});
+    // }, Promise.resolve({}));
 }
 module.exports = Controller(function() {
     return {
@@ -419,7 +420,7 @@ module.exports = Controller(function() {
                     }
 
                     return D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
-                }).then(function(result) { // hotelpriceall, think_user
+                }).then(function(result) { // think_user
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
@@ -428,6 +429,9 @@ module.exports = Controller(function() {
                         tokens[u.id] = u.token;
                     });
 
+                    return prices2(Object.keys(roomtypeids));
+                }).then(function(result) { // hotelpriceall
+                    console.log(JSON.stringify(result, null, 4));
                     // var parameters = [];
                     // var uarr = Object.keys(users);
                     // var i = 0,
