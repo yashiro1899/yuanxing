@@ -448,11 +448,31 @@ module.exports = Controller(function() {
                     }
 
                     var pieces = [];
-                    var block = 1200;
+                    var block = 800;
                     length = Math.ceil(parameters.length / block);
                     for (i = 0; i < length; i += 1) {
                         pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
+
+                    var quotas = result;
+                    return pieces.reduce(function(sequence, p) {
+                        return sequence.then(function(result) {
+                            return p.map(function(param) {
+                                var userid = param.token.slice(47);
+                                var gid_room_quota_map = [];
+                                param.gids.forEach(function(g) {
+                                    g = users[userid][g];
+                                    console.log(g);
+                                    // var time = Date.now();
+                                    // var night, price;
+                                    // var i = 0;
+                                    // for (; i < 90; i += 1) {
+                                    //     night = dateformat(time, "yyyy-mm-dd");
+                                    // }
+                                });
+                            });
+                        });
+                    }, Promise.resolve());
 
                     // var parameters = [];
                     // var uarr = Object.keys(users);
