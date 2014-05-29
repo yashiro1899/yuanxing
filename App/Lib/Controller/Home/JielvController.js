@@ -83,33 +83,41 @@ function prices2(roomtypeids) {
             data = result;
             return Promise.all(p.map(function(param) {return jielvapi(param);}));
         }).then(function(result) {
-            var rooms = [];
             var i = 0,
-                len = result.length;
-            var cluster;
-
+                len = result.length,
+                cluster;
             var j, clen, room;
-
-            var k, rlen, rpd, rpds;
+            var k, rlen, rpd;
+            var id, type, night, price;
             for (; i < len; i += 1) {
                 cluster = result[i];
                 if (cluster && cluster.data && cluster.data.length) {
                     clen = cluster.data.length;
                     for (j = 0; j < clen; j += 1) {
                         room = cluster.data[j];
+                        id = room.roomtypeId;
+                        if (!data[id]) data[id] = [];
                         rlen = room.roomPriceDetail.length;
-                        rpds = [];
                         for (k = 0; k < rlen; k += 1) {
                             rpd = room.roomPriceDetail[k];
                             if (rpd.qtyable < 1) continue;
-                            rpds.push([rpd.ratetype, rpd.night, rpd.preeprice, rpd.qtyable]);
+
+                            type = rpd.ratetype;
+                            if (!data[id][type]) data[id][type] = [];
+
+                            night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            price = data[id][type][night];
+                            if (price && price.price < rpd.preeprice) continue;
+
+                            data[id][type][night] = {
+                                price: rpd.preeprice,
+                                num: rpd.qtyable
+                            };
                         }
-                        rpds.roomtypeid = room.roomtypeId;
-                        rooms.push(rpds);
                     }
                 }
             }
-            return data.concat(rooms);
+            return data;
         });
     }, Promise.resolve([]));
 }
@@ -386,13 +394,14 @@ module.exports = Controller(function() {
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
-                var users = [];
-                var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where("status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")");
+                var where = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
+                var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(where);
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
                     var rtis = {};
+                    var users = [];
                     var i = 0,
                         len = result.length;
                     for (; i < len; i += 1) {
@@ -405,8 +414,8 @@ module.exports = Controller(function() {
                         };
                     }
 
-                    return D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
-                    // return Promise.all([m, prices2(Object.keys(rtis))]);
+                    var m = D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
+                    return Promise.all([m, prices2(Object.keys(rtis)), users]);
                 }).then(function(result) { // hotelpriceall, think_user
                     console.log(JSON.stringify(result, null, 4));
                     // var data = result[0] || [];
