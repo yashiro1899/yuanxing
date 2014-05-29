@@ -401,6 +401,7 @@ module.exports = Controller(function() {
                 var where = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
                 var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(where);
                 var users = {};
+                var tokens = {};
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
@@ -419,15 +420,13 @@ module.exports = Controller(function() {
 
                     return D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
                 }).then(function(result) { // hotelpriceall, think_user
-                    console.log(JSON.stringify(result, null, 4));
-                    // var data = result[0] || [];
-                    // if (data.length === 0) return getDefer().promise;
-                    // if (result[1]["length"] === 0) return getDefer().promise;
+                    result = result || [];
+                    if (result.length === 0) return getDefer().promise;
 
-                    // data.forEach(function(u) {
-                    //     users[u.id][-1] = u.token;
-                    //     users[u.id][-2] = u.expires;
-                    // });
+                    data.forEach(function(u) {
+                        if (u.expires < Date.now()) return null;
+                        tokens[u.id] = u.token;
+                    });
 
                     // var parameters = [];
                     // var uarr = Object.keys(users);
