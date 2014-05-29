@@ -592,16 +592,19 @@ module.exports = Controller(function() {
                             var gid = g;
                             g = u[gid];
 
-                            if (result[gid] == 1 && !g.status) parameters.push({
-                                gid: gid,
-                                status: 2,
-                                token: token
-                            });
-                            else if (result[gid] == 2 && g.status) parameters.push({
-                                gid: gid,
-                                status: 1,
-                                token: token
-                            });
+                            if (result[gid] == 1 && !g.status) {
+                                parameters.push({
+                                    gid: gid,
+                                    status: 2,
+                                    token: token
+                                });
+                            } else if (result[gid] == 2 && g.status) {
+                                parameters.push({
+                                    gid: gid,
+                                    status: 1,
+                                    token: token
+                                });
+                            }
                         });
                     }
                     if (parameters.length === 0) return getDefer().Promise;
@@ -626,10 +629,10 @@ module.exports = Controller(function() {
                             var i = 0, len = result.length, cluster;
                             for (; i < len; i += 1) {
                                 cluster = result[i];
-                                if (cluster["hotel_rooms_update_response"] &&
-                                    cluster["hotel_rooms_update_response"]["room"]) {
-                                    var time = "[" + i.room.modified + "]";
-                                    var room = cluster["hotel_rooms_update_response"]["room"];
+                                if (cluster["hotel_room_update_response"] &&
+                                    cluster["hotel_room_update_response"]["room"]) {
+                                    var room = cluster["hotel_room_update_response"]["room"];
+                                    var time = "[" + room.modified + "]";
                                     if (room["status"] == 2) console.log(time, "taobao.hotel.room.update(delisting)", room.gid);
                                     else if (room["status"] == 1) console.log(time, "taobao.hotel.room.update(listing)", room.gid);
                                 }
