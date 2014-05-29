@@ -523,65 +523,60 @@ module.exports = Controller(function() {
                         })["catch"](function(e) {console.log(e);});
                     }, Promise.resolve());
                 }).then(function(result) { // taobao.hotel.rooms.update
-                    console.log(JSON.stringify(users, null, 4));
-                    // var parameters = [];
-                    // var uarr = Object.keys(users);
-                    // var i = 0,
-                    //     len = uarr.length;
-                    // var u, glen, j;
-                    // for (; i < len; i += 1) {
-                    //     u = uarr[i];
-                    //     u = users[u];
-                    //     if (u[-2] < Date.now()) continue;
+                    var parameters = [];
+                    var uarr = Object.keys(users);
+                    var i = 0, len = uarr.length, u;
+                    var token;
 
-                    //     glen = Math.ceil(u.length / 20);
-                    //     for (j = 0; j < glen; j += 1) {
-                    //         parameters.push([u.slice(j * 20, (j + 1) * 20).map(function(k) {
-                    //             return k[0];
-                    //         }), u[-1]]);
-                    //     }
-                    // }
+                    var j, glen;
+                    for (; i < len; i += 1) {
+                        u = uarr[i];
+                        token = tokens[u];
+                        if (!token) continue;
 
-                    // var pieces = [];
-                    // var block = 500;
-                    // length = Math.ceil(parameters.length / block);
-                    // for (i = 0; i < length; i += 1) {
-                    //     pieces.push(parameters.slice(i * block, (i + 1) * block));
-                    // }
+                        u = users[u];
+                        glen = Math.ceil(u.length / 20);
+                        for (j = 0; j < glen; j += 1) {
+                            parameters.push({
+                                gids: u.slice(j * 20, (j + 1) * 20),
+                                token: token
+                            });
+                        }
+                    }
 
-                    // return Promise.all([pieces.reduce(function(sequence, p) {
-                    //     var data;
-                    //     return sequence.then(function(result) {
-                    //         data = result;
-                    //         return Promise.all(p.map(function(param) {
-                    //             return oauth.accessProtectedResource(null, null, {
-                    //                 "method": "taobao.hotel.rooms.search",
-                    //                 "gids": param[0].join(",")
-                    //             }, param[1]);
-                    //         }));
-                    //     }).then(function(result) {
-                    //         var goods = [];
-                    //         var i = 0,
-                    //             len = result.length;
-                    //         var cluster;
+                    var pieces = [];
+                    var block = 800;
+                    length = Math.ceil(parameters.length / block);
+                    for (i = 0; i < length; i += 1) {
+                        pieces.push(parameters.slice(i * block, (i + 1) * block));
+                    }
 
-                    //         var j, rlen, g;
-                    //         for (; i < len; i += 1) {
-                    //             cluster = result[i];
-                    //             if (cluster["hotel_rooms_search_response"] &&
-                    //                 cluster["hotel_rooms_search_response"]["rooms"] &&
-                    //                 cluster["hotel_rooms_search_response"]["rooms"]["room"]) {
-                    //                 rlen = cluster["hotel_rooms_search_response"]["rooms"]["room"]["length"];
-                    //                 for (j = 0; j < rlen; j += 1) {
-                    //                     g = cluster["hotel_rooms_search_response"]["rooms"]["room"][j];
-                    //                     goods.push([g.gid, g.status]);
-                    //                 }
-                    //             }
-                    //         }
-                    //         return data.concat(goods);
-                    //     });
-                    // }, Promise.resolve([])), result[1]]);
-                // }).then(function(result) { // taobao.hotel.rooms.search
+                    var statuses = {};
+                    return pieces.reduce(function(sequence, p) {
+                        return sequence.then(function(result) {
+                            return Promise.all(p.map(function(param) {
+                                return oauth.accessProtectedResource(null, null, {
+                                    "method": "taobao.hotel.rooms.search",
+                                    "gids": param.gids.join(",")
+                                }, param.token);
+                            }));
+                        }).then(function(result) {
+                            var i = 0, len = result.length, cluster;
+                            for (; i < len; i += 1) {
+                                cluster = result[i];
+                                if (cluster["hotel_rooms_search_response"] &&
+                                    cluster["hotel_rooms_search_response"]["rooms"] &&
+                                    cluster["hotel_rooms_search_response"]["rooms"]["room"]) {
+                                    cluster["hotel_rooms_search_response"]["rooms"]["room"].forEach(function(g) {
+                                        statuses[g.gid] = g.status;
+                                    });
+                                }
+                            }
+                            return statuses;
+                        });
+                    }, Promise.resolve());
+                }).then(function(result) { // taobao.hotel.rooms.search
+                    console.log(JSON.stringify(result, null, 4));
                     // var statuses = {};
                     // var i = 0,
                     //     len = result[0]["length"];
