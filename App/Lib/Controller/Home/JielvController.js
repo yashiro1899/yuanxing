@@ -389,7 +389,7 @@ module.exports = Controller(function() {
                 var users = {};
                 var tokens = {};
                 var model = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
-                    model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(model);
+                    model = D("Goods").field("gid,userid,roomtypeid,ratetype,ptype,profit").where(model);
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
@@ -401,6 +401,8 @@ module.exports = Controller(function() {
                         roomtypeids[g.roomtypeid] = true;
                         if (!users[g.userid]) users[g.userid] = {};
                         users[g.userid][g.gid] = {
+                            roomtypeid, g.roomtypeid,
+                            ratetype, g.ratetype,
                             ptype: g.ptype,
                             profit: g.profit
                         };
@@ -417,9 +419,37 @@ module.exports = Controller(function() {
                     });
                     return prices2(Object.keys(roomtypeids));
                 }).then(function(result) { // hotelpriceall
-                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, Object.keys(result)["length"]);
-                    roomtypeids = result;
+                    var parameters = [];
+                    var uarr = Object.keys(users);
+                    var i = 0, len = uarr.length, u;
+                    var token;
+
+                    var j, glen;
+                    for (; i < len; i += 1) {
+                        u = uarr[i];
+                        token = tokens[u];
+                        if (!token) continue;
+
+                        u = users[u];
+                        u = Object.keys(u);
+                        u = u.filter(function(g) {
+                            if (!roomtypeids[g.roomtypeid]) return false;
+                            if (!roomtypeids[g.roomtypeid][g.ratetype]) return false;
+                            return true;
+                        });
+                        var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
+                        console.log("------------------------------------------------");
+                        console.log(time, u.length);
+                        console.log("------------------------------------------------");
+                        // glen = Math.ceil(u.length / 30);
+                        // for (j = 0; j < glen; j += 1) {
+                        //     parameters.push({
+                        //         gids: u.slice(j * 30, (j + 1) * 30),
+                        //         token: token
+                        //     });
+                        // }
+                    }
+
                     // var parameters = [];
                     // var uarr = Object.keys(users);
                     // var i = 0,
@@ -485,45 +515,6 @@ module.exports = Controller(function() {
                     // for (; i < len; i += 1) {
                     //     s = result[0][i];
                     //     statuses[s[0]] = s[1];
-                    // }
-
-                    // var quotas = {};
-                    // var rti;
-                    // var j, rlen, rpd, rt;
-                    // var price, night;
-                    // len = result[1]['length'];
-                    // for (i = 0; i < len; i += 1) {
-                    //     s = result[1][i];
-                    //     rti = s.roomtypeid;
-                    //     if (!quotas[rti]) quotas[rti] = {};
-                    //     rlen = s.length;
-                    //     for (j = 0; j < rlen; j += 1) {
-                    //         rpd = s[j];
-                    //         if (rpd[3] < 1) continue;
-
-                    //         rt = rpd[0];
-                    //         if (!quotas[rti][rt]) quotas[rti][rt] = {};
-
-                    //         night = dateformat((new Date(rpd[1])), "yyyy-mm-dd");
-                    //         price = quotas[rti][rt][night];
-                    //         if (price && price[0] < rpd[2]) continue;
-                    //         quotas[rti][rt][night] = [rpd[2], rpd[3]];
-                    //     }
-                    // }
-
-                    // var parameters = [];
-                    // var uarr = Object.keys(users);
-                    // var u, glen, gid_room_quota_map;
-                    // len = uarr.length;
-                    // for (i = 0;; i < len; i += 1) {
-                    //     u = uarr[i];
-                    //     u = users[u];
-                    //     if (u[-2] < Date.now()) continue; // expires
-
-                    //     // glen = Math.ceil(u.length / 30);
-                    //     // for (j = 0; j < glen; j += 1) {
-                    //     //     parameters.push([u.slice(j * 30, (j + 1) * 30), u[-1]]);
-                    //     // }
                     // }
 
                     //     gid_room_quota_map = [];
