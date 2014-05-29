@@ -424,11 +424,10 @@ module.exports = Controller(function() {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    data.forEach(function(u) {
+                    result.forEach(function(u) {
                         if (u.expires < Date.now()) return null;
                         tokens[u.id] = u.token;
                     });
-
                     return prices2(Object.keys(roomtypeids));
                 }).then(function(result) { // hotelpriceall
                     console.log(JSON.stringify(result, null, 4));
