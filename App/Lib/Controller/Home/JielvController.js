@@ -109,8 +109,6 @@ function prices2(roomtypeids) {
                     });
                 }
             }
-            var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-            console.log(time, Object.keys(quotas)["length"]);
             return quotas;
         })["catch"](function(e) {console.log(e);});
     }, Promise.resolve());
