@@ -386,8 +386,8 @@ module.exports = Controller(function() {
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
-                var users = {};
-                var model = D("Goods").field("gid,userid,roomtypeid").where("status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")");
+                var users = [];
+                var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where("status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")");
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
@@ -395,122 +395,134 @@ module.exports = Controller(function() {
                     var rtis = {};
                     var i = 0,
                         len = result.length;
-                    var g;
                     for (; i < len; i += 1) {
-                        g = result[i];
+                        var g = result[i];
                         rtis[g.roomtypeid] = true;
                         if (!users[g.userid]) users[g.userid] = [];
-                        users[g.userid].push(g.gid);
+                        users[g.userid][g.gid] = {
+                            ptype: g.ptype,
+                            profit: g.profit
+                        };
                     }
 
-                    var m = D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
-                    return Promise.all([m, prices2(Object.keys(rtis))]);
+                    return D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
+                    // return Promise.all([m, prices2(Object.keys(rtis))]);
                 }).then(function(result) { // hotelpriceall, think_user
-                    var data = result[0] || [];
-                    if (data.length === 0) return getDefer().promise;
-                    if (result[1]["length"] === 0) return getDefer().promise;
+                    console.log(JSON.stringify(result, null, 4));
+                    // var data = result[0] || [];
+                    // if (data.length === 0) return getDefer().promise;
+                    // if (result[1]["length"] === 0) return getDefer().promise;
 
-                    data.forEach(function(u) {
-                        users[u.id][-1] = u.token;
-                        users[u.id][-2] = u.expires;
-                    });
+                    // data.forEach(function(u) {
+                    //     users[u.id][-1] = u.token;
+                    //     users[u.id][-2] = u.expires;
+                    // });
 
-                    var parameters = [];
-                    var uarr = Object.keys(users);
-                    var i = 0,
-                        len = uarr.length;
-                    var u, glen, j;
-                    for (; i < len; i += 1) {
-                        u = uarr[i];
-                        u = users[u];
-                        if (u[-2] < Date.now()) continue;
+                    // var parameters = [];
+                    // var uarr = Object.keys(users);
+                    // var i = 0,
+                    //     len = uarr.length;
+                    // var u, glen, j;
+                    // for (; i < len; i += 1) {
+                    //     u = uarr[i];
+                    //     u = users[u];
+                    //     if (u[-2] < Date.now()) continue;
 
-                        glen = Math.ceil(u.length / 20);
-                        for (j = 0; j < glen; j += 1) {
-                            parameters.push([u.slice(j * 20, (j + 1) * 20), u[-1]]);
-                        }
-                    }
+                    //     glen = Math.ceil(u.length / 20);
+                    //     for (j = 0; j < glen; j += 1) {
+                    //         parameters.push([u.slice(j * 20, (j + 1) * 20).map(function(k) {
+                    //             return k[0];
+                    //         }), u[-1]]);
+                    //     }
+                    // }
 
-                    var pieces = [];
-                    var block = 500;
-                    length = Math.ceil(parameters.length / block);
-                    for (i = 0; i < length; i += 1) {
-                        pieces.push(parameters.slice(i * block, (i + 1) * block));
-                    }
+                    // var pieces = [];
+                    // var block = 500;
+                    // length = Math.ceil(parameters.length / block);
+                    // for (i = 0; i < length; i += 1) {
+                    //     pieces.push(parameters.slice(i * block, (i + 1) * block));
+                    // }
 
-                    return Promise.all([pieces.reduce(function(sequence, p) {
-                        var data;
-                        return sequence.then(function(result) {
-                            data = result;
-                            return Promise.all(p.map(function(param) {
-                                return oauth.accessProtectedResource(null, null, {
-                                    "method": "taobao.hotel.rooms.search",
-                                    "gids": param[0].join(",")
-                                }, param[1]);
-                            }));
-                        }).then(function(result) {
-                            var goods = [];
-                            var i = 0,
-                                len = result.length;
-                            var cluster;
+                    // return Promise.all([pieces.reduce(function(sequence, p) {
+                    //     var data;
+                    //     return sequence.then(function(result) {
+                    //         data = result;
+                    //         return Promise.all(p.map(function(param) {
+                    //             return oauth.accessProtectedResource(null, null, {
+                    //                 "method": "taobao.hotel.rooms.search",
+                    //                 "gids": param[0].join(",")
+                    //             }, param[1]);
+                    //         }));
+                    //     }).then(function(result) {
+                    //         var goods = [];
+                    //         var i = 0,
+                    //             len = result.length;
+                    //         var cluster;
 
-                            var j, rlen, g;
-                            for (; i < len; i += 1) {
-                                cluster = result[i];
-                                if (cluster["hotel_rooms_search_response"] &&
-                                    cluster["hotel_rooms_search_response"]["rooms"] &&
-                                    cluster["hotel_rooms_search_response"]["rooms"]["room"]) {
-                                    rlen = cluster["hotel_rooms_search_response"]["rooms"]["room"]["length"];
-                                    for (j = 0; j < rlen; j += 1) {
-                                        g = cluster["hotel_rooms_search_response"]["rooms"]["room"][j];
-                                        goods.push([g.gid, g.status]);
-                                    }
-                                }
-                            }
-                            return data.concat(goods);
-                        });
-                    }, Promise.resolve([])), result[1]]);
-                }).then(function(result) { // taobao.hotel.rooms.search
-                    var statuses = {};
-                    var i = 0,
-                        len = result[0]["length"];
-                    var s;
-                    for (; i < len; i += 1) {
-                        s = result[0][i];
-                        statuses[s[0]] = s[1];
-                    }
+                    //         var j, rlen, g;
+                    //         for (; i < len; i += 1) {
+                    //             cluster = result[i];
+                    //             if (cluster["hotel_rooms_search_response"] &&
+                    //                 cluster["hotel_rooms_search_response"]["rooms"] &&
+                    //                 cluster["hotel_rooms_search_response"]["rooms"]["room"]) {
+                    //                 rlen = cluster["hotel_rooms_search_response"]["rooms"]["room"]["length"];
+                    //                 for (j = 0; j < rlen; j += 1) {
+                    //                     g = cluster["hotel_rooms_search_response"]["rooms"]["room"][j];
+                    //                     goods.push([g.gid, g.status]);
+                    //                 }
+                    //             }
+                    //         }
+                    //         return data.concat(goods);
+                    //     });
+                    // }, Promise.resolve([])), result[1]]);
+                // }).then(function(result) { // taobao.hotel.rooms.search
+                    // var statuses = {};
+                    // var i = 0,
+                    //     len = result[0]["length"];
+                    // var s;
+                    // for (; i < len; i += 1) {
+                    //     s = result[0][i];
+                    //     statuses[s[0]] = s[1];
+                    // }
 
-                    var quotas = {};
-                    var rti;
-                    var j, rlen, rpd, rt;
-                    var price, night;
-                    len = result[1]['length'];
-                    for (i = 0; i < len; i += 1) {
-                        s = result[1][i];
-                        rti = s.roomtypeid;
-                        if (!quotas[rti]) quotas[rti] = {};
-                        rlen = s.length;
-                        for (j = 0; j < rlen; j += 1) {
-                            rpd = s[j];
-                            if (rpd[3] < 1) continue;
+                    // var quotas = {};
+                    // var rti;
+                    // var j, rlen, rpd, rt;
+                    // var price, night;
+                    // len = result[1]['length'];
+                    // for (i = 0; i < len; i += 1) {
+                    //     s = result[1][i];
+                    //     rti = s.roomtypeid;
+                    //     if (!quotas[rti]) quotas[rti] = {};
+                    //     rlen = s.length;
+                    //     for (j = 0; j < rlen; j += 1) {
+                    //         rpd = s[j];
+                    //         if (rpd[3] < 1) continue;
 
-                            rt = rpd[0];
-                            if (!quotas[rti][rt]) quotas[rti][rt] = {};
+                    //         rt = rpd[0];
+                    //         if (!quotas[rti][rt]) quotas[rti][rt] = {};
 
-                            night = dateformat((new Date(rpd[1])), "yyyy-mm-dd");
-                            price = quotas[rti][rt][night];
-                            if (price && price[0] < rpd[2]) continue;
-                            quotas[rti][rt][night] = [rpd[2], rpd[3]];
-                        }
-                    }
-                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, Object.keys(quotas)["length"]);
-                    // var i, u;
-                    // var promises = [];
-                    // var gid_room_quota_map;
-                    // for (i in users) {
-                    //     u = users[i];
-                    //     if (u.expires < Date.now()) continue;
+                    //         night = dateformat((new Date(rpd[1])), "yyyy-mm-dd");
+                    //         price = quotas[rti][rt][night];
+                    //         if (price && price[0] < rpd[2]) continue;
+                    //         quotas[rti][rt][night] = [rpd[2], rpd[3]];
+                    //     }
+                    // }
+
+                    // var parameters = [];
+                    // var uarr = Object.keys(users);
+                    // var u, glen, gid_room_quota_map;
+                    // len = uarr.length;
+                    // for (i = 0;; i < len; i += 1) {
+                    //     u = uarr[i];
+                    //     u = users[u];
+                    //     if (u[-2] < Date.now()) continue; // expires
+
+                    //     // glen = Math.ceil(u.length / 30);
+                    //     // for (j = 0; j < glen; j += 1) {
+                    //     //     parameters.push([u.slice(j * 30, (j + 1) * 30), u[-1]]);
+                    //     // }
+                    // }
 
                     //     gid_room_quota_map = [];
                     //     u.forEach(function(g) {
