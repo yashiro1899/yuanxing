@@ -535,6 +535,7 @@ module.exports = Controller(function() {
                         if (!token) continue;
 
                         u = users[u];
+                        u = Object.keys(u);
                         glen = Math.ceil(u.length / 20);
                         for (j = 0; j < glen; j += 1) {
                             parameters.push({
