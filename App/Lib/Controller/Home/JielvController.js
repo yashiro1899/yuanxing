@@ -433,8 +433,10 @@ module.exports = Controller(function() {
                         u = users[u];
                         u = Object.keys(u).filter(function(g) {
                             g = u[g];
-                            if (!result[g.roomtypeid]) return false;
-                            if (!result[g.roomtypeid][g.ratetype]) return false;
+                            var rtid = g.roomtypeid;
+                            if (!result[rtid]) return false;
+                            if (!result[rtid][g.ratetype]) return false;
+                            g.status = true;
                             return true;
                         });
 
@@ -516,12 +518,12 @@ module.exports = Controller(function() {
                                 if (!re) continue;
 
                                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                                console.log(time, "taobao.hotel.rooms.update", re.sort().join(","), "/" + re.length);
+                                console.log(time, "taobao.hotel.rooms.update", re.sort().join(","), "/ " + re.length);
                             }
                         })["catch"](function(e) {console.log(e);});
                     }, Promise.resolve());
                 }).then(function(result) { // taobao.hotel.rooms.update
-
+                    console.log(JSON.stringify(users, null, 4));
                     // var parameters = [];
                     // var uarr = Object.keys(users);
                     // var i = 0,
