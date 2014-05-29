@@ -436,7 +436,6 @@ module.exports = Controller(function() {
                             var rtid = g.roomtypeid;
                             if (!result[rtid]) return false;
                             if (!result[rtid][g.ratetype]) return false;
-                            if (Object.keys(result[rtid][g.ratetype])["length"] === 0) return false;
                             g.status = true;
                             return true;
                         });
