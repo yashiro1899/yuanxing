@@ -591,12 +591,12 @@ module.exports = Controller(function() {
                             var gid = g;
                             g = u[gid];
 
-                            if (statuses[gid] == 1 && !g.status) parameters.push({
+                            if (result[gid] == 1 && !g.status) parameters.push({
                                 gid: gid,
                                 status: 2,
                                 token: token
                             });
-                            else if (statuses[gid] == 2 && g.status) parameters.push({
+                            else if (result[gid] == 2 && g.status) parameters.push({
                                 gid: gid,
                                 status: 1,
                                 token: token
