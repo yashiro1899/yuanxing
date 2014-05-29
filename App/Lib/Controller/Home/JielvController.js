@@ -477,8 +477,8 @@ module.exports = Controller(function() {
                     var s;
                     for (; i < len; i += 1) {
                         s = result[0][i];
-                        if (s.status == 1) statuses[0].push(s.gid);
-                        else if (s.status == 2) statuses[1].push(s.gid);
+                        if (s[1] == 1) statuses[0].push(s[0]);
+                        else if (s[1] == 2) statuses[1].push(s[0]);
                     }
 
 // +
