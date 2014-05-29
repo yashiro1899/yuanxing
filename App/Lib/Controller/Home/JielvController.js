@@ -59,7 +59,6 @@ function prices2(roomtypeids) {
 
         for (var j = 0; j < 3; j += 1) {
             parameters.push({
-                "QueryType": "hotelpriceall",
                 "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20).join("/"),
                 "checkInDate": dateformat(start, "yyyy-mm-dd"),
                 "checkOutDate": dateformat(end, "yyyy-mm-dd")
@@ -81,45 +80,50 @@ function prices2(roomtypeids) {
         var data;
         return sequence.then(function(result) {
             data = result;
-            return Promise.all(p.map(function(param) {return jielvapi(param);}));
+            return Promise.all(p.map(function(param) {
+                param["QueryType"] = "hotelpriceall";
+                return jielvapi(param);
+            }));
         }).then(function(result) {
-            var i = 0,
-                len = result.length,
-                cluster;
-            var j, clen, room;
-            var k, rlen, rpd;
-            var id, type, night, price;
-            for (; i < len; i += 1) {
-                cluster = result[i];
-                if (cluster && cluster.data && cluster.data.length) {
-                    clen = cluster.data.length;
-                    for (j = 0; j < clen; j += 1) {
-                        room = cluster.data[j];
-                        id = room.roomtypeId;
-                        if (!data[id]) data[id] = [];
-                        rlen = room.roomPriceDetail.length;
-                        for (k = 0; k < rlen; k += 1) {
-                            rpd = room.roomPriceDetail[k];
-                            if (rpd.qtyable < 1) continue;
+            console.log(result.length);
+            return [];
+            // var i = 0,
+            //     len = result.length,
+            //     cluster;
+            // var j, clen, room;
+            // var k, rlen, rpd;
+            // var id, type, night, price;
+            // for (; i < len; i += 1) {
+            //     cluster = result[i];
+            //     if (cluster && cluster.data && cluster.data.length) {
+            //         clen = cluster.data.length;
+            //         for (j = 0; j < clen; j += 1) {
+            //             room = cluster.data[j];
+            //             id = room.roomtypeId;
+            //             if (!data[id]) data[id] = [];
+            //             rlen = room.roomPriceDetail.length;
+            //             for (k = 0; k < rlen; k += 1) {
+            //                 rpd = room.roomPriceDetail[k];
+            //                 if (rpd.qtyable < 1) continue;
 
-                            type = rpd.ratetype;
-                            if (!data[id][type]) data[id][type] = {};
+            //                 type = rpd.ratetype;
+            //                 if (!data[id][type]) data[id][type] = {};
 
-                            night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                            price = data[id][type][night];
-                            if (price && price.price < rpd.preeprice) continue;
+            //                 night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+            //                 price = data[id][type][night];
+            //                 if (price && price.price < rpd.preeprice) continue;
 
-                            data[id][type][night] = {
-                                price: rpd.preeprice,
-                                num: rpd.qtyable
-                            };
-                        }
-                    }
-                }
-            }
-            return data;
-        })["catch"](function(e) {console.log(e)});
-    }, Promise.resolve([]));
+            //                 data[id][type][night] = {
+            //                     price: rpd.preeprice,
+            //                     num: rpd.qtyable
+            //                 };
+            //             }
+            //         }
+            //     }
+            // }
+            // return data;
+        })["catch"](function(e) {console.log(e);});
+    }, Promise.resolve({}));
 }
 module.exports = Controller(function() {
     return {
