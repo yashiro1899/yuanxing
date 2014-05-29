@@ -457,7 +457,7 @@ module.exports = Controller(function() {
                     var quotas = result;
                     return pieces.reduce(function(sequence, p) {
                         return sequence.then(function(result) {
-                            return p.map(function(param) {
+                            return Promise.all(p.map(function(param) {
                                 var userid = param.token.slice(47);
                                 var gid_room_quota_map = [];
                                 param.gids.forEach(function(g) {
@@ -499,7 +499,7 @@ module.exports = Controller(function() {
                                     "method": "taobao.hotel.rooms.update",
                                     "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
                                 }, param.token);
-                            });
+                            }));
                         }).then(function(result) {
                             var i = 0, len = result.length, re;
                             for (; i < len; i += 1) {
