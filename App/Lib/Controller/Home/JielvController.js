@@ -76,6 +76,7 @@ function prices2(roomtypeids) {
         pieces.push(parameters.slice(i * block, (i + 1) * block));
     }
 
+    var quotas = {};
     return pieces.reduce(function(sequence, p) {
         return sequence.then(function(result) {
             return Promise.all(p.map(function(param) {
@@ -83,44 +84,34 @@ function prices2(roomtypeids) {
                 return jielvapi(param);
             }));
         }).then(function(result) {
-            console.log(JSON.stringify(result, null, 4));
-    //         // var i = 0,
-    //         //     len = result.length,
-    //         //     cluster;
-    //         // var j, clen, room;
-    //         // var k, rlen, rpd;
-    //         // var id, type, night, price;
-    //         // for (; i < len; i += 1) {
-    //         //     cluster = result[i];
-    //         //     if (cluster && cluster.data && cluster.data.length) {
-    //         //         clen = cluster.data.length;
-    //         //         for (j = 0; j < clen; j += 1) {
-    //         //             room = cluster.data[j];
-    //         //             id = room.roomtypeId;
-    //         //             if (!data[id]) data[id] = [];
-    //         //             rlen = room.roomPriceDetail.length;
-    //         //             for (k = 0; k < rlen; k += 1) {
-    //         //                 rpd = room.roomPriceDetail[k];
-    //         //                 if (rpd.qtyable < 1) continue;
+            var i = 0, len = result.length, cluster;
+            for (; i < len; i += 1) {
+                cluster = result[i];
+                if (cluster && cluster.data && cluster.data.length) {
+                    cluster.forEach(function(room) {
+                        var id = room.roomtypeId;
+                        if (!quotas[id]) quotas[id] = {};
 
-    //         //                 type = rpd.ratetype;
-    //         //                 if (!data[id][type]) data[id][type] = {};
+                        room.roomPriceDetail.forEach(function(rpd) {
+                            if (rpd.qtyable < 1) return null;
+                            var type = rpd.ratetype;
+                            var night, price;
 
-    //         //                 night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-    //         //                 price = data[id][type][night];
-    //         //                 if (price && price.price < rpd.preeprice) continue;
-
-    //         //                 data[id][type][night] = {
-    //         //                     price: rpd.preeprice,
-    //         //                     num: rpd.qtyable
-    //         //                 };
-    //         //             }
-    //         //         }
-    //         //     }
-    //         // }
-            return "haha";
+                            if (!quotas[id][type]) quotas[id][type] = {};
+                            night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            price = quotas[id][type][night];
+                            if (price && price.price < rpd.preeprice) return null;
+                            quotas[id][type][night] = {
+                                price: rpd.preeprice,
+                                num: rpd.qtyable
+                            };
+                        });
+                    });
+                }
+            }
+            return quotas;
         })["catch"](function(e) {console.log(e);});
-    }, Promise.resolve({}));
+    }, Promise.resolve());
 }
 module.exports = Controller(function() {
     return {
