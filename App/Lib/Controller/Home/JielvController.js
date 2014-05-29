@@ -437,17 +437,21 @@ module.exports = Controller(function() {
                             if (!result[g.roomtypeid][g.ratetype]) return false;
                             return true;
                         });
-                        var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                        console.log("------------------------------------------------");
-                        console.log(time, u.length);
-                        console.log("------------------------------------------------");
-                        // glen = Math.ceil(u.length / 30);
-                        // for (j = 0; j < glen; j += 1) {
-                        //     parameters.push({
-                        //         gids: u.slice(j * 30, (j + 1) * 30),
-                        //         token: token
-                        //     });
-                        // }
+
+                        glen = Math.ceil(u.length / 30);
+                        for (j = 0; j < glen; j += 1) {
+                            parameters.push({
+                                gids: u.slice(j * 30, (j + 1) * 30),
+                                token: token
+                            });
+                        }
+                    }
+
+                    var pieces = [];
+                    var block = 1200;
+                    length = Math.ceil(parameters.length / block);
+                    for (i = 0; i < length; i += 1) {
+                        pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
 
                     // var parameters = [];
