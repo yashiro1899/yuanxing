@@ -573,7 +573,7 @@ module.exports = Controller(function() {
                                 }
                             }
                             return statuses;
-                        });
+                        })["catch"](function(e) {console.log(e);});
                     }, Promise.resolve());
                 }).then(function(result) { // taobao.hotel.rooms.search
                     console.log(JSON.stringify(result, null, 4));
