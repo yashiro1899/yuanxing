@@ -481,6 +481,32 @@ module.exports = Controller(function() {
                         else if (s.status == 2) statuses[1].push(s.gid);
                     }
 
+// +
+// +                    roomtypeids = {};
+// +                    data.forEach(function(period) {
+// +                        period.forEach(function(r) {
+// +                            if (!roomtypeids[r.roomtypeId]) roomtypeids[r.roomtypeId] = {};
+// +                            r.roomPriceDetail.forEach(function(rpd) {
+// +                                if (rpd.qtyable < 1) return null;
+// +                                if (!roomtypeids[r.roomtypeId][rpd.ratetype]) roomtypeids[r.roomtypeId][rpd.ratetype] = {};
+// +
+// +                                var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+// +                                var r = roomtypeids[r.roomtypeId][rpd.ratetype][night];
+// +                                if (r && r.price < prd.preeprice) return null;
+// +                                roomtypeids[r.roomtypeId][rpd.ratetype][night] = {
+// +                                    price: prd.preeprice,
+// +                                    num: prd.qtyable
+// +                                };
+// +                            });
+// +                        });
+// +                    });
+
+                    // var quotas = {};
+                    // len = result[1]['length'];
+                    // for (i = 0; i < len; i += 1) {
+                    //     s = result[1]
+                    //     if (quotas[])
+                    // }
                     var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                     console.log(time, statuses[0]["length"], statuses[1]["length"]);
                     // var i, u;
