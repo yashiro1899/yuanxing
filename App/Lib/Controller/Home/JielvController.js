@@ -400,26 +400,24 @@ module.exports = Controller(function() {
 
                 var where = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
                 var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(where);
+                var users = {};
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    var rtis = {};
-                    var users = [];
-                    var i = 0,
-                        len = result.length;
+                    roomtypeids = {};
+                    var i = 0, len = result.length, g;
                     for (; i < len; i += 1) {
-                        var g = result[i];
-                        rtis[g.roomtypeid] = true;
-                        if (!users[g.userid]) users[g.userid] = [];
+                        g = result[i];
+                        roomtypeids[g.roomtypeid] = true;
+                        if (!users[g.userid]) users[g.userid] = {};
                         users[g.userid][g.gid] = {
                             ptype: g.ptype,
                             profit: g.profit
                         };
                     }
 
-                    var m = D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
-                    return Promise.all([m, prices2(Object.keys(rtis)), users]);
+                    return D("User").field("id,token,expires").where("id in (" + Object.keys(users).join(",") + ")").select();
                 }).then(function(result) { // hotelpriceall, think_user
                     console.log(JSON.stringify(result, null, 4));
                     // var data = result[0] || [];
