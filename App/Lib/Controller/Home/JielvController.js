@@ -431,8 +431,8 @@ module.exports = Controller(function() {
                         if (!token) continue;
 
                         u = users[u];
-                        u = Object.keys(u);
-                        u = u.filter(function(g) {
+                        u = Object.keys(u).filter(function(g) {
+                            g = u[g];
                             if (!result[g.roomtypeid]) return false;
                             if (!result[g.roomtypeid][g.ratetype]) return false;
                             return true;
