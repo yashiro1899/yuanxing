@@ -603,6 +603,7 @@ module.exports = Controller(function() {
                             });
                         });
                     }
+                    if (parameters.length === 0) return getDefer().Promise();
 
                     var pieces = [];
                     var block = 800;
