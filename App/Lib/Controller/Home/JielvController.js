@@ -495,10 +495,32 @@ module.exports = Controller(function() {
                                         roomQuota: roomQuota
                                     });
                                 });
-                                console.log(JSON.stringify(gid_room_quota_map, null, 4));
+                                return oauth.accessProtectedResource(null, null, {
+                                    "method": "taobao.hotel.rooms.update",
+                                    "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
+                                }, param.token);
                             });
-                        });
+                        }).then(function(result) {
+                            var i = 0, len = result.length, re;
+                            for (; i < len; i += 1) {
+                                re = result[i];
+                                if (!re) continue;
+
+                                re = re["hotel_rooms_update_response"];
+                                if (!re) continue;
+
+                                re = re["gids"];
+                                if (!re) continue;
+
+                                re = re["string"];
+                                if (!re) continue;
+
+                                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                                console.log(time, "taobao.hotel.rooms.update", re.sort().join(","), "/" + re.length);
+                            }
+                        })["catch"](function(e) {console.log(e);});
                     }, Promise.resolve());
+                }).then(function(result) { // taobao.hotel.rooms.update
 
                     // var parameters = [];
                     // var uarr = Object.keys(users);
@@ -600,27 +622,7 @@ module.exports = Controller(function() {
                     //             }, u.token));
                     //         }
 
-
-                    //     var length = Math.ceil(gid_room_quota_map.length / 30);
-                    //     for (var j = 0; j < length; j += 1) {
-                    //         promises.push(oauth.accessProtectedResource(null, null, {
-                    //             "method": "taobao.hotel.rooms.update",
-                    //             "gid_room_quota_map": JSON.stringify(gid_room_quota_map.slice(j * 30, (j + 1) * 30))
-                    //         }, u.token));
-                    //     }
-                    // }
-                    // return Promise.all(promises);
-                // }).then(function(result) { // taobao.hotel.rooms.update
                     // result.forEach(function(i) {
-                    //     if (i.hotel_rooms_update_response) {
-                    //         i = i.hotel_rooms_update_response;
-                    //         if (!i.gids) return null;
-
-                    //         i = i.gids;
-                    //         if (!i.string) return null;
-
-                    //         time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-                    //         console.log(time, "taobao.hotel.rooms.update", i.string.sort().join(","), "(" + i.string.length, "gids)");
                     //     } else if (i.hotel_room_update_response) {
                     //         i = i.hotel_room_update_response;
                     //         if (!i.room) return null;
