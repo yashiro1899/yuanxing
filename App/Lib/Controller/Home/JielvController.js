@@ -438,8 +438,7 @@ module.exports = Controller(function() {
                         pieces.push(parameters.slice(i * block, (i + 1) * block));
                     }
 
-                    roomtypeids = result[1];
-                    return pieces.reduce(function(sequence, p) {
+                    return Promise.all([pieces.reduce(function(sequence, p) {
                         var data;
                         return sequence.then(function(result) {
                             data = result;
@@ -470,11 +469,20 @@ module.exports = Controller(function() {
                             }
                             return data.concat(goods);
                         });
-                    }, Promise.resolve([]));
+                    }, Promise.resolve([])), result[1]]);
                 }).then(function(result) { // taobao.hotel.rooms.search
-                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, result["length"]);
+                    var statuses = [[], []];
+                    var i = 0,
+                        len = result[0]["length"];
+                    var s;
+                    for (; i < len; i += 1) {
+                        s = result[0][i];
+                        if (s.status == 1) statuses[0].push(s.gid);
+                        else if (s.status == 2) statuses[1].push(s.gid);
+                    }
 
+                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, statuses[0]["length"], statuses[1]["length"]);
                     // var i, u;
                     // var promises = [];
                     // var gid_room_quota_map;
