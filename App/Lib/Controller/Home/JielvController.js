@@ -386,10 +386,10 @@ module.exports = Controller(function() {
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
-                var where = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
-                var model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(where);
                 var users = {};
                 var tokens = {};
+                var model = "status = 4 and roomtypeid in (" + roomtypeids.join(",") + ")";
+                    model = D("Goods").field("gid,userid,roomtypeid,ptype,profit").where(model);
                 model.select().then(function(result) { // think_goods
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
@@ -417,7 +417,9 @@ module.exports = Controller(function() {
                     });
                     return prices2(Object.keys(roomtypeids));
                 }).then(function(result) { // hotelpriceall
-                    console.log(JSON.stringify(result, null, 4));
+                    var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
+                    console.log(time, Object.keys(result));
+                    roomtypeids = result;
                     // var parameters = [];
                     // var uarr = Object.keys(users);
                     // var i = 0,
