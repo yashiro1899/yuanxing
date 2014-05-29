@@ -148,8 +148,8 @@ module.exports = Controller("Home/BaseController", function() {
                         g["roomtypeid"] = exists[g.rid]["roomtypeid"];
 
                         if (exists[g.rid]["no_price_expires"] > Date.now()) {
-                            g["goodstatus"] = 4;
-                            g["goodstatusicon"] = mapping.goodstatus[4];
+                            g["goodstatus"] = 3;
+                            g["goodstatusicon"] = mapping.goodstatus[3];
                         }
                     }
                 });
