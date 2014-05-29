@@ -500,14 +500,31 @@ module.exports = Controller(function() {
 // +                        });
 // +                    });
 
-                    // var quotas = {};
-                    // len = result[1]['length'];
-                    // for (i = 0; i < len; i += 1) {
-                    //     s = result[1]
-                    //     if (quotas[])
-                    // }
+                    var quotas = {};
+                    var rti;
+                    var j, rlen, rpd, rt;
+                    var price, night;
+                    len = result[1]['length'];
+                    for (i = 0; i < len; i += 1) {
+                        s = result[1][i];
+                        rti = s.roomtypeid;
+                        if (!quotas[rti]) quotas[rti] = {};
+                        rlen = s.length;
+                        for (j = 0; j < rlen; j += 1) {
+                            rpd = s[j];
+                            if (rpd[3] < 1) continue;
+
+                            rt = rpd[0];
+                            if (!quotas[rti][rt]) quotas[rti][rt] = {};
+
+                            night = dateformat((new Date(rpd[1])), "yyyy-mm-dd");
+                            price = quotas[rti][rt][night];
+                            if (price && price[0] < prd[2]) continue;
+                            quotas[rti][rt][night] = [rpd[2], rpd[3]];
+                        }
+                    }
                     var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
-                    console.log(time, statuses[0]["length"], statuses[1]["length"]);
+                    console.log(time, Object.keys(quotas)["length"]);
                     // var i, u;
                     // var promises = [];
                     // var gid_room_quota_map;
