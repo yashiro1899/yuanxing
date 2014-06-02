@@ -56,6 +56,7 @@ module.exports = function(data) {
         });
     });
 
+    request.setTimeout(1000 * 60);
     request.on('error', function(e) {
         deferred.resolve(null);
     });

@@ -208,6 +208,7 @@ OAuth2.prototype._executeRequest = function(library, options, post_body, callbac
             }
         });
     });
+    request.setTimeout(1000 * 60);
     request.on('error', function(e) {
         callbackCalled = true;
         callback(e, null);
