@@ -11,6 +11,9 @@ var getDefer = function() {
     return deferred;
 };
 var conf = require('./auth.conf').jielv;
+var agent = new http.Agent({
+    maxSockets: 20
+});
 
 module.exports = function(data) {
     if (!data) return getDefer().promise;
@@ -25,7 +28,8 @@ module.exports = function(data) {
         host: host,
         port: port,
         path: "/commonQueryServlet",
-        method: "POST"
+        method: "POST",
+        agent: agent
     };
 
     data = JSON.stringify(data);
