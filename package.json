@@ -9,6 +9,7 @@
     "dateformat": "^1.0.7-1.2.3",
     "es6-promise": "^0.1.1",
     "heapdump": "^0.2.8",
+    "memwatch": "^0.2.2",
     "mysql": "^2.1.1",
     "simple-mime": "0.0.8",
     "thinkjs": "^0.4.10"
