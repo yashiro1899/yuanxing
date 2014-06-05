@@ -1,3 +1,5 @@
+var Agent = require("agentkeepalive");
+var conf = require('./auth.conf').jielv;
 var dateformat = require("dateformat");
 var http = require('http');
 var Promise = require('es6-promise').Promise;
@@ -10,9 +12,9 @@ var getDefer = function() {
     });
     return deferred;
 };
-var conf = require('./auth.conf').jielv;
-var agent = new http.Agent({
-    maxSockets: 20
+var agent = new Agent({
+    maxSockets: 50,
+    keepAlive: true
 });
 
 module.exports = function(data) {
