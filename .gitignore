@@ -4,5 +4,6 @@ Runtime/
 auth.conf
 logs/
 node_modules/
+run/
 www/bower_components/
 www/index.js
