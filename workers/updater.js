@@ -7,8 +7,10 @@ var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
 var http = require('http');
+var https = require('https');
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
+var util = require("util");
 
 var getDefer = function() {
     var deferred = {};
@@ -36,6 +38,17 @@ var jielvOptions = {
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
         "Host": host + ":" + port,
+        "Content-Length": 0
+    }
+};
+var taobaoOptions = {
+    host: "eco.taobao.com",
+    port: null,
+    path: "/router/rest",
+    method: "POST",
+    headers: {
+        "Host": "eco.taobao.com",
+        "Content-Type": "",
         "Content-Length": 0
     }
 };
@@ -189,9 +202,10 @@ deferred.promise.then(function(result) { // hotelpriceall
                 });
             });
             bagpipe.push(taobaorequest, {
+                "access_token": users[userid],
                 "method": "taobao.hotel.rooms.update",
                 "gid_room_quota_map": JSON.stringify(gid_room_quota_map)
-            }, users[userid], callback);
+            }, callback);
             count += 1;
         }
     }
@@ -216,6 +230,52 @@ function jielvrequest(data, callback) {
                 if (result && result.success == 8)
                     console.log(time, "jielv.ERROR", JSON.stringify(result.msg));
 
+                callback(result);
+            } catch(e) {
+                callback(null);
+            }
+        });
+    });
+
+    request.setTimeout(1000 * 60);
+    request.on('error', function(e) {callback(null);});
+    request.write(data, 'utf8');
+    request.end();
+}
+function taobaorequest(params) {
+    params["v"] = "2.0";
+    params["format"] = "json";
+
+    var body = new Buffer("");
+    var boundary = "----webkitformboundary";
+    boundary += (+(new Date())).toString(16);
+
+    (Object.keys(params)).forEach(function(p) {
+        var field = util.format('\r\n--%s\r\n', boundary);
+        field += util.format('Content-Disposition: form-data; name="%s"\r\n\r\n', p);
+        field += params[p];
+        field = new Buffer(field);
+        body = Buffer.concat([body, field]);
+    });
+    body = Buffer.concat([body, new Buffer(util.format('\r\n--%s--', boundary))]);
+
+    taobaoOptions.headers['Content-Length'] = body.length;
+    taobaoOptions.headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary;
+
+    var result = new Buffer('');
+    var request = https.request(taobaoOptions, function(response) {
+        response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
+        response.on('end', function() {
+            try {
+                var result = JSON.parse(data);
+                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                var message = "";
+                var user = token.slice(47);
+                if (result && result["error_response"]) {
+                    message = result["error_response"]["sub_msg"];
+                    message = message || result["error_response"]["msg"];
+                    console.log(time, "taobao.ERROR", JSON.stringify(message), user, "(" + params["method"] + ")");
+                }
                 callback(result);
             } catch(e) {
                 callback(null);
