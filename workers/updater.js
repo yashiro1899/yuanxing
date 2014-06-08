@@ -52,6 +52,7 @@ var callback = function(result) {
             });
         });
     }
+    showMem();
 };
 
 for (; i < length; i += 1) {
