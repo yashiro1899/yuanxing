@@ -426,7 +426,7 @@ module.exports = Controller(function() {
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
-                cp.fork("../../../../workers/updater.js").send(roomtypeids);
+                cp.fork(__dirname + "/../../../../workers/updater.js").send(roomtypeids);
             } catch (e) {console.log(e);}
             showMem();
         }

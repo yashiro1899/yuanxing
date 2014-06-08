@@ -1,84 +1,111 @@
-// var Agent = require("agentkeepalive");
-// var Bagpipe = require('bagpipe');
-// var conf = require('./auth.conf').jielv;
-// var dateformat = require("dateformat");
-// var fs = require("fs");
-// var http = require('http');
-
-// var bagpipe = new Bagpipe(100);
-// var host = conf["host"] || "chstravel.com";
-// var port = conf["port"] || "30000";
-// var options = {
-//     host: host,
-//     port: port,
-//     path: "/commonQueryServlet",
-//     method: "POST",
-//     agent: (new Agent({
-//         maxSockets: 50,
-//         keepAlive: true
-//     })),
-//     headers: {
-//         "Cache-Control": "no-cache",
-//         "Pragma": "no-cache",
-//         "Host": host + ":" + port,
-//         "Content-Length": 0
-//     }
-// };
-
-// showMem();
-// var start = Date.now();
-// var hotelIds;
-// var i = 0, j;
-// for (; i < 5000; i += 1) {
-//     hotelIds = [];
-//     for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) hotelIds.push(j);
-//     hotelIds = hotelIds.join("/");
-//     bagpipe.push(jielvrequest, {
-//         "QueryType": "hotelinfo",
-//         "hotelIds": hotelIds
-//     }, function(result) {
-//         showMem();
-//     });
-// }
-
-// function jielvrequest(data, callback) {
-//     data["Usercd"] = conf["Usercd"];
-//     data["Authno"] = conf["Authno"];
-//     data = new Buffer(JSON.stringify(data), "utf8");
-//     options.headers["Content-Length"] = data.length;
-
-//     var result = new Buffer('');
-//     var request = http.request(options, function(response) {
-//         response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
-//         response.on('end', function() {
-//             try {
-//                 result = '(' + result + ')';
-//                 result = eval(result);
-
-//                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-//                 if (result && result.success == 8)
-//                     console.log(time, "jielv.ERROR", JSON.stringify(result.msg));
-
-//                 callback(result);
-//             } catch(e) {
-//                 callback(null);
-//             }
-//         });
-//     });
-
-//     request.setTimeout(1000 * 60);
-//     request.on('error', function(e) {callback(null);});
-//     request.write(data, 'utf8');
-//     request.end();
-// }
-
-// function showMem() {
-//     var mem = process.memoryUsage();
-//     var format = function(bytes) {
-//         return (bytes / 1024 / 1024).toFixed(2) + "MB";
-//     };
-//     console.log("Process: heapTotal", format(mem.heapTotal), "heapUsed", format(mem.heapUsed), "rss", format(mem.rss));
-// }
 process.on('message', function(roomtypeids) {
-    console.log(JSON.stringify(roomtypeids, null, 4));
+var Agent = require("agentkeepalive");
+var Bagpipe = require('bagpipe');
+var conf = require('./auth.conf');
+var dateformat = require("dateformat");
+var http = require('http');
+
+var host = conf.jielv["host"] || "chstravel.com";
+var port = conf.jielv["port"] || "30000";
+var jielvOptions = {
+    host: host,
+    port: port,
+    path: "/commonQueryServlet",
+    method: "POST",
+    agent: (new Agent({
+        maxSockets: 50,
+        keepAlive: true
+    })),
+    headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Host": host + ":" + port,
+        "Content-Length": 0
+    }
+};
+
+var bagpipe = new Bagpipe(50);
+var length = Math.ceil(roomtypeids.length / 20);
+var i = 0;
+var start, end, j;
+var quotas = {};
+var callback = function(result) {
+    if (result && result.data && result.data.length) {
+        result.data.forEach(function(room) {
+            var id = room.roomtypeId;
+            if (!quotas[id]) quotas[id] = {};
+
+            room.roomPriceDetail.forEach(function(rpd) {
+                if (rpd.qtyable < 1) return null;
+                var type = rpd.ratetype;
+                var night, price;
+
+                if (!quotas[id][type]) quotas[id][type] = {};
+                night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                price = quotas[id][type][night];
+                if (price && price.price < rpd.preeprice) return null;
+
+                quotas[id][type][night] = {
+                    price: rpd.preeprice,
+                    num: rpd.qtyable
+                };
+            });
+        });
+    }
+};
+
+for (; i < length; i += 1) {
+    start = Date.now();
+    end = start + 30 * 24 * 60 * 60 * 1000;
+
+    for (j = 0; j < 3; j += 1) {
+        bagpipe.push(jielvrequest, {
+            "QueryType": "hotelpriceall",
+            "roomtypeids": roomtypeids.slice(i * 20, (i + 1) * 20).join("/"),
+            "checkInDate": dateformat(start, "yyyy-mm-dd"),
+            "checkOutDate": dateformat(end, "yyyy-mm-dd")
+        }, callback);
+
+        start = end;
+        end = start + 30 * 24 * 60 * 60 * 1000;
+    }
+}
+
+function jielvrequest(data, callback) {
+    data["Usercd"] = conf.jielv["Usercd"];
+    data["Authno"] = conf.jielv["Authno"];
+    data = new Buffer(JSON.stringify(data), "utf8");
+    options.headers["Content-Length"] = data.length;
+
+    var result = new Buffer('');
+    var request = http.request(options, function(response) {
+        response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
+        response.on('end', function() {
+            try {
+                result = '(' + result + ')';
+                result = eval(result);
+
+                var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+                if (result && result.success == 8)
+                    console.log(time, "jielv.ERROR", JSON.stringify(result.msg));
+
+                callback(result);
+            } catch(e) {
+                callback(null);
+            }
+        });
+    });
+
+    request.setTimeout(1000 * 60);
+    request.on('error', function(e) {callback(null);});
+    request.write(data, 'utf8');
+    request.end();
+}
+function showMem() {
+    var mem = process.memoryUsage();
+    var format = function(bytes) {
+        return (bytes / 1024 / 1024).toFixed(2) + "MB";
+    };
+    console.log("Process: heapTotal", format(mem.heapTotal), "heapUsed", format(mem.heapUsed), "rss", format(mem.rss));
+}
 });
