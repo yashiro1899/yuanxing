@@ -426,14 +426,25 @@ module.exports = Controller(function() {
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
 
+                data = null;
                 time = Date.now();
-                D("Users").field('id').where("expires > " + time).select().then(function(result) {
+                return D("User").field('id').where("expires > " + time).select().then(function(result) {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    var model = D("Goods");
-                    console.log(result);
-                    console.log(model.group);
+                    var users = result.map(function(u) {return u.id;});
+                    var model = D("Goods").field('roomtypeid').group("roomtypeid");
+                    var where = "roomtypeid in (" + roomtypeids.join(",") + ") and ";
+                    where += "userid in (" + users.join(",") + ") and ";
+                    where += "status = 4";
+                    roomtypeids = null;
+                    return model.select();
+                }).then(function(result) {
+                    result = result || [];
+                    if (result.length === 0) return getDefer().promise;
+
+                    var ids = result.map(function(g) {return g.roomtypeid;});
+                    console.log(ids.length);
                 });
                 // cp.fork(__dirname + "/../../../../workers/updater.js").send(roomtypeids);
             } catch (e) {console.log(e);}
