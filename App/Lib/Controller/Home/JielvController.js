@@ -3,10 +3,18 @@
  * @return
  */
 var cookie = require("cookie");
+var cp = require("child_process");
 var dateformat = require("dateformat");
 var jielvapi = require("../../../../jielv-api.js");
 var oauth = require("../../../../taobao-oauth");
 var querystring = require('querystring');
+function showMem() {
+    var mem = process.memoryUsage();
+    var format = function(bytes) {
+        return (bytes / 1024 / 1024).toFixed(2) + "MB";
+    };
+    console.log("Process: heapTotal", format(mem.heapTotal), "heapUsed", format(mem.heapUsed), "rss", format(mem.rss));
+}
 function rot13(s) {
     var i;
     var rotated = '';
@@ -400,6 +408,7 @@ module.exports = Controller(function() {
             } catch (e) {console.log(e);}
         },
         testAction: function() {
+            showMem();
             this.end({
                 "Usercd": "SZ2747",
                 "Authno": "123456",
@@ -416,7 +425,10 @@ module.exports = Controller(function() {
 
                 var time = dateformat(Date.now(), "[yyyy-mm-dd HH:MM:ss]");
                 console.log(time, "jielv.callback", roomtypeids.length, "roomtypeids");
+
+                cp.fork("../../../../workers/updater.js").send(roomtypeids);
             } catch (e) {console.log(e);}
+            showMem();
         }
     };
 });
