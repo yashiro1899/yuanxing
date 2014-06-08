@@ -68,7 +68,7 @@ var callback = function(result) {
     count -= 1;
 
     if (count === 0) {
-        deferred.resolve(quotas);
+        deferred.resolve(null);
     }
 };
 
@@ -88,6 +88,11 @@ for (; i < length; i += 1) {
         end = start + 30 * 24 * 60 * 60 * 1000;
     }
 }
+
+deferred.promise.then(function(result) {
+    console.log(Object.keys(quotas));
+    process.exit(0);
+});
 
 function jielvrequest(data, callback) {
     data["Usercd"] = conf.jielv["Usercd"];
