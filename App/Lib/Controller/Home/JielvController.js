@@ -438,13 +438,14 @@ module.exports = Controller(function() {
                     where += "userid in (" + users.join(",") + ") and ";
                     where += "status = 4";
                     roomtypeids = null;
-                    return model.select();
+                    return model.where(where).select();
                 }).then(function(result) {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
                     var ids = result.map(function(g) {return g.roomtypeid;});
                     console.log(ids.length);
+                    showMem();
                 });
                 // cp.fork(__dirname + "/../../../../workers/updater.js").send(roomtypeids);
             } catch (e) {console.log(e);}
