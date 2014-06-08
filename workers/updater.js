@@ -267,7 +267,7 @@ function taobaorequest(params) {
         response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
         response.on('end', function() {
             try {
-                var result = JSON.parse(data);
+                result = JSON.parse(result);
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                 var message = "";
                 var user = token.slice(47);
