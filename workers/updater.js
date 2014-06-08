@@ -4,6 +4,16 @@ var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
 var http = require('http');
+var Promise = require('es6-promise').Promise;
+
+var getDefer = function() {
+    var deferred = {};
+    deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+    return deferred;
+};
 
 var host = conf.jielv["host"] || "chstravel.com";
 var port = conf.jielv["port"] || "30000";
@@ -28,6 +38,8 @@ var bagpipe = new Bagpipe(50);
 var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
+
+var deferred = getDefer();
 var quotas = {};
 var count = length * 3;
 var callback = function(result) {
@@ -56,7 +68,7 @@ var callback = function(result) {
     count -= 1;
 
     if (count === 0) {
-        console.log(Object.keys(quotas));
+        deferred.resolve(quotas);
     }
 };
 
