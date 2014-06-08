@@ -210,7 +210,10 @@ deferred.promise.then(function(result) { // hotelpriceall
         }
     }
     quotas = null;
-})["catch"](function(e) {console.log(e);});
+})["catch"](function(e) {
+    console.log(e);
+    process.exit(0);
+});
 
 function jielvrequest(data, callback) {
     data["Usercd"] = conf.jielv["Usercd"];
@@ -285,7 +288,7 @@ function taobaorequest(params) {
 
     request.setTimeout(1000 * 60);
     request.on('error', function(e) {callback(null);});
-    request.write(data, 'utf8');
+    request.write(body, 'utf8');
     request.end();
 }
 function showMem() {
