@@ -273,7 +273,7 @@ function taobaorequest(params) {
                 result = JSON.parse(result);
                 var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
                 var message = "";
-                var user = token.slice(47);
+                var user = params.access_token.slice(47);
                 if (result && result["error_response"]) {
                     message = result["error_response"]["sub_msg"];
                     message = message || result["error_response"]["msg"];
