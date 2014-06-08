@@ -1,4 +1,7 @@
-process.on('message', function(roomtypeids) {
+process.on('message', function(data) {
+var roomtypeids = data.roomtypeids;
+var users = data.users;
+
 var Agent = require("agentkeepalive");
 var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
@@ -93,10 +96,9 @@ for (; i < length; i += 1) {
 }
 
 var goods = {};
-var users = {};
 deferred.promise.then(function(result) { // hotelpriceall
     return new Promise(function(resolve, reject) {
-        var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and status = 4";
+        var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and userid in (" + Object.keys(users).join(",") + ") and status = 4";
         roomtypeids = null;
         connection.query(querystring, function(err, rows, fields) {
             if (err) {
@@ -120,19 +122,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         goods[userid].push(g);
     }
 
-    return new Promise(function(resolve, reject) {
-        var querystring = "select id,token from think_user where id in (" + Object.keys(goods).join(",") + ")";
-        connection.query(querystring, function(err, rows, fields) {
-            if (err) {
-                console.log(err.toString());
-                rows = [];
-            }
-            resolve(rows);
-        });
-    });
-}).then(function(result) { // think_user
-    result.forEach(function(u) {users[u.id] = u.token;});
-    console.log(users);
+    console.log(Object.keys(goods), users);
     connection.end();
     process.exit(0);
 })["catch"](function(e) {console.log(e);});

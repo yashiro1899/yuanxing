@@ -428,14 +428,15 @@ module.exports = Controller(function() {
 
                 data = null;
                 time = Date.now();
-                return D("User").field('id').where("expires > " + time).select().then(function(result) {
+                var users = {};
+                return D("User").field('id,token').where("expires > " + time).select().then(function(result) {
                     result = result || [];
                     if (result.length === 0) return getDefer().promise;
 
-                    var users = result.map(function(u) {return u.id;});
+                    result.map(function(u) {users[u.id] = u.token;});
                     var model = D("Goods").field('roomtypeid').group("roomtypeid");
                     var where = "roomtypeid in (" + roomtypeids.join(",") + ") and ";
-                    where += "userid in (" + users.join(",") + ") and ";
+                    where += "userid in (" + Object.keys(users).join(",") + ") and ";
                     where += "status = 4";
                     roomtypeids = null;
                     return model.where(where).select();
@@ -444,7 +445,10 @@ module.exports = Controller(function() {
                     if (result.length === 0) return getDefer().promise;
 
                     var ids = result.map(function(g) {return g.roomtypeid;});
-                    cp.fork(__dirname + "/../../../../workers/updater.js").send(ids);
+                    cp.fork(__dirname + "/../../../../workers/updater.js").send({
+                        roomtypeids: ids,
+                        users: users
+                    });
                     showMem();
                 });
             } catch (e) {console.log(e);}
