@@ -125,18 +125,48 @@ deferred.promise.then(function(result) { // hotelpriceall
 
     bagpipe = new Bagpipe(50);
     var uarr = Object.keys(goods);
-    var j, len;
+    var j, len, gid_room_quota_map;
     for (i = 0, length = uarr.length; i < length; i += 1) {
         userid = uarr[i];
         g = users[userid];
         len = Math.ceil(g.length / 30);
         for (j = 0; j < len; j += 1) {
-            parameters.push({
-                gids: u.slice(j * 30, (j + 1) * 30),
-                token: token
+            gid_room_quota_map = [];
+            g.slice(j * 30, (j + 1) * 30).forEach(function(goods) {
+                var roomQuota = [];
+                var time = Date.now();
+                var night, price, num;
+                var k = 0;
+                for (; k < 90; k += 1) {
+                    night = dateformat(time, "yyyy-mm-dd");
+                    price = quotas[goods.roomtypeid][goods.ratetype][night];
+                    if (price) {
+                        num = price.num;
+                        price = price.price;
+                        if (goods.ptype == 1) price = Math.ceil(price * (goods.profit + 100) / 100) * 100;
+                        else if (goods.ptype == 2) price = Math.ceil((price + goods.profit)) * 100;
+                        roomQuota.push({
+                            date: night,
+                            price: price,
+                            num: num
+                        });
+                    } else {
+                        roomQuota.push({
+                            date: night,
+                            price: 9999999,
+                            num: 0
+                        });
+                    }
+                    time += 24 * 60 * 60 * 1000;
+                }
+                gid_room_quota_map.push({
+                    gid: goods.gid,
+                    roomQuota: roomQuota
+                });
             });
         }
     }
+    console.log(JSON.stringify(gid_room_quota_map, null, 4));
 
     process.exit(0);
 })["catch"](function(e) {console.log(e);});
