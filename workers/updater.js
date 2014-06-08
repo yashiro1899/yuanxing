@@ -93,9 +93,11 @@ for (; i < length; i += 1) {
 }
 
 var goods = {};
-deferred.promise.then(function(result) {
+var users = {};
+deferred.promise.then(function(result) { // hotelpriceall
     return new Promise(function(resolve, reject) {
         var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and status = 4";
+        roomtypeids = null;
         connection.query(querystring, function(err, rows, fields) {
             if (err) {
                 console.log(err.toString());
@@ -104,23 +106,36 @@ deferred.promise.then(function(result) {
             resolve(rows);
         });
     });
-}).then(function(result) {
+}).then(function(result) { // think_goods
     var length = result.length;
     if (length === 0) process.exit(0);
 
     var i = 0, g, userid;
     for (; i < length; i += 1) {
         g = result[i];
-        var userid = g.userid;
+        userid = g.userid;
         delete g.userid;
 
         if (goods[userid] === undefined) goods[userid] = [];
         goods[userid].push(g);
     }
-    console.log(JSON.stringify(goods, null, 4));
+
+    return new Promise(function(resolve, reject) {
+        var querystring = "select id,token from think_user where id in (" + Object.keys(goods).join(",") + ")";
+        connection.query(querystring, function(err, rows, fields) {
+            if (err) {
+                console.log(err.toString());
+                rows = [];
+            }
+            resolve(rows);
+        });
+    });
+}).then(function(result) { // think_user
+    result.forEach(function(u) {users[u.id] = u.token;});
+    console.log(users);
     connection.end();
     process.exit(0);
-});
+})["catch"](function(e) {console.log(e);});
 
 function jielvrequest(data, callback) {
     data["Usercd"] = conf.jielv["Usercd"];
