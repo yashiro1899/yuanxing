@@ -4,6 +4,7 @@ var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
 var http = require('http');
+var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 
 var getDefer = function() {
@@ -89,8 +90,32 @@ for (; i < length; i += 1) {
     }
 }
 
+var goods = {};
 deferred.promise.then(function(result) {
-    console.log(Object.keys(quotas));
+    return new Promise(function(resolve, reject) {
+        var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and status = 4";
+        connection.query(querystring, function(err, rows, fields) {
+            if (err) {
+                console.log(err.toString());
+                rows = [];
+            }
+            resolve(rows);
+        });
+    });
+}).then(function(result) {
+    var length = result.length;
+    if (length === 0) process.exit(0);
+
+    var i = 0, g, userid;
+    for (; i < length; i += 1) {
+        g = result[i];
+        var userid = g.userid;
+        delete g.userid;
+
+        if (goods[userid] === undefined) goods[userid] = [];
+        goods[userid].push(g);
+    }
+    console.log(JSON.stringify(goods, null, 4));
     process.exit(0);
 });
 
