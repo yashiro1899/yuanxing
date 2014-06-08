@@ -97,18 +97,19 @@ for (; i < length; i += 1) {
 
 var goods = {};
 deferred.promise.then(function(result) { // hotelpriceall
-    return new Promise(function(resolve, reject) {
-        var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and userid in (" + Object.keys(users).join(",") + ") and status = 4";
-        roomtypeids = null;
-        connection.query(querystring, function(err, rows, fields) {
-            if (err) {
-                console.log(err.toString());
-                rows = [];
-            }
-            resolve(rows);
-        });
+    var dfd = getDefer();
+    var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and userid in (" + Object.keys(users).join(",") + ") and status = 4";
+    roomtypeids = null;
+    connection.query(querystring, function(err, rows, fields) {
+        if (err) {
+            console.log(err.toString());
+            rows = [];
+        }
+        dfd.resolve(rows);
     });
+    return dfd.promise;
 }).then(function(result) { // think_goods
+    connection.end();
     var length = result.length;
     if (length === 0) process.exit(0);
 
@@ -122,8 +123,21 @@ deferred.promise.then(function(result) { // hotelpriceall
         goods[userid].push(g);
     }
 
-    console.log(Object.keys(goods), users);
-    connection.end();
+    bagpipe = new Bagpipe(50);
+    var uarr = Object.keys(goods);
+    var j, len;
+    for (i = 0, length = uarr.length; i < length; i += 1) {
+        userid = uarr[i];
+        g = users[userid];
+        len = Math.ceil(g.length / 30);
+        for (j = 0; j < len; j += 1) {
+            parameters.push({
+                gids: u.slice(j * 30, (j + 1) * 30),
+                token: token
+            });
+        }
+    }
+
     process.exit(0);
 })["catch"](function(e) {console.log(e);});
 
@@ -156,5 +170,12 @@ function jielvrequest(data, callback) {
     request.on('error', function(e) {callback(null);});
     request.write(data, 'utf8');
     request.end();
+}
+function showMem() {
+    var mem = process.memoryUsage();
+    var format = function(bytes) {
+        return (bytes / 1024 / 1024).toFixed(2) + "MB";
+    };
+    console.log("Process: heapTotal", format(mem.heapTotal), "heapUsed", format(mem.heapUsed), "rss", format(mem.rss));
 }
 });
