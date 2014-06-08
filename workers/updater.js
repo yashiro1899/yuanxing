@@ -29,6 +29,7 @@ var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
 var quotas = {};
+var count = length * 3;
 var callback = function(result) {
     if (result && result.data && result.data.length) {
         result.data.forEach(function(room) {
@@ -52,7 +53,11 @@ var callback = function(result) {
             });
         });
     }
-    showMem();
+    count -= 1;
+
+    if (count === 0) {
+        console.log(Object.keys(quotas));
+    }
 };
 
 for (; i < length; i += 1) {
