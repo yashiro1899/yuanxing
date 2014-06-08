@@ -1,7 +1,7 @@
 process.on('message', function(roomtypeids) {
 var Agent = require("agentkeepalive");
 var Bagpipe = require('bagpipe');
-var conf = require('./auth.conf');
+var conf = require('../auth.conf');
 var dateformat = require("dateformat");
 var http = require('http');
 
@@ -76,10 +76,10 @@ function jielvrequest(data, callback) {
     data["Usercd"] = conf.jielv["Usercd"];
     data["Authno"] = conf.jielv["Authno"];
     data = new Buffer(JSON.stringify(data), "utf8");
-    options.headers["Content-Length"] = data.length;
+    jielvOptions.headers["Content-Length"] = data.length;
 
     var result = new Buffer('');
-    var request = http.request(options, function(response) {
+    var request = http.request(jielvOptions, function(response) {
         response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
         response.on('end', function() {
             try {
