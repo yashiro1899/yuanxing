@@ -15,6 +15,8 @@ var getDefer = function() {
     });
     return deferred;
 };
+var connection = mysql.createConnection(conf.mysql);
+connection.connect();
 
 var host = conf.jielv["host"] || "chstravel.com";
 var port = conf.jielv["port"] || "30000";
@@ -116,6 +118,7 @@ deferred.promise.then(function(result) {
         goods[userid].push(g);
     }
     console.log(JSON.stringify(goods, null, 4));
+    connection.end();
     process.exit(0);
 });
 
