@@ -444,10 +444,9 @@ module.exports = Controller(function() {
                     if (result.length === 0) return getDefer().promise;
 
                     var ids = result.map(function(g) {return g.roomtypeid;});
-                    console.log(ids.length);
+                    cp.fork(__dirname + "/../../../../workers/updater.js").send(ids);
                     showMem();
                 });
-                // cp.fork(__dirname + "/../../../../workers/updater.js").send(roomtypeids);
             } catch (e) {console.log(e);}
             showMem();
         }
