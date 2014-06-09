@@ -286,7 +286,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         }
     }
     if (count === 0) process.exit(0);
-})["catch"](function(e) {
+})["catch"](function(e) { // taobao.hotel.room.update
     console.log(e);
     process.exit(0);
 });
@@ -366,12 +366,5 @@ function taobaorequest(params, callback) {
     request.on('error', function(e) {callback(null);});
     request.write(body, 'utf8');
     request.end();
-}
-function showMem() {
-    var mem = process.memoryUsage();
-    var format = function(bytes) {
-        return (bytes / 1024 / 1024).toFixed(2) + "MB";
-    };
-    console.log("Process: heapTotal", format(mem.heapTotal), "heapUsed", format(mem.heapUsed), "rss", format(mem.rss));
 }
 });

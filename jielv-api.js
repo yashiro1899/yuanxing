@@ -12,42 +12,36 @@ var getDefer = function() {
     });
     return deferred;
 };
-var agent = new Agent({
-    maxSockets: 50,
-    keepAlive: true
-});
+
+var host = conf.jielv["host"] || "chstravel.com";
+var port = conf.jielv["port"] || "30000";
+var options = {
+    host: host,
+    port: port,
+    path: "/commonQueryServlet",
+    method: "POST",
+    agent: (new Agent({
+        maxSockets: 50,
+        keepAlive: true
+    })),
+    headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Host": host + ":" + port,
+        "Content-Length": 0
+    }
+};
 
 module.exports = function(data) {
-    if (!data) return getDefer().promise;
-
     data["Usercd"] = conf["Usercd"];
     data["Authno"] = conf["Authno"];
-
-    var host = conf["host"] || "chstravel.com";
-    var port = conf["port"] || "30000";
-    var headers = {};
-    var options = {
-        host: host,
-        port: port,
-        path: "/commonQueryServlet",
-        method: "POST",
-        agent: agent
-    };
-
-    data = JSON.stringify(data);
-    data = new Buffer(data, 'utf8');
-    headers["Cache-Control"] = "no-cache";
-    headers["Pragma"] = "no-cache";
-    headers['Host'] = host + ":" + port;
-    headers["Content-Length"] = data.length;
-    options["headers"] = headers;
+    data = new Buffer(JSON.stringify(data), "utf8");
+    options.headers["Content-Length"] = data.length;
 
     var deferred = getDefer();
     var result = new Buffer('');
     var request = http.request(options, function(response) {
-        response.on('data', function(chunk) {
-            result = Buffer.concat([result, chunk]);
-        });
+        response.on('data', function(chunk) {result = Buffer.concat([result, chunk]);});
         response.on('end', function() {
             try {
                 result = '(' + result + ')';
@@ -63,10 +57,7 @@ module.exports = function(data) {
     });
 
     request.setTimeout(1000 * 60);
-    request.on('error', function(e) {
-        deferred.resolve(null);
-    });
-
+    request.on('error', function(e) {deferred.resolve(null);});
     request.write(data, 'utf8');
     request.end();
     return deferred.promise;
