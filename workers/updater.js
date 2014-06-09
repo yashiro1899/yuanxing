@@ -142,7 +142,7 @@ deferred.promise.then(function(result) { // hotelpriceall
     callback = function(result) {
         if (result && (result = result["hotel_rooms_update_response"]) && (result = result["gids"]) && (result = result["string"])) {
             var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-            console.log(time, "taobao.hotel.rooms.update", re.sort().join(","), "/ " + re.length);
+            console.log(time, "taobao.hotel.rooms.update", result.sort().join(","), "/ " + result.length);
         }
         count -= 1;
 
