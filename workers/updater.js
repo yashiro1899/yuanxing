@@ -198,7 +198,6 @@ deferred.promise.then(function(result) { // hotelpriceall
                     roomQuota: roomQuota
                 });
             });
-            if (gid_room_quota_map.length === 0) continue;
             bagpipe.push(taobaorequest, {
                 "access_token": users[userid],
                 "method": "taobao.hotel.rooms.update",
@@ -210,23 +209,44 @@ deferred.promise.then(function(result) { // hotelpriceall
     quotas = null;
     return dfd.promise;
 }).then(function(result) { // taobao.hotel.rooms.update
+    var statuses = {};
+    var dfd = getDefer();
+    bagpipe = new Bagpipe(50);
+    count = 0;
+    callback = function(result) {
+        if (result && (result = result["hotel_rooms_search_response"]) && (result = result["rooms"]) && (result = result["room"])) {
+            result.forEach(function(g) {
+                statuses[g.gid] = g.status;
+            });
+        }
+        count -= 1;
+
+        if (count === 0) {
+            dfd.resolve(statuses);
+        }
+    };
+
     var uarr = Object.keys(goods);
     var length = uarr.length;
     var i = 0, g, userid;
     var j, len;
-
-    count = 0;
-
     for (; i < length; i += 1) {
         userid = uarr[i];
         g = goods[userid];
 
         len = Math.ceil(g.length / 20);
         for (j = 0; j < len; j += 1) {
+            bagpipe.push(taobaorequest, {
+                "access_token": users[userid],
+                "method": "taobao.hotel.rooms.search",
+                "gids": g.slice(j * 20, (j + 1) * 20).join(",")
+            }, callback);
             count += 1;
         }
     }
-    console.log(count);
+    return dfd.promise;
+}).then(function(result) { // taobao.hotel.rooms.search
+    console.log(result);
     process.exit(0);
 })["catch"](function(e) {
     console.log(e);
