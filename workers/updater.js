@@ -222,7 +222,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         g = goods[userid];
 
         len = Math.ceil(g.length / 20);
-        for (j = 0; j < len; i += 1) {
+        for (j = 0; j < len; j += 1) {
             count += 1;
         }
     }
