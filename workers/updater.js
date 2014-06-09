@@ -147,8 +147,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         count -= 1;
 
         if (count === 0) {
-            process.exit(0);
-            // dfd.resolve(null);
+            dfd.resolve(null);
         }
     };
     var uarr = Object.keys(goods);
@@ -209,6 +208,26 @@ deferred.promise.then(function(result) { // hotelpriceall
         }
     }
     quotas = null;
+    return dfd.promise;
+}).then(function(result) { // taobao.hotel.rooms.update
+    var uarr = Object.keys(goods);
+    var length = uarr.length;
+    var i = 0, g, userid;
+    var j, len;
+
+    count = 0;
+
+    for (; i < length; i += 1) {
+        userid = uarr[i];
+        g = goods[userid];
+
+        len = Math.ceil(g.length / 20);
+        for (j = 0; j < len; i += 1) {
+            count += 1;
+        }
+    }
+    console.log(count);
+    process.exit(0);
 })["catch"](function(e) {
     console.log(e);
     process.exit(0);
