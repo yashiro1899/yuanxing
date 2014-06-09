@@ -62,7 +62,7 @@ var deferred = getDefer();
 var quotas = {};
 var count = length * 3;
 var callback = function(result) {
-    if (result && result.data && result.data.length) {
+    if (result && result.data && result.data.length > 0) {
         result.data.forEach(function(room) {
             var id = room.roomtypeId;
             if (!quotas[id]) quotas[id] = {};
