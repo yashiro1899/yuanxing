@@ -229,17 +229,19 @@ deferred.promise.then(function(result) { // hotelpriceall
     var uarr = Object.keys(goods);
     var length = uarr.length;
     var i = 0, g, userid;
-    var j, len;
+    var j, len, gids;
     for (; i < length; i += 1) {
         userid = uarr[i];
         g = goods[userid];
 
         len = Math.ceil(g.length / 20);
         for (j = 0; j < len; j += 1) {
+            gids = g.slice(j * 20, (j + 1) * 20);
+            gids = gids.map(function(i) {return i.gid;});
             bagpipe.push(taobaorequest, {
                 "access_token": users[userid],
                 "method": "taobao.hotel.rooms.search",
-                "gids": g.slice(j * 20, (j + 1) * 20).join(",")
+                "gids": gids.join(",")
             }, callback);
             count += 1;
         }
