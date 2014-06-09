@@ -156,6 +156,13 @@ deferred.promise.then(function(result) { // hotelpriceall
     for (i = 0, length = uarr.length; i < length; i += 1) {
         userid = uarr[i];
         g = goods[userid];
+        g = g.filter(function(goods) {
+            var rtid = goods.roomtypeid;
+            if (quotas[rtid] === undefined) return false;
+            if (quotas[rtid][goods.ratetype] === undefined) return false;
+            goods.status = true;
+            return true;
+        });
         len = Math.ceil(g.length / 30);
         for (j = 0; j < len; j += 1) {
             gid_room_quota_map = [];
@@ -168,19 +175,7 @@ deferred.promise.then(function(result) { // hotelpriceall
                     night = dateformat(time, "yyyy-mm-dd");
                     time += 24 * 60 * 60 * 1000;
 
-                    price = quotas[goods.roomtypeid];
-                    if (price === undefined) {
-                        goods.status = 2;
-                        return null;
-                    }
-
-                    price = price[goods.ratetype];
-                    if (price === undefined) {
-                        goods.status = 2;
-                        return null;
-                    }
-
-                    price = price[night];
+                    price = quotas[goods.roomtypeid][goods.ratetype][night];
                     if (price) {
                         num = price.num;
                         price = price.price;
