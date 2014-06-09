@@ -259,7 +259,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         userid = uarr[i];
         g = goods[userid];
         for (j = 0, len = g.length; j < len; j += 1) {
-            k = g[i];
+            k = g[j];
             if (statuses[k.gid] == 1 && !k.status) {
                 // parameters.push({
                 //     gid: k.gid,
