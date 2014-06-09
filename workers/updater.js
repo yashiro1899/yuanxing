@@ -248,7 +248,36 @@ deferred.promise.then(function(result) { // hotelpriceall
     }
     return dfd.promise;
 }).then(function(result) { // taobao.hotel.rooms.search
-    console.log(result);
+    var statuses = result;
+    count = 0;
+
+    var uarr = Object.keys(goods);
+    var length = uarr.length;
+    var i = 0, g, userid;
+    var j, len, k;
+    for (; i < length; i += 1) {
+        userid = uarr[i];
+        g = goods[userid];
+        for (j = 0, len = g.length; j < len; j += 1) {
+            k = g[i];
+            if (statuses[k.gid] == 1 && !k.status) {
+                // parameters.push({
+                //     gid: k.gid,
+                //     status: 2,
+                //     token: users[userid]
+                // });
+                count += 1;
+            } else if (statuses[k.gid] == 2 && k.status) {
+                // parameters.push({
+                //     gid: k.gid,
+                //     status: 1,
+                //     token: users[userid]
+                // });
+                count += 1;
+            }
+        }
+    }
+    console.log(count);
     process.exit(0);
 })["catch"](function(e) {
     console.log(e);
