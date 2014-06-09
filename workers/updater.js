@@ -86,9 +86,7 @@ var callback = function(result) {
     }
     count -= 1;
 
-    if (count === 0) {
-        deferred.resolve(null);
-    }
+    if (count === 0) deferred.resolve(null);
 };
 
 for (; i < length; i += 1) {
@@ -146,9 +144,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         }
         count -= 1;
 
-        if (count === 0) {
-            dfd.resolve(null);
-        }
+        if (count === 0) dfd.resolve(null);
     };
     var uarr = Object.keys(goods);
     var j, len, gid_room_quota_map;
@@ -221,9 +217,7 @@ deferred.promise.then(function(result) { // hotelpriceall
         }
         count -= 1;
 
-        if (count === 0) {
-            dfd.resolve(statuses);
-        }
+        if (count === 0) dfd.resolve(statuses);
     };
 
     var uarr = Object.keys(goods);
@@ -249,7 +243,19 @@ deferred.promise.then(function(result) { // hotelpriceall
     return dfd.promise;
 }).then(function(result) { // taobao.hotel.rooms.search
     var statuses = result;
+    var dfd = getDefer();
+    bagpipe = new Bagpipe(50);
     count = 0;
+    callback = function(result) {
+        if (result && (result = result["hotel_room_update_response"]) && (result = result["room"])) {
+            var time = "[" + result.modified + "]";
+            if (result["status"] == 2) console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
+            else if (result["status"] == 1) console.log(time, "taobao.hotel.room.update(listing)", result.gid);
+        }
+        count -= 1;
+
+        if (count === 0) process.exit(0);
+    };
 
     var uarr = Object.keys(goods);
     var length = uarr.length;
@@ -261,24 +267,25 @@ deferred.promise.then(function(result) { // hotelpriceall
         for (j = 0, len = g.length; j < len; j += 1) {
             k = g[j];
             if (statuses[k.gid] == 1 && !k.status) {
-                // parameters.push({
-                //     gid: k.gid,
-                //     status: 2,
-                //     token: users[userid]
-                // });
+                bagpipe.push(taobaorequest, {
+                    "access_token": users[userid],
+                    "method": "taobao.hotel.room.update",
+                    "gid": k.gid,
+                    "status": 2
+                }, callback);
                 count += 1;
             } else if (statuses[k.gid] == 2 && k.status) {
-                // parameters.push({
-                //     gid: k.gid,
-                //     status: 1,
-                //     token: users[userid]
-                // });
+                bagpipe.push(taobaorequest, {
+                    "access_token": users[userid],
+                    "method": "taobao.hotel.room.update",
+                    "gid": k.gid,
+                    "status": 1
+                }, callback);
                 count += 1;
             }
         }
     }
-    console.log(count);
-    process.exit(0);
+    if (count === 0) process.exit(0);
 })["catch"](function(e) {
     console.log(e);
     process.exit(0);
