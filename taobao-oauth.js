@@ -2,7 +2,6 @@ var cookie = require("cookie");
 var dateformat = require("dateformat");
 var fs = require("fs");
 var https = require('https');
-var path = require('path');
 var querystring = require('querystring');
 var util = require("util");
 var Promise = require('es6-promise').Promise;
