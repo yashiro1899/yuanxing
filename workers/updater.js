@@ -140,7 +140,10 @@ deferred.promise.then(function(result) { // hotelpriceall
     bagpipe = new Bagpipe(50);
     count = 0;
     callback = function(result) {
-        console.log(result);
+        if (result && (result = result["hotel_rooms_update_response"]) && (result = result["gids"]) && (result = result["string"])) {
+            var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+            console.log(time, "taobao.hotel.rooms.update", re.sort().join(","), "/ " + re.length);
+        }
         count -= 1;
 
         if (count === 0) {
@@ -201,6 +204,7 @@ deferred.promise.then(function(result) { // hotelpriceall
                     roomQuota: roomQuota
                 });
             });
+            if (gid_room_quota_map.length === 0) continue;
             bagpipe.push(taobaorequest, {
                 "access_token": users[userid],
                 "method": "taobao.hotel.rooms.update",
@@ -245,7 +249,7 @@ function jielvrequest(data, callback) {
     request.write(data, 'utf8');
     request.end();
 }
-function taobaorequest(params) {
+function taobaorequest(params, callback) {
     params["v"] = "2.0";
     params["format"] = "json";
 
