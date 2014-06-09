@@ -219,6 +219,10 @@ module.exports = Controller("Home/BaseController", function() {
                             no_price_expires: Date.now() + 7 * 24 * 60 * 60 * 1000
                         });
                     }
+// data.hotelId
+// data.hotelName
+// data.roomtypeId
+// data.roomtypeName
 
                     // var rpd = [];
                     // data.forEach(function(period) {
