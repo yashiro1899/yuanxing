@@ -13,8 +13,8 @@ var getDefer = function() {
     return deferred;
 };
 
-var host = conf.jielv["host"] || "chstravel.com";
-var port = conf.jielv["port"] || "30000";
+var host = conf["host"] || "chstravel.com";
+var port = conf["port"] || "30000";
 var options = {
     host: host,
     port: port,
