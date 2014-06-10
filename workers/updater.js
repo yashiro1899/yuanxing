@@ -51,7 +51,7 @@ var taobaoOptions = {
     }
 };
 
-var bagpipe = new Bagpipe(5);
+var bagpipe = new Bagpipe(10);
 var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
