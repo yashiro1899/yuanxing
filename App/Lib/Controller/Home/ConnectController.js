@@ -688,7 +688,7 @@ module.exports = Controller("Home/BaseController", function() {
                     ratetypes = ratetypes.map(function(rt) {
                         return [rt, mapping.ratetype[rt]];
                     });
-                    if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetypes[data.ratetype]]);
+                    if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetype[data.ratetype]]);
                     that.assign("ratetypes", ratetypes);
 
                     data["data"] = JSON.stringify(prices);
