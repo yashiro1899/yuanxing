@@ -1,6 +1,6 @@
 process.on('message', function(data) {
 setTimeout(function() {
-process.exit(4);
+    process.exit(4);
 }, 30 * 60 * 1000);
 var roomtypeids = data.roomtypeids;
 var users = data.users;
@@ -106,7 +106,7 @@ for (; i < length; i += 1) {
 
 var goods = {};
 deferred.promise.then(function(result) { // hotelpriceall
-console.log(dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]"), "---------->", roomtypeids.length, Object.keys(quotas)["length"]);
+    console.log(dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]"), "---------->", roomtypeids.length, Object.keys(quotas)["length"]);
     var dfd = getDefer();
     var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and userid in (" + Object.keys(users).join(",") + ") and status = 4";
     roomtypeids = null;
