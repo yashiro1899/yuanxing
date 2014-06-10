@@ -5,6 +5,7 @@ setTimeout(function() {
 var roomtypeids = data.roomtypeids;
 var users = data.users;
 
+var Agent = require("agentkeepalive");
 var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
@@ -32,6 +33,10 @@ var jielvOptions = {
     port: port,
     path: "/commonQueryServlet",
     method: "POST",
+    agent: (new Agent({
+        maxSockets: 10,
+        keepAlive: true
+    })),
     headers: {
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
@@ -51,7 +56,7 @@ var taobaoOptions = {
     }
 };
 
-var bagpipe = new Bagpipe(10);
+var bagpipe = new Bagpipe(16);
 var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
