@@ -34,7 +34,7 @@ var jielvOptions = {
     path: "/commonQueryServlet",
     method: "POST",
     agent: (new Agent({
-        maxSockets: 10,
+        maxSockets: 8,
         keepAlive: true
     })),
     headers: {
@@ -56,7 +56,7 @@ var taobaoOptions = {
     }
 };
 
-var bagpipe = new Bagpipe(16);
+var bagpipe = new Bagpipe(10);
 var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
