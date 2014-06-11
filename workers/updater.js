@@ -5,7 +5,6 @@ setTimeout(function() {
 var roomtypeids = data.roomtypeids;
 var users = data.users;
 
-var Agent = require("agentkeepalive");
 var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
@@ -33,10 +32,6 @@ var jielvOptions = {
     port: port,
     path: "/commonQueryServlet",
     method: "POST",
-    agent: (new Agent({
-        maxSockets: 8,
-        keepAlive: true
-    })),
     headers: {
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
