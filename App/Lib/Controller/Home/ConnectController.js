@@ -463,7 +463,7 @@ module.exports = Controller("Home/BaseController", function() {
                 data.roomPriceDetail.forEach(function(rpd) {ratetypes[rpd.ratetype] = true;});
                 ratetypes = Object.keys(ratetypes);
                 ratetypes = ratetypes.map(function(rt) {
-                    return [rt, mapping.ratetype[rt]];
+                    return [rt, (mapping.ratetype[rt] || "其他")];
                 });
                 this.assign("ratetypes", ratetypes);
 
