@@ -398,31 +398,40 @@ module.exports = Controller("Home/BaseController", function() {
 
                         var quotas = {};
                         data.roomPriceDetail.forEach(function(rpd) {
-                            var price = rpd.preeprice;
-                            var num = (rpd.qtyable > 0 ? rpd.qtyable : 0);
-                            if (num < 1) return null;
+                            if (rpd.qtyable < 1) return null;
+                            var type = rpd.ratetype;
+                            var night, price;
 
-                            profit = parseInt(profit, 10) || 0;
-                            if (rpd.ratetype != ratetype) return null;
-                            if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
-                            else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+                            if (!quotas[type]) quotas[type] = {};
+                            night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            price = quotas[type][night];
+                            if (price && price.price < rpd.preeprice) return null;
 
-                            var night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                            quotas[night] = {
-                                date: night,
-                                price: price,
-                                num: num
-                            };
+                            quotas[type][night] = {
+                                price: rpd.preeprice,
+                                num: rpd.qtyable
+                             };
                         });
 
                         var temp = [];
                         var timestamp = Date.now();
-                        var night;
+                        var night, price;
                         var i = 0;
                         for (; i < 90; i += 1) {
                             night = dateformat(timestamp, "yyyy-mm-dd");
-                            if (quotas[night]) {
-                                temp.push(quotas[night]);
+                            timestamp += 24 * 60 * 60 * 1000;
+
+                            price = quotas[ratetype][night];
+                            if (price) {
+                                num = price.num;
+                                price = price.price;
+                                if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
+                                else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+                                temp.push({
+                                    date: night,
+                                    price: price,
+                                    num: num
+                                });
                             } else {
                                 temp.push({
                                     date: night,
@@ -430,7 +439,6 @@ module.exports = Controller("Home/BaseController", function() {
                                     num: 0
                                 });
                             }
-                            timestamp += 24 * 60 * 60 * 1000;
                         }
                         quotas = temp;
 
@@ -440,7 +448,7 @@ module.exports = Controller("Home/BaseController", function() {
                             "room_quotas": JSON.stringify(quotas),
                             "status": 1
                         });
-                    }).then(function(result) {
+                    }).then(function(result) { // taobao.hotel.room.update
                         if (!result) return null;
 
                         result = result["hotel_room_update_response"];
