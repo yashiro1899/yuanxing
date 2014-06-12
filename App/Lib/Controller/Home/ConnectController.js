@@ -686,9 +686,9 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                     ratetypes = Object.keys(ratetypes);
                     ratetypes = ratetypes.map(function(rt) {
-                        return [rt, mapping.ratetype[rt]];
+                        return [rt, (mapping.ratetype[rt] || "其他")];
                     });
-                    if (ratetypes.length === 0) ratetypes.push([data.ratetype, mapping.ratetype[data.ratetype]]);
+                    if (ratetypes.length === 0) ratetypes.push([data.ratetype, (mapping.ratetype[data.ratetype] || "其他")]);
                     that.assign("ratetypes", ratetypes);
 
                     data["data"] = JSON.stringify(prices);
