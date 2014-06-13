@@ -1,8 +1,7 @@
-var config = require("./auth.conf").mysql;
-var jielvapi = require("./jielv-api.js");
-var mapping = require("./define.conf");
+var config = require("../auth.conf").mysql;
+var mapping = require("../define.conf");
 var mysql = require('mysql');
-var oauth = require("./taobao-oauth.js");
+var oauth = require("../taobao-oauth.js");
 var Promise = require('es6-promise').Promise;
 
 var connection = mysql.createConnection(config);
