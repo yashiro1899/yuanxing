@@ -90,12 +90,26 @@ $(function() {
                 selected.reduce(function(sequence, el) {
                     return sequence.then(function(result) {
                         var td = $(el).parent().next();
-                        td.html("发布中…");
+                        td.html("询价中…");
                         $(window).scrollTop(td.position()["top"]);
-                        return $.ajax("/publish/create/", {
+                        return $.ajax("/publish/quotas/", {
                             type: "post",
                             dataType: "json",
-                            data: {roomtypeid: roomtypeid}
+                            data: {roomtypeid: $(el).val()}
+                        }).then(function(result) {
+                            if (result["success"] == 8) {
+                                td.html("");
+                                td.prev().html(NOPRICE_ICON);
+                                counter();
+                                return $.Deferred().promise();
+                            }
+
+                            td.html("发布中…");
+                            return $.ajax("/publish/create/", {
+                                type: "post",
+                                dataType: "json",
+                                data: {roomtypeid: $(el).val()}
+                            });
                         }).then(function(result) {
                             if (result["success"] == 1) {
                                 td.html("发布成功");
