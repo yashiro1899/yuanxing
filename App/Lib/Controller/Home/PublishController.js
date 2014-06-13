@@ -285,11 +285,13 @@ module.exports = Controller("Home/BaseController", function() {
                 id: this.userInfo["taobao_user_id"]
             });
 
+            var goods, hotelid;
             return Promise.all([modelroom.select(), modeltaobao.select(), modeluser.select()]).then(function(result) {
                 var room = result[0][0];
                 var taobao = result[1][0];
                 var user = result[2][0];
                 room.original = JSON.parse(room.original);
+                hotelid = room.hotelid;
 
                 var title = room.namechn + " " + room.original.namechn;
                 var area, size, bedtype, storey;
@@ -321,7 +323,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "refund_policy_info": JSON.stringify({t: 2})
                 };
 
-                if (area = parseInt(room.original.acreages, 10)) {
+                if ((area = parseInt(room.original.acreages, 10))) {
                     if (area <= 15) area = "A";
                     else if (area > 15 && area <= 30) area = "B";
                     else if (area > 30 && area <= 50) area = "C";
@@ -329,7 +331,7 @@ module.exports = Controller("Home/BaseController", function() {
                     params["area"] = area;
                 }
 
-                if (size = parseFloat(room.original.bedsize)) {
+                if ((size = parseFloat(room.original.bedsize))) {
                     if (size <= 1) size = "A";
                     else if (size > 2.2) size = "H";
                     else if (mapping.bedsize[size]) size = mapping.bedsize[size];
@@ -337,7 +339,7 @@ module.exports = Controller("Home/BaseController", function() {
                     params["size"] = size;
                 }
 
-                if (storey = parseInt(room.original.floordistribution, 10)) params["storey"] = storey;
+                if ((storey = parseInt(room.original.floordistribution, 10))) params["storey"] = storey;
 
                 var pieces;
                 if (user.pic_path) {
@@ -348,58 +350,46 @@ module.exports = Controller("Home/BaseController", function() {
                     params["pic"] = __dirname + "/../../../../www/static/img/placeholder.jpg";
                 }
                 if (user.guide) params["guide"] = user.guide;
-                that.end(params);
+                return oauth.accessProtectedResource(req, res, params);
+            }).then(function(result) { // taobao.hotel.room.add
+                if (result && (result = result["hotel_room_add_response"]) && (result = result["room"])) {
+                    goods = result;
+                    return D("Goods").add({
+                        gid: result.gid,
+                        userid: that.userInfo["taobao_user_id"],
+                        hotelid: hotelid,
+                        roomtypeid: roomtypeid,
+                        iid: result.iid
+                    });
+                } else if (result && (result = result["error_response"])) {
+                    that.end({
+                        success: 8,
+                        message: (result.sub_msg || result.msg)
+                    });
+                    return getDefer().promise;
+                } else {
+                    that.end({
+                        success: 8,
+                        message: "暂无价格！"
+                    });
+                    return getDefer().promise;
+                }
+            }).then(function(result) { // think_goods
+                var content = "发布成功！";
+                content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
+                content += (goods.iid + "\" target=\"_blank\">去淘宝查看</a>");
+                content = cookie.serialize("success.message", content, {
+                    path: "/",
+                    expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
+                });
+                res.setHeader("Set-Cookie", content);
+
+                that.end({
+                    success: 1,
+                    message: "发布成功！",
+                    gid: that.gid
+                });
             });
-
-                //     return oauth.accessProtectedResource(req, res, params);
-                // }).then(function(result) { // taobao.hotel.room.add
-                //     var r = {
-                //         success: 8,
-                //         message: "暂无价格！"
-                //     };
-
-                //     if (!result) {
-                //         that.end(r);
-                //         return getDefer().promise;
-                //     }
-
-                //     result = result["hotel_room_add_response"];
-                //     if (!result) {
-                //         that.end(r);
-                //         return getDefer().promise;
-                //     }
-
-                //     result = result["room"];
-                //     if (!result) {
-                //         that.end(r);
-                //         return getDefer().promise;
-                //     }
-
-                //     gid = result.gid;
-                //     iid = result.iid;
-                //     return D("Goods").add({
-                //         gid: result.gid,
-                //         userid: that.userInfo["taobao_user_id"],
-                //         hotelid: data.hotelId,
-                //         roomtypeid: data.roomtypeId,
-                //         iid: result.iid
-                //     });
-                // }).then(function(result) { // think_goods
-                //     var now = +(new Date());
-                //     var content = "发布成功！";
-                //     content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
-                //     content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
-                //     res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                //         path: "/",
-                //         expires: (new Date(24 * 60 * 60 * 1000 + now))
-                //     }));
-
-                //     that.end({
-                //         success: 1,
-                //         message: "发布成功！",
-                //         gid: gid
-                //     });
-                // });
         }
     };
 });
