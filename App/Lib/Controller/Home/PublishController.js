@@ -267,164 +267,154 @@ module.exports = Controller("Home/BaseController", function() {
             }
         },
         createAction: function() {
+            if (!this.isPost()) {
+                this.end(null);
+                return null;
+            }
+
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
 
-            if (this.isPost()) {
-                var data = this.post("data");
-                if (!data) {
-                    this.end(null);
-                    return null;
-                }
-                try {
-                    data = JSON.parse(data);
-                } catch(e) {
-                    this.end(null);
-                    return null;
-                }
+            var roomtypeid = this.post("roomtypeid");
+            var modelroom = D("Room").join("think_hotel on think_room.hotelid = think_hotel.hotelid").field("think_room.original,think_hotel.hotelid,think_hotel.namechn").where({
+                "roomtypeid": roomtypeid
+            });
+            var modeltaobao = D("Taobaoroom").where({"roomtypeid": roomtypeid}).order("rid desc");
+            var modeluser = D("User").where({
+                id: this.userInfo["taobao_user_id"]
+            });
 
-                var gid = 0, iid = 0;
-                var promises = [],
-                    model;
+            return Promise.all([modelroom.select(), modeltaobao.select(), modeluser.select()]).then(function(result) {
+                that.end(result);
+            });
 
-                model = D("Room").field("original").where({"roomtypeid": data.roomtypeId}).select();
-                promises.push(model);
-                model = D("Taobaoroom").where({"roomtypeid": data.roomtypeId}).order("rid desc").select();
-                promises.push(model);
-                model = D("User").field("pic_path,guide");
-                model = model.where("id = " + that.userInfo["taobao_user_id"]).select();
-                promises.push(model);
+                // return Promise.all(promises).then(function(result) { // think_room, think_taobaoroom, think_user
+                //     var room = result[0][0];
+                //     var taobaoroom = result[1][0];
+                //     var usermeta = result[2][0];
 
-                return Promise.all(promises).then(function(result) { // think_room, think_taobaoroom, think_user
-                    var room = result[0][0];
-                    var taobaoroom = result[1][0];
-                    var usermeta = result[2][0];
+                //     var original = JSON.parse(room["original"]);
+                //     var detail = data.roomPriceDetail[0];
 
-                    var original = JSON.parse(room["original"]);
-                    var detail = data.roomPriceDetail[0];
+                //     var title = data.hotelName + " " + data.roomtypeName;
 
-                    var title = data.hotelName + " " + data.roomtypeName;
+                //     var area = parseInt(original["acreages"].replace(/^\D/, ""), 10) || 20;
+                //     if (area <= 15) area = "A";
+                //     else if (area > 15 && area <= 30) area = "B";
+                //     else if (area > 30 && area <= 50) area = "C";
+                //     else area = "D";
 
-                    var area = parseInt(original["acreages"].replace(/^\D/, ""), 10) || 20;
-                    if (area <= 15) area = "A";
-                    else if (area > 15 && area <= 30) area = "B";
-                    else if (area > 30 && area <= 50) area = "C";
-                    else area = "D";
+                //     var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
+                //     if (size <= 1) size = "A";
+                //     else if (size > 2.2) size = "H";
+                //     else if (mapping.bedsize[size]) size = mapping.bedsize[size];
+                //     else size = "E";
 
-                    var size = parseFloat(original["bedsize"].replace(/^\D/, "")) || 1.5;
-                    if (size <= 1) size = "A";
-                    else if (size > 2.2) size = "H";
-                    else if (mapping.bedsize[size]) size = mapping.bedsize[size];
-                    else size = "E";
+                //     var bedtype = mapping.bedtype[original.bedtype] || "B";
+                //     var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
 
-                    var bedtype = mapping.bedtype[original.bedtype] || "B";
-                    var storey = parseInt(original["floordistribution"].replace(/^\D/, ""), 10) || 3;
+                //     var breakfast = "A";
+                //     if (detail.ratetype == 16 || detail.ratetype == 56) breakfast = "B";
+                //     else if (detail.ratetype == 9) breakfast = "C";
 
-                    var breakfast = "A";
-                    if (detail.ratetype == 16 || detail.ratetype == 56) breakfast = "B";
-                    else if (detail.ratetype == 9) breakfast = "C";
+                //     var bbn = "A";
+                //     if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
+                //     else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
 
-                    var bbn = "A";
-                    if (detail["internetprice"] != 3 && detail["netcharge"] === 0) bbn = "B";
-                    else if (detail["internetprice"] != 3 && detail["netcharge"] !== 0) bbn = "C";
+                //     var quotas = [{
+                //         date: dateformat(Date.now(), "yyyy-mm-dd"),
+                //         price: 9999999,
+                //         num: 0
+                //     }, {
+                //         date: dateformat(Date.now() + 24 * 60 * 60 * 1000, "yyyy-mm-dd"),
+                //         price: 9999999,
+                //         num: 0
+                //     }, {
+                //         date: dateformat(Date.now() + 48 * 60 * 60 * 1000, "yyyy-mm-dd"),
+                //         price: 9999999,
+                //         num: 0
+                //     }];
 
-                    var quotas = [{
-                        date: dateformat(Date.now(), "yyyy-mm-dd"),
-                        price: 9999999,
-                        num: 0
-                    }, {
-                        date: dateformat(Date.now() + 24 * 60 * 60 * 1000, "yyyy-mm-dd"),
-                        price: 9999999,
-                        num: 0
-                    }, {
-                        date: dateformat(Date.now() + 48 * 60 * 60 * 1000, "yyyy-mm-dd"),
-                        price: 9999999,
-                        num: 0
-                    }];
+                //     var params = {
+                //         "method": "taobao.hotel.room.add",
+                //         "hid": taobaoroom.hid,
+                //         "rid": taobaoroom.rid,
+                //         "title": title,
+                //         "area": area, // optional
+                //         "size": size, // optional
+                //         "bed_type": bedtype,
+                //         "storey": storey, // optional
+                //         "breakfast": breakfast,
+                //         "bbn": bbn, // optional
+                //         "payment_type": "A",
+                //         "desc": title,
+                //         "room_quotas": JSON.stringify(quotas),
+                //         "receipt_type": "A",
+                //         "has_receipt": true, // TODO
+                //         "refund_policy_info": JSON.stringify({t: 2}) // TODO
+                //     };
 
-                    var params = {
-                        "method": "taobao.hotel.room.add",
-                        "hid": taobaoroom.hid,
-                        "rid": taobaoroom.rid,
-                        "title": title,
-                        "area": area, // optional
-                        "size": size, // optional
-                        "bed_type": bedtype,
-                        "storey": storey, // optional
-                        "breakfast": breakfast,
-                        "bbn": bbn, // optional
-                        "payment_type": "A",
-                        "desc": title,
-                        "room_quotas": JSON.stringify(quotas),
-                        "receipt_type": "A",
-                        "has_receipt": true, // TODO
-                        "refund_policy_info": JSON.stringify({t: 2}) // TODO
-                    };
+                //     if (usermeta.pic_path) {
+                //         temp = usermeta.pic_path.split("/");
+                //         i = "/" + temp.pop();
+                //         i = "/" + temp.pop() + i;
+                //         i = temp.pop() + i;
+                //         params["pic_path"] = i;
+                //     } else {
+                //         params["pic"] = __dirname + "/../../../../www/static/img/placeholder.jpg";
+                //     }
 
-                    if (usermeta.pic_path) {
-                        temp = usermeta.pic_path.split("/");
-                        i = "/" + temp.pop();
-                        i = "/" + temp.pop() + i;
-                        i = temp.pop() + i;
-                        params["pic_path"] = i;
-                    } else {
-                        params["pic"] = __dirname + "/../../../../www/static/img/placeholder.jpg";
-                    }
+                //     if (usermeta.guide) params["guide"] = usermeta.guide;
+                //     return oauth.accessProtectedResource(req, res, params);
+                // }).then(function(result) { // taobao.hotel.room.add
+                //     var r = {
+                //         success: 8,
+                //         message: "暂无价格！"
+                //     };
 
-                    if (usermeta.guide) params["guide"] = usermeta.guide;
-                    return oauth.accessProtectedResource(req, res, params);
-                }).then(function(result) { // taobao.hotel.room.add
-                    var r = {
-                        success: 8,
-                        message: "暂无价格！"
-                    };
+                //     if (!result) {
+                //         that.end(r);
+                //         return getDefer().promise;
+                //     }
 
-                    if (!result) {
-                        that.end(r);
-                        return getDefer().promise;
-                    }
+                //     result = result["hotel_room_add_response"];
+                //     if (!result) {
+                //         that.end(r);
+                //         return getDefer().promise;
+                //     }
 
-                    result = result["hotel_room_add_response"];
-                    if (!result) {
-                        that.end(r);
-                        return getDefer().promise;
-                    }
+                //     result = result["room"];
+                //     if (!result) {
+                //         that.end(r);
+                //         return getDefer().promise;
+                //     }
 
-                    result = result["room"];
-                    if (!result) {
-                        that.end(r);
-                        return getDefer().promise;
-                    }
+                //     gid = result.gid;
+                //     iid = result.iid;
+                //     return D("Goods").add({
+                //         gid: result.gid,
+                //         userid: that.userInfo["taobao_user_id"],
+                //         hotelid: data.hotelId,
+                //         roomtypeid: data.roomtypeId,
+                //         iid: result.iid
+                //     });
+                // }).then(function(result) { // think_goods
+                //     var now = +(new Date());
+                //     var content = "发布成功！";
+                //     content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
+                //     content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
+                //     res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                //         path: "/",
+                //         expires: (new Date(24 * 60 * 60 * 1000 + now))
+                //     }));
 
-                    gid = result.gid;
-                    iid = result.iid;
-                    return D("Goods").add({
-                        gid: result.gid,
-                        userid: that.userInfo["taobao_user_id"],
-                        hotelid: data.hotelId,
-                        roomtypeid: data.roomtypeId,
-                        iid: result.iid
-                    });
-                }).then(function(result) { // think_goods
-                    var now = +(new Date());
-                    var content = "发布成功！";
-                    content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
-                    content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
-                    res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                        path: "/",
-                        expires: (new Date(24 * 60 * 60 * 1000 + now))
-                    }));
-
-                    that.end({
-                        success: 1,
-                        message: "发布成功！",
-                        gid: gid
-                    });
-                });
-            } else {
-                this.end(null);
-            }
+                //     that.end({
+                //         success: 1,
+                //         message: "发布成功！",
+                //         gid: gid
+                //     });
+                // });
         }
     };
 });
