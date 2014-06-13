@@ -720,10 +720,48 @@ module.exports = Controller("Home/BaseController", function() {
             var req = this.http.req;
             var res = this.http.res;
 
+            var message = this.cookie("success.message");
+            this.assign("message", message);
+            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+                path: "/",
+                expires: (new Date())
+            }));
+
             var gid = this.param("gid");
+            var quotas = this.post('quotas');
             if (!gid) {
                 this.end(null);
                 return null;
+            }
+
+            var promise;
+            if (quotas) {
+                quotas = JSON.parse(quotas);
+                promise = Promise.resolve();
+            } else {
+                quotas = {};
+                promise = Promise.all(this.prices(roomtypeid)).then(function(result) {
+                    result.forEach(function(period) {
+                        if (period && period.data && period.data.length > 0) {
+                            var room = period.data[0];
+                            room.roomPriceDetail.forEach(function(rpd) {
+                                if (rpd.qtyable < 1) return null;
+                                var type = rpd.ratetype;
+                                var night, price;
+
+                                if (!quotas[type]) quotas[type] = {};
+                                night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                                price = quotas[type][night];
+                                if (price && price.price < rpd.preeprice) return null;
+
+                                quotas[type][night] = {
+                                    price: rpd.preeprice,
+                                    num: rpd.qtyable
+                                };
+                            });
+                        }
+                    });
+                });
             }
         },
         deleteAction: function() {
