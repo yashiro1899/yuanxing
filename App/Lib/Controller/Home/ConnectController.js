@@ -715,6 +715,17 @@ module.exports = Controller("Home/BaseController", function() {
             }
             return promise;
         },
+        viewAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var gid = this.param("gid");
+            if (!gid) {
+                this.end(null);
+                return null;
+            }
+        },
         deleteAction: function() {
             var that = this;
             var gid = this.post("gid");
