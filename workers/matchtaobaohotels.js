@@ -27,7 +27,7 @@ var db = function(querystring) {
 };
 connection.connect();
 
-var token = db('SELECT `nick`,`token`,`expires` FROM `think_user` WHERE `nick` = "liwenmz"');
+var token = db('SELECT `token` FROM `think_user` WHERE `nick` = "liwenmz"');
 var hotels = db('SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `think_hotel`');
 Promise.all([token, hotels]).then(function(result) {
     token = result[0]["token"];
