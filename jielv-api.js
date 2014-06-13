@@ -1,4 +1,3 @@
-var Agent = require("agentkeepalive");
 var conf = require('./auth.conf').jielv;
 var dateformat = require("dateformat");
 var http = require('http');
@@ -20,10 +19,6 @@ var options = {
     port: port,
     path: "/commonQueryServlet",
     method: "POST",
-    agent: (new Agent({
-        maxSockets: 50,
-        keepAlive: true
-    })),
     headers: {
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",

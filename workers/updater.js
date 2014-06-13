@@ -1,8 +1,10 @@
 process.on('message', function(data) {
+setTimeout(function() {
+    process.exit(4);
+}, 30 * 60 * 1000);
 var roomtypeids = data.roomtypeids;
 var users = data.users;
 
-var Agent = require("agentkeepalive");
 var Bagpipe = require('bagpipe');
 var conf = require('../auth.conf');
 var dateformat = require("dateformat");
@@ -30,10 +32,6 @@ var jielvOptions = {
     port: port,
     path: "/commonQueryServlet",
     method: "POST",
-    agent: (new Agent({
-        maxSockets: 50,
-        keepAlive: true
-    })),
     headers: {
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
@@ -53,7 +51,7 @@ var taobaoOptions = {
     }
 };
 
-var bagpipe = new Bagpipe(50);
+var bagpipe = new Bagpipe(10);
 var length = Math.ceil(roomtypeids.length / 20);
 var i = 0;
 var start, end, j;
@@ -108,6 +106,7 @@ for (; i < length; i += 1) {
 
 var goods = {};
 deferred.promise.then(function(result) { // hotelpriceall
+    console.log(dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]"), "---------->", roomtypeids.length, Object.keys(quotas)["length"]);
     var dfd = getDefer();
     var querystring = "select gid,userid,roomtypeid,ratetype,ptype,profit from think_goods where roomtypeid in (" + roomtypeids.join(",") + ") and userid in (" + Object.keys(users).join(",") + ") and status = 4";
     roomtypeids = null;
@@ -316,7 +315,6 @@ function jielvrequest(data, callback) {
         });
     });
 
-    request.setTimeout(1000 * 60);
     request.on('error', function(e) {callback(null);});
     request.write(data, 'utf8');
     request.end();
@@ -362,7 +360,6 @@ function taobaorequest(params, callback) {
         });
     });
 
-    request.setTimeout(1000 * 60);
     request.on('error', function(e) {callback(null);});
     request.write(body, 'utf8');
     request.end();
