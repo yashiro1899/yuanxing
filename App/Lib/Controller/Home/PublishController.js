@@ -173,67 +173,56 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
         },
-        testAction: function() {
+        quotasAction: function() {
             var that = this;
-            if (this.isPost()) {
-                var roomtypeid = this.post("roomtypeid");
-                if (!roomtypeid) {
-                    this.end(null);
-                    return null;
-                }
+            var roomtypeid = this.param("roomtypeid");
+            if (!roomtypeid) {
+                this.end(null);
+                return null;
+            }
 
-                return Promise.all(this.prices(roomtypeid)).then(function(result) {
-                    var quotas = {};
-                    var detail = null;
-                    result.forEach(function(period) {
-                        if (period && period.data && period.data.length > 0) {
-                            var room = period.data[0];
-                            room.roomPriceDetail.forEach(function(rpd) {
-                                if (rpd.qtyable < 1) return null;
-                                var type = rpd.ratetype;
-                                var night, price;
+            return Promise.all(this.prices(roomtypeid)).then(function(result) {
+                var quotas = {};
+                result.forEach(function(period) {
+                    if (period && period.data && period.data.length > 0) {
+                        var room = period.data[0];
+                        room.roomPriceDetail.forEach(function(rpd) {
+                            if (rpd.qtyable < 1) return null;
+                            var type = rpd.ratetype;
+                            var night, price;
 
-                                if (!quotas[type]) quotas[type] = {};
-                                night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
-                                price = quotas[type][night];
-                                if (price && price.price < rpd.preeprice) return null;
+                            if (!quotas[type]) quotas[type] = {};
+                            night = dateformat((new Date(rpd.night)), "yyyy-mm-dd");
+                            price = quotas[type][night];
+                            if (price && price.price < rpd.preeprice) return null;
 
-                                quotas[type][night] = {
-                                    price: rpd.preeprice,
-                                    num: rpd.qtyable
-                                };
-                            });
-                        }
-                    });
-
-                    if (Object.keys(quotas)['length'] === 0) {
-                        that.end({
-                            success: 8,
-                            message: "暂无价格！"
-                        });
-
-                        var model = D("Room");
-                        model.pk = "roomtypeid";
-                        return model.update({
-                            roomtypeid: roomtypeid,
-                            no_price_expires: Date.now() + 7 * 24 * 60 * 60 * 1000
+                            quotas[type][night] = {
+                                price: rpd.preeprice,
+                                num: rpd.qtyable
+                            };
                         });
                     }
-// data.hotelId
-// data.hotelName
-// data.roomtypeId
-// data.roomtypeName
-
-                    // var rpd = [];
-                    // data.forEach(function(period) {
-                    //     if (period[0] && period[0].roomPriceDetail) rpd = rpd.concat(period[0].roomPriceDetail);
-                    // });
-                    // data[0][0]["roomPriceDetail"] = rpd;
-                    // that.end(data[0][0]);
                 });
-            } else {
-                this.end(null);
-            }
+
+                var model;
+                if (Object.keys(quotas)['length'] === 0) {
+                    that.end({
+                        success: 8,
+                        message: "暂无价格！"
+                    });
+
+                    model = D("Room");
+                    model.pk = "roomtypeid";
+                    return model.update({
+                        roomtypeid: roomtypeid,
+                        no_price_expires: (Date.now() + 7 * 24 * 60 * 60 * 1000)
+                    });
+                }
+                that.end({
+                    success: 1,
+                    data: quotas
+                });
+            });
         },
         inquiryAction: function() {
             var that = this;
