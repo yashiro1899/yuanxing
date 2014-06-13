@@ -765,6 +765,7 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }
             }).then(function(result) {
+                that.end(quotas);
             });
         },
         deleteAction: function() {

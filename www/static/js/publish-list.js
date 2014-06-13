@@ -35,18 +35,16 @@ $(function() {
             }
         }).then(function(response) {
             td.html("");
-            console.log(response);
-            //     if (response["success"] == 1) {
-            //         $('<form action="/connect/create/" method="post">\
-            //           <textarea name="data">' + data + '</textarea>\
-            //           <input type="hidden" name="gid" value="' + response.gid + '" />\
-            //           <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
-            //           </form>').submit();
-            //         return null;
-            //     }
-            //     td.prev().html(NOPRICE_ICON);
-            //     alert(response["message"]);
-            // });
+            if (response["success"] == 1) {
+                $('<form action="/connect/edit/" method="post">\
+                  <textarea name="quotas">' + JSON.stringify(quotas) + '</textarea>\
+                  <input type="hidden" name="gid" value="' + response.gid + '" />\
+                  <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
+                  </form>').submit();
+            } else {
+                td.prev().html(NOPRICE_ICON);
+                alert(response["message"]);
+            }
         });
     });
 
