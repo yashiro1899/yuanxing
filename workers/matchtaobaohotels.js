@@ -33,6 +33,7 @@ var hotels = db('SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `th
 Promise.all(token, hotels).then(function(result) {
     token = result[0]["token"];
     hotels = result[1];
+    console.log(token);
 });
 // select nick , token , expires from think_user where nick = "liwenmz";
 // var fields1 = "`hid`,`hotelid`,`original`";
