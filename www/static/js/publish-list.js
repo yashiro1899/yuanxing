@@ -8,7 +8,7 @@ $(function() {
 
         td.append("<span>询价中…</span>");
         $(this).hide();
-        $.ajax("/publish/inquiry/", {
+        $.ajax("/publish/quotas/", {
             type: "post",
             dataType: "json",
             data: {roomtypeid: roomtypeid}

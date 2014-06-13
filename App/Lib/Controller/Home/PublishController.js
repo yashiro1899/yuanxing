@@ -281,7 +281,7 @@ module.exports = Controller("Home/BaseController", function() {
                 "roomtypeid": roomtypeid
             });
             var modeltaobao = D("Taobaoroom").where({"roomtypeid": roomtypeid}).order("rid desc");
-            var modeluser = D("User").where({
+            var modeluser = D("User").field("pic_path,guide").where({
                 id: this.userInfo["taobao_user_id"]
             });
 
