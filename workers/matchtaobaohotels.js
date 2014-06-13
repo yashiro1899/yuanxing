@@ -30,7 +30,7 @@ connection.connect();
 var token = db('SELECT `token` FROM `think_user` WHERE `nick` = "liwenmz"');
 var hotels = db('SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `think_hotel`');
 Promise.all([token, hotels]).then(function(result) {
-    token = result[0]["token"];
+    token = result[0][0]["token"];
     hotels = result[1];
     console.log(token);
     connection.end();
