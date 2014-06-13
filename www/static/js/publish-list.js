@@ -101,7 +101,7 @@ $(function() {
                                 td.html("");
                                 td.prev().html(NOPRICE_ICON);
                                 counter();
-                                return $.Deferred().promise();
+                                return null;
                             }
 
                             td.html("发布中…");
@@ -111,7 +111,7 @@ $(function() {
                                 data: {roomtypeid: $(el).val()}
                             });
                         }).then(function(result) {
-                            if (result["success"] == 1) {
+                            if (result && result["success"] == 1) {
                                 td.html("发布成功");
                                 td.prev().html("<i title=\"已发布\" class=\"icon-upload\"></i>");
                             } else if (result) {
