@@ -729,7 +729,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var gid = this.param("gid");
             var roomtypeid = this.param("roomtypeid");
-            if (!gid || !roomtypeid) {
+            if (!gid) {
                 this.end(null);
                 return null;
             }
@@ -739,6 +739,7 @@ module.exports = Controller("Home/BaseController", function() {
             var goods;
             return D("Goods").where({gid: gid}).select().then(function(result) {
                 goods = result[0];
+                if (goods) roomtypeid = goods.roomtypeid;
                 if (!quotas) {
                     quotas = {};
                     return Promise.all(that.prices(roomtypeid)).then(function(result) {
