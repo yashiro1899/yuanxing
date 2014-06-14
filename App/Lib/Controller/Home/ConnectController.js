@@ -840,7 +840,7 @@ module.exports = Controller("Home/BaseController", function() {
                 return null;
             }
 
-            var quotas = this.post("quotas");
+            var quotas = JSON.parse(this.post("quotas"));
             var data = {
                 gid: this.post("gid"),
                 ptype: this.post("ptype"),
