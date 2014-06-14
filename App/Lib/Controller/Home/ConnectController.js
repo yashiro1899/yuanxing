@@ -866,7 +866,7 @@ module.exports = Controller("Home/BaseController", function() {
                     data.userid = that.userInfo["taobao_user_id"];
                     return model.add(data);
                 }
-            }).then(function() { // think_goods
+            }).then(function(result) { // think_goods
                 if (result === false) {
                     that.end("关联失败！");
                     return getDefer().promise;
