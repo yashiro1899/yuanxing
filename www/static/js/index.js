@@ -5,22 +5,21 @@ $(function() {
         var td = $(this).parent();
 
         td.html("询价中…");
-        $.ajax("/publish/inquiry/", {
+        $.ajax("/publish/quotas/", {
             type: "post",
             dataType: "json",
-            data: "roomtypeid=" + roomtypeid
+            data: {"roomtypeid": roomtypeid}
         }).done(function(response) {
             if (response["success"] == 8) {
                 td.html("暂无价格");
                 alert(response["message"]);
                 return null;
+            } else if (response["success"] == 1) {
+                $('<form action="/connect/edit/" method="post">\
+                  <textarea name="data">' + JSON.stringify(response.data) + '</textarea>\
+                  <input type="hidden" name="gid" value="' + gid + '" />\
+                  </form>').submit();
             }
-
-            $('<form action="/connect/create/" method="post">\
-              <textarea name="data">' + JSON.stringify(response) + '</textarea>\
-              <input type="hidden" name="gid" value="' + gid + '" />\
-              <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
-              </form>').submit();
         });
     });
 
