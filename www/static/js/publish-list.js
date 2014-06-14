@@ -39,7 +39,6 @@ $(function() {
                 $('<form action="/connect/edit/" method="post">\
                   <textarea name="quotas">' + JSON.stringify(quotas) + '</textarea>\
                   <input type="hidden" name="gid" value="' + response.gid + '" />\
-                  <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
                   </form>').submit();
             } else {
                 td.prev().html(NOPRICE_ICON);
