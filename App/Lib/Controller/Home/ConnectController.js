@@ -638,11 +638,6 @@ module.exports = Controller("Home/BaseController", function() {
                 var qs = querystring.stringify(formdata);
                 var pagination = that.pagination(total, range, page, qs);
                 that.assign('pagination', pagination);
-
-                res.setHeader("Set-Cookie", cookie.serialize("jump." + gid, (req.headers["referer"] || ""), {
-                    path: "/",
-                    expires: (new Date(10 * 60 * 1000 + Date.now()))
-                }));
                 that.display();
             });
         }
