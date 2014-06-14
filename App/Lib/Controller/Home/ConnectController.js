@@ -843,13 +843,13 @@ module.exports = Controller("Home/BaseController", function() {
             var quotas = this.post("quotas");
             var data = {
                 gid: this.post("gid"),
-                hotelid: this.post("hotelid"),
-                roomtypeid: this.post("roomtypeid"),
-                iid: this.post("iid"),
                 ptype: this.post("ptype"),
                 profit: (parseInt(this.post("profit"), 10) || 0),
                 ratetype: this.post("ratetype")
             };
+            var hotelid = this.post("hotelid");
+            var roomtypeid = this.post("roomtypeid");
+            var iid = this.post("iid");
 
             return D("Goods").where({gid: data.gid}).select().then(function(result) {
                 result = result || [];
@@ -858,11 +858,11 @@ module.exports = Controller("Home/BaseController", function() {
                 data.status = 4;
                 if (result.length > 0) {
                     model.pk = "gid";
-                    delete data.hotelid;
-                    delete data.roomtypeid;
-                    delete data.iid;
                     return model.update(data);
                 } else {
+                    data.hotelid = hotelid;
+                    data.roomtypeid = roomtypeid;
+                    data.iid = iid;
                     data.userid = that.userInfo["taobao_user_id"];
                     return model.add(data);
                 }
@@ -874,7 +874,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 var content = "关联成功！";
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
-                content += (data.iid + "\" target=\"_blank\">去淘宝查看</a>");
+                content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
                 res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
                     path: "/",
                     expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
