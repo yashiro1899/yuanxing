@@ -801,7 +801,7 @@ module.exports = Controller("Home/BaseController", function() {
                 bedtype = mapping.bedtype[jielv.room.bedtype];
                 if (bedtype) list.jielv["bedtype"] = mapping.bedtypestrings[bedtype];
 
-                area = parseInt(jielvroom["acreages"], 10);
+                area = parseInt(jielv.room["acreages"], 10);
                 if (area) list.jielv["area"] = area;
 
                 that.end(list);
