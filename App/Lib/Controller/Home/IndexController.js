@@ -20,7 +20,10 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("message", message);
 
             var cookies = [];
-            cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
+            cookies.push(cookie.serialize("success.message", "", {
+                path: "/",
+                expires: (new Date())
+            }));
             cookies.push(cookie.serialize("back.url", req.url, {path: "/"}));
             res.setHeader("Set-Cookie", cookies);
 
