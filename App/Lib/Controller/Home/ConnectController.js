@@ -803,8 +803,29 @@ module.exports = Controller("Home/BaseController", function() {
 
                 area = parseInt(jielv.room["acreages"], 10);
                 if (area) list.jielv["area"] = area;
+                that.assign("list", list);
 
-                that.end(list);
+                var data = {};
+                var ratetypes = Object.keys(quotas);
+                ratetypes = ratetypes.map(function(rt) {return [rt, (mapping.ratetype[rt] || "其他")];});
+
+                data["gid"] = gid;
+                data["roomtypeid"] = roomtypeid;
+                data["quotas"] = JSON.stringify(quotas);
+                if (goods) {
+                    if (ratetypes.length === 0) ratetypes.push([goods.ratetype, (mapping.ratetype[goods.ratetype] || "其他")]);
+                    data["action"] = "/connect/update/";
+                    data = extend(data, goods);
+                } else {
+                    data["action"] = "/connect/create/";
+                    data["hotelid"] = jielv.hotel.hotelid;
+                    data["iid"] = taobao.iid;
+                }
+
+                that.end(data);
+                // that.assign("ratetypes", ratetypes);
+                // that.assign("formdata", data);
+                // that.display();
             });
         },
         deleteAction: function() {

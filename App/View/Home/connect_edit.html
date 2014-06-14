@@ -1,0 +1,80 @@
+<% include inc/header.html %>
+<% include inc/message.html %>
+<h2 class="legend">对比信息</h2>
+<table class="table-overview" style="width:100%">
+    <tr>
+        <th></th>
+        <th width="45%" style="text-align:center"><b>淘宝</b></th>
+        <th width="45%" style="text-align:center"><b>货源</b></th>
+    </tr>
+    <tr>
+        <th><b>酒店：</b></th>
+        <td><%=list.taobao.hotel%></td>
+        <th style="text-align:left"><%=list.jielv.hotel%></th>
+    </tr>
+    <tr>
+        <th><b>房型：</b></th>
+        <td><%=list.taobao.room%></td>
+        <th style="text-align:left"><%=list.jielv.room%></th>
+    </tr>
+    <tr>
+        <th><b>地址：</b></th>
+        <td><%=list.taobao.address%></td>
+        <th style="text-align:left"><%=list.jielv.address%></th>
+    </tr>
+    <tr>
+        <th><b>床型：</b></th>
+        <td><%=list.taobao.bedtype%></td>
+        <th style="text-align:left"><%=list.jielv.bedtype%></th>
+    </tr>
+    <tr>
+        <th><b>面积：</b></th>
+        <td><%=list.taobao.area%> &#13217;</td>
+        <th style="text-align:left"><%=list.jielv.area%> &#13217;</th>
+    </tr>
+</table>
+<h2 class="legend">关联信息</h2>
+<form action="<%=formdata.action%>" method="post" id="connect-form" class="form-horizontal">
+<textarea name="data" style="display:none"><%-formdata.quotas%></textarea>
+<input type="hidden" name="gid" value="<%=formdata.gid%>" />
+<input type="hidden" name="hotelid" value="<%=formdata.hotelid%>" />
+<input type="hidden" name="roomtypeid" value="<%=formdata.roomtypeid%>" />
+<input type="hidden" name="iid" value="<%=formdata.iid%>" />
+<table class="table-overview" style="width:100%">
+    <tr>
+        <th style="vertical-align:middle"><b>价格类型：</b></th>
+        <td width="90%">
+            <select id="id_continent" name="ratetype" style="font-size:12px">
+            <% ratetypes.forEach(function(v, i) { %>
+                <option value="<%=v[0]%>" <%if (formdata.ratetype == v[0]) {%>selected<%}%>><%=v[1]%></option>
+            <% }); %>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>加价类型：</b></th>
+        <td>
+            <label class="radio inline" style="font-size:12px">
+                <input type="radio" value="1" name="ptype" style="margin-top:2px" <%if (formdata.ptype == 1) {%>checked<%}%> />比例加价</label>
+            <label class="radio inline" style="font-size:12px">
+                <input type="radio" value="2" name="ptype" style="margin-top:2px" <%if (formdata.ptype == 2) {%>checked<%}%> />固定加价</label>
+        </td>
+    </tr>
+    <tr>
+        <th style="vertical-align:middle"><b>加价额度：</b></th>
+        <td>
+            <div class="input-append">
+                <input class="input-small" name="profit" placeholder="额度" size="10" type="text" style="font-size:12px" <%if (formdata.profit !== undefined) {%>value="<%=formdata.profit%>"<%}%> />
+                <span class="add-on" style="font-size:12px"><%if (formdata.ptype == 1) {%>%<%} else {%>元<%}%></span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align:center">
+            <button type="submit" class="btn btn-high btn-info">保存</button>
+        </td>
+    </tr>
+</table>
+</form>
+<script src="/static/js/connect-create.js?<%=staticversion%>"></script>
+<% include inc/footer.html %>
