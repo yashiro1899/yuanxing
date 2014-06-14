@@ -27,7 +27,7 @@ module.exports = Controller("Home/BaseController", function() {
             }));
             res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
                 path: "/",
-                expires: (new Date(24 * 60 * 60 * 1000 + now))
+                expires: null
             }));
 
             var range = 0, total = 0;
@@ -176,7 +176,7 @@ module.exports = Controller("Home/BaseController", function() {
             }));
             res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
                 path: "/",
-                expires: (new Date(24 * 60 * 60 * 1000 + now))
+                expires: null
             }));
 
             var range = 0, total = 0;
