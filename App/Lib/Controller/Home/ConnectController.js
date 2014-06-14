@@ -781,7 +781,7 @@ module.exports = Controller("Home/BaseController", function() {
                     jielv: {}
                 };
 
-                var taobao = result[0];
+                var taobao = (result[0] || {});
                 if (taobao && (taobao = taobao["hotel_room_get_response"]) && (taobao = taobao["room"])) {
                     list.taobao["hotel"] = taobao.hotel.name;
                     list.taobao["room"] = taobao.room_type.name;
@@ -812,14 +812,14 @@ module.exports = Controller("Home/BaseController", function() {
                 data["gid"] = gid;
                 data["roomtypeid"] = roomtypeid;
                 data["quotas"] = JSON.stringify(quotas);
-                if (goods) {
+                data["action"] = "/connect/save/";
+                if (goods && goods.status == 4) {
                     if (ratetypes.length === 0) ratetypes.push([goods.ratetype, (mapping.ratetype[goods.ratetype] || "其他")]);
-                    data["action"] = "/connect/update/";
                     data = extend(data, goods);
                 } else {
-                    data["action"] = "/connect/create/";
                     data["hotelid"] = jielv.hotel.hotelid;
                     data["iid"] = taobao.iid;
+                    data["ptype"] = 1;
                 }
 
                 that.assign("ratetypes", ratetypes);
