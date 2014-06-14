@@ -765,7 +765,18 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }
             }).then(function(result) {
-                that.end(quotas);
+                var modelroom = D("Room").join("think_hotel on think_hotel.hotelid = think_room.hotelid").field("think_room.original as r,think_hotel.original as h").where({
+                    'think_room.roomtypeid': roomtypeid
+                });
+
+                return Promise.all([oauth.accessProtectedResource(req, res, {
+                    "gid": gid,
+                    "method": "taobao.hotel.room.get",
+                    "need_hotel": true,
+                    "need_room_type": true
+                }), modelroom]);
+            }).then(function(result) {
+                that.end(result);
             });
         },
         deleteAction: function() {
