@@ -12,7 +12,7 @@ module.exports = Controller(function() {
             this.super_("init", http);
             this.assign("title", this.title || "");
             this.assign("navType", this.navType || "");
-            this.assign("staticversion", "");
+            this.assign("staticversion", "1402731505");
 
             var that = this;
             return oauth.getUserInfo(this.http.req, this.http.res).then(function(u) {
