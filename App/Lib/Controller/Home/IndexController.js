@@ -21,7 +21,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var cookies = [];
             cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
-            cookies.push(cookie.serialize("back.url", req.url));
+            cookies.push(cookie.serialize("back.url", req.url, {path: "/"}));
             res.setHeader("Set-Cookie", cookies);
 
             var page = parseInt(this.param("p"), 10) || 1;

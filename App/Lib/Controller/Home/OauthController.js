@@ -56,6 +56,7 @@ module.exports = Controller(function() {
         },
         logoutAction: function() {
             this.http.res.setHeader("Set-Cookie", cookie.serialize("access_token.taobao", "", {
+                path: "/",
                 expires: (new Date())
             }));
             this.redirect("/");

@@ -10,13 +10,6 @@ module.exports = Controller("Home/BaseController", function() {
         title: "信息",
         indexAction: function() {
             var that = this;
-
-            var message = this.cookie("success.message");
-            this.assign("message", message);
-            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                expires: (new Date())
-            }));
-
             var promise = D("User").where("id=" + this.userInfo["taobao_user_id"]).select();
             promise = promise.then(function(result) {
                 result = result || [];
@@ -42,9 +35,7 @@ module.exports = Controller("Home/BaseController", function() {
                     guide: guide
                 }).then(function(result) {
                     var content = "编辑成功！";
-                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                        expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
-                    }));
+                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {path: "/"}));
                     that.redirect("/connect/");
                 });
             } else {

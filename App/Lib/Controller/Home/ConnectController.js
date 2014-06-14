@@ -23,7 +23,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var cookies = [];
             cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
-            cookies.push(cookie.serialize("back.url", req.url));
+            cookies.push(cookie.serialize("back.url", req.url, {path: "/"}));
             res.setHeader("Set-Cookie", cookies);
 
             var range = 0, total = 0;
@@ -168,7 +168,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var cookies = [];
             cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
-            cookies.push(cookie.serialize("back.url", req.url));
+            cookies.push(cookie.serialize("back.url", req.url, {path: "/"}));
             res.setHeader("Set-Cookie", cookies);
 
             var range = 0, total = 0;
@@ -318,7 +318,10 @@ module.exports = Controller("Home/BaseController", function() {
 
             var message = this.cookie("success.message");
             this.assign("message", message);
-            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {expires: (new Date())}));
+            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+                path: "/",
+                expires: (new Date())
+            }));
 
             var gid = this.param("gid");
             var roomtypeid = this.param("roomtypeid");
@@ -468,9 +471,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var content = "关联成功！";
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
                 content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
-                res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                    expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
-                }));
+                res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {path: "/"}));
                 that.redirect("/");
 
                 if (quotas[data.ratetype]) {
