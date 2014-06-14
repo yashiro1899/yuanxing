@@ -922,6 +922,12 @@ module.exports = Controller("Home/BaseController", function() {
                         "status": 2
                     });
                 }
+            }).then(function(result) { // taobao.hotel.room.update
+                if (result && (result = result["hotel_room_update_response"]) && (result = result["room"])) {
+                    var time = "[" + result.modified + "]";
+                    if (result.status == 2) console.log(time, "taobao.hotel.room.update(delisting)", result.gid);
+                    else if (result.status == 1) console.log(time, "taobao.hotel.room.update", result.gid);
+                }
             });
         },
         deleteAction: function() {
