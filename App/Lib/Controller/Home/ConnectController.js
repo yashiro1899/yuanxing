@@ -781,13 +781,15 @@ module.exports = Controller("Home/BaseController", function() {
                     jielv: {}
                 };
 
-                var taobao = (result[0] || {});
+                var taobao = result[0];
                 if (taobao && (taobao = taobao["hotel_room_get_response"]) && (taobao = taobao["room"])) {
                     list.taobao["hotel"] = taobao.hotel.name;
                     list.taobao["room"] = taobao.room_type.name;
                     list.taobao["address"] = taobao.hotel.address;
                     list.taobao["bedtype"] = mapping.bedtypestrings[taobao.bed_type];
                     list.taobao["area"] = mapping.area[taobao.area];
+                } else {
+                    taobao = {};
                 }
 
                 var jielv = result[1][0];
