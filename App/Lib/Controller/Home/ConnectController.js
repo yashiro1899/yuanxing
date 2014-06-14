@@ -468,7 +468,9 @@ module.exports = Controller("Home/BaseController", function() {
                 var content = "关联成功！";
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
                 content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
-                res.setHeader("Set-Cookie", cookie.serialize("success.message", content));
+                res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                    expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
+                }));
                 that.redirect("/");
 
                 if (quotas[data.ratetype]) {

@@ -42,7 +42,9 @@ module.exports = Controller("Home/BaseController", function() {
                     guide: guide
                 }).then(function(result) {
                     var content = "编辑成功！";
-                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content));
+                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                        expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
+                    }));
                     that.redirect("/connect/");
                 });
             } else {
