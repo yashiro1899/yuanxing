@@ -830,6 +830,100 @@ module.exports = Controller("Home/BaseController", function() {
                 that.display();
             });
         },
+        saveAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            if (!this.isPost()) {
+                that.end(null);
+                return null;
+            }
+
+            var quotas = this.post("quotas");
+            var data = {
+                gid: this.post("gid"),
+                hotelid: this.post("hotelid"),
+                roomtypeid: this.post("roomtypeid"),
+                iid: this.post("iid"),
+                ptype: this.post("ptype"),
+                profit: (parseInt(this.post("profit"), 10) || 0),
+                ratetype: this.post("ratetype")
+            };
+
+            return D("Goods").where({gid: gid}).select().then(function(result) {
+                result = result || [];
+
+                var model = D("Goods");
+                data.status = 4;
+                if (result.length > 0) {
+                    model.pk = "gid";
+                    delete data.hotelid;
+                    delete data.roomtypeid;
+                    delete data.iid;
+                    return g.update(data);
+                } else {
+                    data.userid = that.userInfo["taobao_user_id"];
+                    return model.add(data);
+                }
+            }).then(function() { // think_goods
+                if (result === false) {
+                    that.end("关联失败！");
+                    return getDefer().promise;
+                }
+
+                var content = "关联成功！";
+                content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
+                content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
+                res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
+                    path: "/",
+                    expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
+                }));
+
+                if (quotas[data.ratetype]) {
+                    quotas = quotas[data.ratetype];
+
+                    var roomQuota = [];
+                    var timestamp = Date.now();
+                    var night, price;
+                    var i = 0;
+                    for (; i < 90; i += 1) {
+                        night = dateformat(timestamp, "yyyy-mm-dd");
+                        timestamp += 24 * 60 * 60 * 1000;
+                        price = quotas[night];
+                        if (price) {
+                            num = price.num;
+                            price = price.price;
+                            if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
+                            else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+                            temp.push({
+                                date: night,
+                                price: price,
+                                num: num
+                            });
+                        } else {
+                            temp.push({
+                                date: night,
+                                price: 9999999,
+                                num: 0
+                            });
+                        }
+                    }
+                    return oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.room.update",
+                        "gid": gid,
+                        "room_quotas": JSON.stringify(roomQuota),
+                        "status": 1
+                    });
+                } else {
+                    return oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.room.update",
+                        "gid": gid,
+                        "status": 2
+                    });
+                }
+            });
+        },
         deleteAction: function() {
             var that = this;
             var gid = this.post("gid");
