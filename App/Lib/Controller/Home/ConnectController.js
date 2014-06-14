@@ -895,8 +895,8 @@ module.exports = Controller("Home/BaseController", function() {
                         if (price) {
                             num = price.num;
                             price = price.price;
-                            if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
-                            else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
+                            if (ptype == 1) price = Math.ceil(price * (data.profit + 100) / 100) * 100;
+                            else if (ptype == 2) price = Math.ceil((price + data.profit)) * 100;
                             roomQuota.push({
                                 date: night,
                                 price: price,
