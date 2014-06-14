@@ -765,7 +765,7 @@ module.exports = Controller("Home/BaseController", function() {
                     });
                 }
             }).then(function(result) {
-                var modelroom = D("Room").join("think_hotel on think_hotel.hotelid = think_room.hotelid").field("think_room.original as r,think_hotel.original as h").where({
+                var modelroom = D("Room").join("think_hotel on think_hotel.hotelid = think_room.hotelid").field("think_room.original as room,think_hotel.original as hotel").where({
                     'think_room.roomtypeid': roomtypeid
                 });
 
@@ -776,7 +776,35 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_room_type": true
                 }), modelroom.select()]);
             }).then(function(result) {
-                that.end(result);
+                var list = {
+                    taobao: {},
+                    jielv: {}
+                };
+
+                var taobao = result[0];
+                if (taobao && (taobao = taobao["hotel_room_get_response"]) && (taobao = taobao["room"])) {
+                    list.taobao["hotel"] = taobao.hotel.name;
+                    list.taobao["room"] = taobao.room_type.name;
+                    list.taobao["address"] = taobao.hotel.address;
+                    list.taobao["bedtype"] = mapping.bedtypestrings[taobao.bed_type];
+                    list.taobao["area"] = mapping.area[taobao.area];
+                }
+
+                var jielv = result[1][0];
+                var bedtype, area;
+                jielv.room = JSON.parse(jielv.room);
+                jielv.hotel = JSON.parse(jielv.hotel);
+                list.jielv["hotel"] = jielv.hotel.namechn;
+                list.jielv["room"] = jielv.room.namechn;
+                list.jielv["address"] = jielv.hotel.addresschn;
+
+                bedtype = mapping.bedtype[jielv.room.bedtype];
+                if (bedtype) list.jielv["bedtype"] = mapping.bedtypestrings[bedtype];
+
+                area = parseInt(jielvroom["acreages"], 10);
+                if (area) list.jielv["area"] = area;
+
+                that.end(list);
             });
         },
         deleteAction: function() {
