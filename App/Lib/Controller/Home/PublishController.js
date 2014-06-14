@@ -224,48 +224,6 @@ module.exports = Controller("Home/BaseController", function() {
                 });
             });
         },
-        inquiryAction: function() {
-            var that = this;
-            var req = this.http.req;
-            var res = this.http.res;
-
-            if (this.isPost()) {
-                var roomtypeid = this.post("roomtypeid");
-                if (!roomtypeid) {
-                    this.end(null);
-                    return null;
-                }
-
-                return Promise.all(this.prices(roomtypeid)).then(function(result) {
-                    var data = [];
-                    if (result[0] && result[0].data.length) data.push(result[0].data);
-                    if (result[1] && result[1].data.length) data.push(result[1].data);
-                    if (result[2] && result[2].data.length) data.push(result[2].data);
-                    if (data.length === 0) {
-                        that.end({
-                            success: 8,
-                            message: "暂无价格！"
-                        });
-
-                        var model = D("Room");
-                        model.pk = "roomtypeid";
-                        return model.update({
-                            roomtypeid: roomtypeid,
-                            no_price_expires: Date.now() + 7 * 24 * 60 * 60 * 1000
-                        });
-                    }
-
-                    var rpd = [];
-                    data.forEach(function(period) {
-                        if (period[0] && period[0].roomPriceDetail) rpd = rpd.concat(period[0].roomPriceDetail);
-                    });
-                    data[0][0]["roomPriceDetail"] = rpd;
-                    that.end(data[0][0]);
-                });
-            } else {
-                this.end(null);
-            }
-        },
         createAction: function() {
             if (!this.isPost()) {
                 this.end(null);
