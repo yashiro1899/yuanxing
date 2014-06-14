@@ -64,7 +64,7 @@
                 <% } else if (v.goodstatus == 1) { %>
                     <a href="/connect/match/?gid=<%=v.gid%>&hotelid=<%=v.hotelid%>">匹配/关联</a>
                 <% } else if (v.goodstatus === 0) { %>
-                <a href="/connect/match/?gid=<%=v.gid%>&q=<%=v.hotel.name%>">匹配/关联</a>
+                    <a href="/connect/match/?gid=<%=v.gid%>&q=<%=v.hotel.name%>">匹配/关联</a>
                 <% } %>
                 </td>
         <% }); %>
