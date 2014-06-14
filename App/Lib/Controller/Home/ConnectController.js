@@ -851,7 +851,7 @@ module.exports = Controller("Home/BaseController", function() {
                 ratetype: this.post("ratetype")
             };
 
-            return D("Goods").where({gid: gid}).select().then(function(result) {
+            return D("Goods").where({gid: data.gid}).select().then(function(result) {
                 result = result || [];
 
                 var model = D("Goods");
@@ -874,7 +874,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 var content = "关联成功！";
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
-                content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
+                content += (data.iid + "\" target=\"_blank\">去淘宝查看</a>");
                 res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
                     path: "/",
                     expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
@@ -897,13 +897,13 @@ module.exports = Controller("Home/BaseController", function() {
                             price = price.price;
                             if (ptype == 1) price = Math.ceil(price * (profit + 100) / 100) * 100;
                             else if (ptype == 2) price = Math.ceil((price + profit)) * 100;
-                            temp.push({
+                            roomQuota.push({
                                 date: night,
                                 price: price,
                                 num: num
                             });
                         } else {
-                            temp.push({
+                            roomQuota.push({
                                 date: night,
                                 price: 9999999,
                                 num: 0
@@ -912,14 +912,14 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                     return oauth.accessProtectedResource(req, res, {
                         "method": "taobao.hotel.room.update",
-                        "gid": gid,
+                        "gid": data.gid,
                         "room_quotas": JSON.stringify(roomQuota),
                         "status": 1
                     });
                 } else {
                     return oauth.accessProtectedResource(req, res, {
                         "method": "taobao.hotel.room.update",
-                        "gid": gid,
+                        "gid": data.gid,
                         "status": 2
                     });
                 }
