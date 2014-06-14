@@ -472,7 +472,7 @@ module.exports = Controller("Home/BaseController", function() {
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
                 content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
                 res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {path: "/"}));
-                that.redirect("/");
+                that.redirect(that.cookie("back.url") || "/");
 
                 if (quotas[data.ratetype]) {
                     quotas = quotas[data.ratetype];
