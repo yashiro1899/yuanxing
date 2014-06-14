@@ -861,7 +861,7 @@ module.exports = Controller("Home/BaseController", function() {
                     delete data.hotelid;
                     delete data.roomtypeid;
                     delete data.iid;
-                    return g.update(data);
+                    return model.update(data);
                 } else {
                     data.userid = that.userInfo["taobao_user_id"];
                     return model.add(data);
