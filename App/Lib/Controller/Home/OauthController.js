@@ -55,13 +55,9 @@ module.exports = Controller(function() {
             });
         },
         logoutAction: function() {
-            var now = new Date();
-            var data = cookie.serialize("access_token.taobao", "", {
-                path: "/",
-                expires: now
-            });
-
-            this.http.res.setHeader("Set-Cookie", data);
+            this.http.res.setHeader("Set-Cookie", cookie.serialize("access_token.taobao", "", {
+                expires: (new Date())
+            }));
             this.redirect("/");
         }
     };

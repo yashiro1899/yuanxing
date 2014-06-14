@@ -19,16 +19,12 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             var message = this.cookie("success.message");
-            var now = new Date();
             this.assign("message", message);
-            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                path: "/",
-                expires: now
-            }));
-            res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
-                path: "/",
-                expires: null
-            }));
+
+            var cookies = [];
+            cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
+            cookies.push(cookie.serialize("back.url", req.url));
+            res.setHeader("Set-Cookie", cookies);
 
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
@@ -168,16 +164,12 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             var message = this.cookie("success.message");
-            var now = new Date();
             this.assign("message", message);
-            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                path: "/",
-                expires: now
-            }));
-            res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
-                path: "/",
-                expires: null
-            }));
+
+            var cookies = [];
+            cookies.push(cookie.serialize("success.message", "", {expires: (new Date())}));
+            cookies.push(cookie.serialize("back.url", req.url));
+            res.setHeader("Set-Cookie", cookies);
 
             var range = 0, total = 0;
             var page = parseInt(this.param("p"), 10) || 1;
@@ -326,10 +318,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var message = this.cookie("success.message");
             this.assign("message", message);
-            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                path: "/",
-                expires: (new Date())
-            }));
+            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {expires: (new Date())}));
 
             var gid = this.param("gid");
             var roomtypeid = this.param("roomtypeid");
@@ -479,10 +468,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var content = "关联成功！";
                 content += "<a href=\"http://kezhan.trip.taobao.com/item.htm?item_id=";
                 content += (iid + "\" target=\"_blank\">去淘宝查看</a>");
-                res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                    path: "/",
-                    expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
-                }));
+                res.setHeader("Set-Cookie", cookie.serialize("success.message", content));
                 that.redirect("/");
 
                 if (quotas[data.ratetype]) {

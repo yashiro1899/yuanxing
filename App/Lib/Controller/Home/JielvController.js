@@ -28,7 +28,6 @@ module.exports = Controller(function() {
     return {
         cookieAction: function() {
             var res = this.http.res;
-            var now = Date.now();
             var data = {
                 "taobao_user_id": 0,
                 "taobao_user_nick": "",
@@ -45,8 +44,7 @@ module.exports = Controller(function() {
             data = querystring.stringify(data);
             data = rot13(data);
             data = cookie.serialize("access_token.taobao", data, {
-                path: "/",
-                expires: (new Date(90 * 24 * 60 * 60 * 1000 + now))
+                expires: (new Date(90 * 24 * 60 * 60 * 1000 + Date.now()))
             });
 
             res.setHeader("Set-Cookie", data);

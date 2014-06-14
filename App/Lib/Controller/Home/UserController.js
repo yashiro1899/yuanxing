@@ -12,11 +12,9 @@ module.exports = Controller("Home/BaseController", function() {
             var that = this;
 
             var message = this.cookie("success.message");
-            var now = new Date();
             this.assign("message", message);
             this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                path: "/",
-                expires: now
+                expires: (new Date())
             }));
 
             var promise = D("User").where("id=" + this.userInfo["taobao_user_id"]).select();
@@ -43,12 +41,8 @@ module.exports = Controller("Home/BaseController", function() {
                     pic_path: pic_path,
                     guide: guide
                 }).then(function(result) {
-                    var now = +(new Date());
                     var content = "编辑成功！";
-                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content, {
-                        path: "/",
-                        expires: (new Date(24 * 60 * 60 * 1000 + now))
-                    }));
+                    that.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", content));
                     that.redirect("/connect/");
                 });
             } else {
