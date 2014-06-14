@@ -879,6 +879,7 @@ module.exports = Controller("Home/BaseController", function() {
                     path: "/",
                     expires: (new Date(24 * 60 * 60 * 1000 + Date.now()))
                 }));
+                that.redirect("/");
 
                 if (quotas[data.ratetype]) {
                     quotas = quotas[data.ratetype];
