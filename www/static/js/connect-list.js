@@ -19,6 +19,7 @@ $(function() {
                 $('<form action="/connect/edit/" method="post">\
                   <textarea name="data">' + JSON.stringify(response.data) + '</textarea>\
                   <input type="hidden" name="gid" value="' + gid + '" />\
+                  <input type="hidden" name="roomtypeid" value="' + roomtypeid + '" />\
                   </form>').submit();
             }
         });
