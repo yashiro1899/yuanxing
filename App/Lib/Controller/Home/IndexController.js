@@ -17,16 +17,12 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             var message = this.cookie("success.message");
-            var now = new Date();
             this.assign("message", message);
-            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
-                path: "/",
-                expires: now
-            }));
-            res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
-                path: "/",
-                expires: (new Date(24 * 60 * 60 * 1000 + now))
-            }));
+
+            var cookies = [];
+            cookies.push(cookie.serialize("success.message", ""));
+            cookies.push(cookie.serialize("back.url", req.url));
+            res.setHeader("Set-Cookie", cookies);
 
             var page = parseInt(this.param("p"), 10) || 1;
             var query = this.param("q").trim();
