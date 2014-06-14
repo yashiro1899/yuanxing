@@ -822,10 +822,9 @@ module.exports = Controller("Home/BaseController", function() {
                     data["iid"] = taobao.iid;
                 }
 
-                that.end(data);
-                // that.assign("ratetypes", ratetypes);
-                // that.assign("formdata", data);
-                // that.display();
+                that.assign("ratetypes", ratetypes);
+                that.assign("formdata", data);
+                that.display();
             });
         },
         deleteAction: function() {
