@@ -774,7 +774,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "method": "taobao.hotel.room.get",
                     "need_hotel": true,
                     "need_room_type": true
-                }), modelroom]);
+                }), modelroom.select()]);
             }).then(function(result) {
                 that.end(result);
             });
