@@ -387,7 +387,7 @@ module.exports = Controller("Home/BaseController", function() {
                 that.end({
                     success: 1,
                     message: "发布成功！",
-                    gid: that.gid
+                    gid: goods.gid
                 });
             });
         }
