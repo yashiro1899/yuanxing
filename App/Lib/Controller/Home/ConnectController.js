@@ -21,9 +21,13 @@ module.exports = Controller("Home/BaseController", function() {
             var message = this.cookie("success.message");
             var now = new Date();
             this.assign("message", message);
-            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
                 path: "/",
                 expires: now
+            }));
+            res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
+                path: "/",
+                expires: (new Date(24 * 60 * 60 * 1000 + now))
             }));
 
             var range = 0, total = 0;
@@ -166,9 +170,13 @@ module.exports = Controller("Home/BaseController", function() {
             var message = this.cookie("success.message");
             var now = new Date();
             this.assign("message", message);
-            this.http.res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
+            res.setHeader("Set-Cookie", cookie.serialize("success.message", "", {
                 path: "/",
                 expires: now
+            }));
+            res.setHeader("Set-Cookie", cookie.serialize("back.url", req.url, {
+                path: "/",
+                expires: (new Date(24 * 60 * 60 * 1000 + now))
             }));
 
             var range = 0, total = 0;
