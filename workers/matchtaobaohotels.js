@@ -149,9 +149,21 @@ Promise.all([token, hotels]).then(function(result) {
                             "need_room_type": true
                         }, token);
                     }).then(function(result) {
-                        if (result && (result = result["hotel_get_response"]) && (result = result.hotel)) {
-                            console.log(result);
+                        if (result && (result = result["hotel_get_response"]) && (result = result.hotel) && (result = result.room_types) && result.room_type) {
+                            result.room_type.forEach(function(room) {
+                                var roomtypeid = names[room.name];
+                                if (roomtypeid) {
+                                    rooms.push({
+                                        rid: room.rid,
+                                        hid: room.hid,
+                                        roomtypeid: roomtypeid
+                                    });
+                                }
+                            });
                         }
+                        return rooms;
+                    }).then(function(result) {
+                        console.log(result);
                     })["catch"](function(e) {console.log(e);});
                 }, Promise.resolve());
             })["catch"](function(e) {console.log(e);});
@@ -163,30 +175,6 @@ Promise.all([token, hotels]).then(function(result) {
     });
 });
 
-//             data = [];
-//             result[0].forEach(function(h) {
-//                 if (h && h["hotel_get_response"]) {
-//                     h = h["hotel_get_response"]["hotel"];
-//                     var hid = h.hid;
-
-//                     h = (h.room_types ? (h.room_types["room_type"] || []) : []);
-//                     h.forEach(function(r, i) {r.hid = hid;});
-//                     data = data.concat(h);
-//                 }
-//             });
-//             if (data.length === 0) throw "NO_ROOM_TYPE " + params.name;
-
-//             var rooms = {};
-//             var rids = [];
-//             roomtypeids = result[1] || [];
-//             roomtypeids.forEach(function(r) {rooms[r.namechn] = r.roomtypeid;});
-//             data = data.filter(function(r) {
-//                 if (rooms[r.name]) {
-//                     r.roomtypeid = rooms[r.name];
-//                     return true;
-//                 }
-//                 return false;
-//             });
 //             rids = data.map(function(r) {return r.rid;});
 //             if (rids.length === 0) throw "NO_MATCHED " + params.name;
 
