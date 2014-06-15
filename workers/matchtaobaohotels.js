@@ -162,10 +162,17 @@ Promise.all([token, hotels]).then(function(result) {
                             });
                         }
                         return rooms;
-                    }).then(function(result) {
-                        console.log(result);
-                    })["catch"](function(e) {console.log(e);});
+                    });
                 }, Promise.resolve());
+            }).then(function(result) { // taobao.hotel.get
+                taobao = result;
+                if (taobao.length === 0) throw "NO_MATCHED";
+
+                var rids = taobao.map(function(r) {return r.rid;});
+                return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
+            }).then(function(result) { // think_taobaoroom
+                var ids = result.map(function(r) {return r.rid;});
+                console.log(ids);
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
@@ -175,12 +182,6 @@ Promise.all([token, hotels]).then(function(result) {
     });
 });
 
-//             rids = data.map(function(r) {return r.rid;});
-//             if (rids.length === 0) throw "NO_MATCHED " + params.name;
-
-//             return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
-//         }).then(function(result) { // think_taobaoroom
-//             var ids = result.map(function(r) {return r.rid;});
 //             var sqls = [];
 
 //             var values = data.map(function(r) {
