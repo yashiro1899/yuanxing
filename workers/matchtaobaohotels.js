@@ -4,26 +4,35 @@ var mysql = require('mysql');
 var oauth = require("../taobao-oauth.js");
 var Promise = require('es6-promise').Promise;
 
+var getDefer = function() {
+    var deferred = {};
+    deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+    return deferred;
+};
+
 var connection = mysql.createConnection(config);
 var db = function(querystring) {
-    return new Promise(function(resolve, reject) {
-        connection.query(querystring, function(err, rows, fields) {
-            if (/^SELECT/.test(querystring)) {
-                if (err) {
-                    console.log(err.toString());
-                    rows = [];
-                }
-                resolve(rows);
-            } else {
-                if (err) {
-                    console.log(err.toString());
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
+    var dfd = getDefer();
+    connection.query(querystring, function(err, rows, fields) {
+        if (/^SELECT/.test(querystring)) {
+            if (err) {
+                console.log(err.toString());
+                rows = [];
             }
-        });
+            dfd.resolve(rows);
+        } else {
+            if (err) {
+                console.log(err.toString());
+                dfd.resolve(false);
+            } else {
+                dfd.resolve(true);
+            }
+        }
     });
+    return dfd.promise;
 };
 connection.connect();
 
@@ -72,33 +81,24 @@ Promise.all([token, hotels]).then(function(result) {
         pieces.push(params.slice(i * block, (i + 1) * block));
     }
     params = null;
+
+    var promises = [];
     pieces.forEach(function(thread) {
-        console.log(thread.length);
+        promises.push(thread.reduce(function(sequence, param) {
+            return sequence.then(function(result) {
+                param.method = "taobao.hotels.search";
+                return oauth.accessProtectedResource(null, null, param, token);
+            }).then(function(result) { // taobao.hotels.search
+                if (result && (result = result["hotels_search_response"])) {
+                    console.log(param.name, result.total_results);
+                }
+            })["catch"](function(e) {console.log(e);});
+        }, Promise.resolve()));
     });
 
     connection.end();
 });
 
-//     var block = 800;
-//     var length = Math.ceil(hotels.length / block);
-//     var i = 0;
-//     for (; i < length; i += 1) {
-//         pieces.push(hotels.slice(i * block, (i + 1) * block));
-//     }
-
-//     var last = pieces.length - 1;
-//     last = pieces[last];
-//     pieces.reduce(function(sequence, p) {
-//         return sequence.then(function() {
-//             var promises = [];
-//             p.forEach(function(hotel) {
-//                 var params = {
-//                     "method": "taobao.hotels.search",
-//                     "name": hotel.namechn
-//                 };
-
-//             });
-//             return Promise.all(promises);
 //         }).then(function() {
 //             var now = +(new Date());
 //             console.log("hotel matched:", total1, ",room matched:", total2, ",time:", now - start, "milliseconds");
@@ -257,6 +257,5 @@ Promise.all([token, hotels]).then(function(result) {
 //             return Promise.all(sqls);
 //         }).then(function(result) { // think_taobaoroom
 //             console.log(params.name, result.length, "roomtypeids");
-//         })["catch"](function(e) {console.log(e);});
 //     }
 // })["catch"](function(e) {console.log(e);});
