@@ -97,7 +97,7 @@ Promise.all([token, hotels]).then(function(result) {
                 return oauth.accessProtectedResource(null, null, param, token);
             }).then(function(result) { // taobao.hotels.search
                 if (result && (result = result["hotels_search_response"])) {
-                    if (result["total_results"] > 20) console.log("GREATER THAN 20,", total, params.name);
+                    if (result["total_results"] > 20) console.log("GREATER THAN 20,", result["total_results"], params.name);
                     if ((result = result.hotels) && result.hotel) {
                         taobao = result.hotel.filter(function(h) {return (param.name == h.name);});
                         if (taobao.length === 0) throw "NO_MATCHED";
