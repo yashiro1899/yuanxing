@@ -64,12 +64,20 @@ Promise.all([token, hotels]).then(function(result) {
             });
         }
     }
-    console.log(hotels.length, params.length);
+    hotels = null;
+
+    var pieces = [];
+    var block = Math.ceil(params.length / 5);
+    for (i = 0; i < 5; i += 1) {
+        pieces.push(params.slice(i * block, (i + 1) * block));
+    }
+    params = null;
+    pieces.forEach(function(thread) {
+        console.log(thread.length);
+    });
 
     connection.end();
 });
-// var fields1 = "`hid`,`hotelid`,`original`";
-// var fields2 = "`rid`,`hid`,`roomtypeid`";
 
 //     var block = 800;
 //     var length = Math.ceil(hotels.length / block);
