@@ -186,7 +186,7 @@ Promise.all([token, hotels]).then(function(result) {
                     }
                 });
 
-                if (insertings.length === 0) throw "NO_INSERTING";
+                if (insertings.length === 0) return true;
                 return db("INSERT INTO `think_taobaoroom` (rid,hid,roomtypeid) VALUES " + insertings.join(","));
             }).then(function(result) { // think_taobaoroom
                 if (result === false) {
@@ -197,14 +197,18 @@ Promise.all([token, hotels]).then(function(result) {
                     taobao.forEach(function(r) {rooms[r.roomtypeid] = true;});
                     var status128 = jielv.filter(function(r) {return rooms[r.roomtypeid];});
                     var status1= jielv.filter(function(r) {return !rooms[r.roomtypeid];});
-                    console.log(status128, status1);
+                    status128 = status128.map(function(r) {return r.roomtypeid;});
+                    status1 = status1.map(function(r) {return r.roomtypeid;});
+                    status128 = db("UPDATE `think_room` SET `status` = 128 WHERE `roomtypeid` IN (" + status128.join(",") + ")");
+                    status1 = db("UPDATE `think_room` SET `status` = 1WHERE `roomtypeid` IN (" + status1.join(",") + ")");
+                    return Promise.all([status128, status1]);
                 }
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
     Promise.all(promises).then(function(result) {
         var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-        console.log(time, 'hotels: ' + total1, 'rooms: ' + total2, (Date.now() - start) + "", "milliseconds");
+        console.log(time, 'hotels:' + total1, 'rooms:' + total2, (Date.now() - start) + "ms");
         connection.end();
     });
 });
