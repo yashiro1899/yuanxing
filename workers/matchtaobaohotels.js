@@ -205,7 +205,7 @@ Promise.all([token, hotels]).then(function(result) {
                         status1 = db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` IN (" + status1.join(",") + ")");
                     return Promise.all([status128, status1]);
                 }
-            })["catch"](function(e) {console.log(e);});
+            })["catch"](function(e) {});
         }, Promise.resolve()));
     });
     Promise.all(promises).then(function(result) {
