@@ -1,4 +1,5 @@
 var config = require("../auth.conf").mysql;
+var dateformat = require("dateformat");
 var mapping = require("../define.conf");
 var mysql = require('mysql');
 var oauth = require("../taobao-oauth.js");
@@ -88,7 +89,7 @@ Promise.all([token, hotels]).then(function(result) {
     var promises = [];
     pieces.forEach(function(thread) {
         promises.push(thread.reduce(function(sequence, param) {
-            var taobao;
+            var taobao, jielv;
             var hotelid = param.hotelid;
             delete param.hotelid;
             return sequence.then(function(result) {
@@ -133,13 +134,14 @@ Promise.all([token, hotels]).then(function(result) {
             }).then(function(result) { // think_taobaohotel
                 var success = true;
                 result.forEach(function(r) {if (r === false) success = r;});
-                if (success === false) console.log(taobao.map(function(h) {return h.hid;}).join(","));
+                if (success === false) console.log("HOTEL_ERROR", taobao.map(function(h) {return h.hid;}).join(","));
                 else total1 += taobao.length;
 
                 return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotelid);
             }).then(function(result) { // think_room
+                jielv = result;
                 var names = {};
-                result.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
+                jielv.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
                 var rooms = [];
                 return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
                     return sequence.then(function(result) {
@@ -183,36 +185,26 @@ Promise.all([token, hotels]).then(function(result) {
                         insertings.push(qs);
                     }
                 });
-                console.log(insertings);
+
+                if (insertings.length === 0) throw "NO_INSERTING";
+                return db("INSERT INTO `think_taobaoroom` (rid,hid,roomtypeid) VALUES " + insertings.join(","));
+            }).then(function(result) { // think_taobaoroom
+                if (result === false) {
+                    console.log("ROOM_ERROR", taobao.map(function(r) {return r.rid;}).join(","));
+                } else {
+                    total2 += taobao.length;
+                    var rooms = {};
+                    taobao.forEach(function(r) {rooms[r.roomtypeid] = true;});
+                    var status128 = jielv.filter(function(r) {return rooms[r.roomtypeid];});
+                    var status1= jielv.filter(function(r) {return !rooms[r.roomtypeid];});
+                    console.log(status128, status1);
+                }
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
     Promise.all(promises).then(function(result) {
-        console.log((Date.now() - start) + "", "milliseconds");
+        var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+        console.log(time, 'hotels: ' + total1, 'rooms: ' + total2, (Date.now() - start) + "", "milliseconds");
         connection.end();
     });
 });
-
-//             if (values.length > 0)
-//                 sqls.push(db("INSERT INTO `think_taobaoroom` (" + fields2 + ") VALUES " + values.join(",")));
-//             return Promise.all(sqls);
-//         }).then(function(result) { // think_taobaoroom
-//             if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
-//             total2 += data.length;
-
-//             var sqls = [];
-//             var rti = {};
-//             data.forEach(function(r) {rti[r.roomtypeid] = true;});
-//             roomtypeids.forEach(function(r) {
-//                 var qs = "UPDATE `think_room` SET ";
-//                 qs += "`status` = ";
-//                 qs += (rti[r.roomtypeid] ? 128 : 1);
-//                 qs += " WHERE `roomtypeid` = " + r.roomtypeid;
-//                 sqls.push(db(qs));
-//             });
-
-//             return Promise.all(sqls);
-//         }).then(function(result) { // think_taobaoroom
-//             console.log(params.name, result.length, "roomtypeids");
-//     }
-// })["catch"](function(e) {console.log(e);});
