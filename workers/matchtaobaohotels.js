@@ -140,9 +140,20 @@ Promise.all([token, hotels]).then(function(result) {
             }).then(function(result) { // think_room
                 var names = {};
                 result.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
-                console.log(names);
-                // return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
-                // })["catch"](function(e) {console.log(e);});
+                var rooms = [];
+                return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
+                    return sequence.then(function(result) {
+                        return oauth.accessProtectedResource(null, null, {
+                            "hid": hid,
+                            "method": "taobao.hotel.get",
+                            "need_room_type": true
+                        }, token);
+                    }).then(function(result) {
+                        if (result && (result = result["hotel_get_response"]) && (result = result.hotel)) {
+                            console.log(result);
+                        }
+                    })["catch"](function(e) {console.log(e);});
+                }, Promise.resolve());
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
@@ -152,25 +163,6 @@ Promise.all([token, hotels]).then(function(result) {
     });
 });
 
-//     function generate(params, hotel) {
-//         var data = [],
-//             inserted = [],
-//             roomtypeids = [];
-//
-
-//             var promises = [];
-//             var model;
-
-//             data.forEach(function(h) {
-//                 promises.push(oauth.accessProtectedResource(null, null, {
-//                     "hid": h.hid,
-//                     "method": "taobao.hotel.get",
-//                     "need_room_type": true
-//                 }, token));
-//             });
-//             model = db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotel.hotelid);
-//             return Promise.all([Promise.all(promises), model]);
-//         }).then(function(result) { // taobao.hotel.get, think_room
 //             data = [];
 //             result[0].forEach(function(h) {
 //                 if (h && h["hotel_get_response"]) {
