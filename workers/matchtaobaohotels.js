@@ -32,17 +32,44 @@ var hotels = db('SELECT `hotelid`,`namechn`,`nameeng`,`country`,`state` FROM `th
 Promise.all([token, hotels]).then(function(result) {
     token = result[0][0]["token"];
     hotels = result[1];
-    console.log(token);
+
+    var total1 = 0, total2 = 0;
+    var start = Date.now();
+    var params = [];
+    var i = 0,
+        length = hotels.length;
+    var hotel, state, country;
+    for (; i < length; i += 1) {
+        hotel = hotels[i];
+        state = mapping.province[hotel.state];
+        country = mapping.country[hotel.country];
+
+        if (state) {
+            params.push({
+                domestic: true,
+                province: state[1],
+                name: hotel.namechn
+            });
+        } else if (country) {
+            if (hotel.nameeng.trim() === "") continue;
+            params.push({
+                domestic: false,
+                country: country[1],
+                name: hotel.namechn
+            });
+            params.push({
+                domestic: false,
+                country: country[1],
+                name: hotel.nameeng
+            });
+        }
+    }
+    console.log(hotels.length, params.length);
+
     connection.end();
 });
-// select nick , token , expires from think_user where nick = "liwenmz";
 // var fields1 = "`hid`,`hotelid`,`original`";
 // var fields2 = "`rid`,`hid`,`roomtypeid`";
-// var qs = "";
-// db(qs).then(function(hotels) {
-//     var total1 = 0, total2 = 0;
-//     var start = +(new Date());
-//     var pieces = [];
 
 //     var block = 800;
 //     var length = Math.ceil(hotels.length / block);
@@ -61,23 +88,7 @@ Promise.all([token, hotels]).then(function(result) {
 //                     "method": "taobao.hotels.search",
 //                     "name": hotel.namechn
 //                 };
-//                 var state = mapping.province[hotel.state],
-//                     country = mapping.country[hotel.country];
 
-//                 if (state) {
-//                     params["domestic"] = true;
-//                     params["province"] = state[1];
-//                     if (params.name) promises.push(generate(params, hotel));
-//                 } else if (country) {
-//                     params["domestic"] = false;
-//                     params["country"] = country[1];
-//                     if (params.name) promises.push(generate(params, hotel));
-
-//                     var another = {};
-//                     Object.keys(params).forEach(function(k) {return another[k] = params[k];});
-//                     another["name"] = hotel.nameeng;
-//                     if (params.name) promises.push(generate(params, hotel));
-//                 }
 //             });
 //             return Promise.all(promises);
 //         }).then(function() {
