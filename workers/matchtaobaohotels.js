@@ -120,7 +120,15 @@ Promise.all([token, hotels]).then(function(result) {
                         insertings.push(qs);
                     }
                 });
-                console.log("updatings: " + updatings.length, "insertings: " + insertings.length);
+
+                updatings = updatings.map(function(qs) {
+                    return db("UPDATE `think_taobaohotel` SET " + qs);
+                });
+                if (insertings.length > 0)
+                    updatings.push(db("INSERT INTO `think_taobaohotel` (hid,hotelid,original) VALUES " + insertings.join(",")));
+                return Promise.all(updatings);
+            }).then(function(result) { // think_taobaohotel
+                console.log(result);
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
@@ -128,7 +136,6 @@ Promise.all([token, hotels]).then(function(result) {
         console.log((Date.now() - start) + "", "milliseconds");
         connection.end();
     });
-
 });
 
 //     function generate(params, hotel) {
@@ -136,27 +143,6 @@ Promise.all([token, hotels]).then(function(result) {
 //             inserted = [],
 //             roomtypeids = [];
 //
-//             var sqls = [];
-//             var values = data.map(function(h) {
-//                 var v = [];
-//                 v.push(h.hid);
-//                 v.push(hotel.hotelid);
-
-//                 if (ids.indexOf(h.hid) > -1) {
-//                     var qs = "UPDATE `think_taobaohotel` SET ";
-//                     var f = fields1.split(",");
-//                     v.forEach(function(value, index) {
-//                         if (index === 0) return null;
-//                         if (index > 1) qs += ",";
-//                         qs += f[index];
-//                         qs += "=";
-//                         qs += value;
-//                     });
-//                     qs += " WHERE `hid`=" + h.hid;
-//                     sqls.push(db(qs));
-//                 }
-//                 return v;
-//             });
 
 //             values = values.filter(function(h) {return ids.indexOf(h[0]) < 0;});
 //             inserted = values.map(function(h) {return h[0];});
