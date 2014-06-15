@@ -103,7 +103,7 @@ Promise.all([token, hotels]).then(function(result) {
                 }
                 throw "NO_MATCHED";
             }).then(function(result) { // think_taobaohotel
-                console.log(result.length);
+                console.log(result.length, param.name);
             })["catch"](function(e) {});
         }, Promise.resolve()));
     });
