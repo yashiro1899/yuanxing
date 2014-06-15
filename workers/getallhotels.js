@@ -1,6 +1,6 @@
-var config = require("./auth.conf").mysql;
+var config = require("../auth.conf").mysql;
 var dateformat = require("dateformat");
-var jielvapi = require("./jielv-api.js");
+var jielvapi = require("../jielv-api.js");
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 
