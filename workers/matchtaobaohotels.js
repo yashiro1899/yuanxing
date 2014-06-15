@@ -172,7 +172,18 @@ Promise.all([token, hotels]).then(function(result) {
                 return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
             }).then(function(result) { // think_taobaoroom
                 var ids = result.map(function(r) {return r.rid;});
-                console.log(ids);
+                var insertings = [];
+                taobao.forEach(function(r) {
+                    var qs = [];
+                    if (ids.indexOf(r.rid) < 0) {
+                        qs.push(r.rid);
+                        qs.push(r.hid);
+                        qs.push(r.roomtypeid);
+                        qs = "(" + qs.join(",") + ")";
+                        insertings.push(qs);
+                    }
+                });
+                console.log(insertings);
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
@@ -182,33 +193,6 @@ Promise.all([token, hotels]).then(function(result) {
     });
 });
 
-//             var sqls = [];
-
-//             var values = data.map(function(r) {
-//                 var v = [];
-//                 v.push(r.rid);
-//                 v.push(r.hid);
-//                 v.push(r.roomtypeid);
-
-//                 if (ids.indexOf(r.rid) > -1) {
-//                     var qs = "UPDATE `think_taobaoroom` SET ";
-//                     var f = fields2.split(",");
-//                     v.forEach(function(value, index) {
-//                         if (index === 0) return null;
-//                         if (index > 1) qs += ",";
-//                         qs += f[index];
-//                         qs += "=";
-//                         qs += value;
-//                     });
-//                     qs += " WHERE `rid`=" + r.rid;
-//                     sqls.push(db(qs));
-//                 }
-//                 return v;
-//             });
-
-//             values = values.filter(function(r) {return ids.indexOf(r[0]) < 0;});
-//             inserted = values.map(function(r) {return r[0];});
-//             values = values.map(function(r) {return "(" + r.join(",") + ")";});
 //             if (values.length > 0)
 //                 sqls.push(db("INSERT INTO `think_taobaoroom` (" + fields2 + ") VALUES " + values.join(",")));
 //             return Promise.all(sqls);
