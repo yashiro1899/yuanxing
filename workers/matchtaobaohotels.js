@@ -131,7 +131,18 @@ Promise.all([token, hotels]).then(function(result) {
                     updatings.push(db("INSERT INTO `think_taobaohotel` (hid,hotelid,original) VALUES " + insertings.join(",")));
                 return Promise.all(updatings);
             }).then(function(result) { // think_taobaohotel
-                console.log(result);
+                var success = true;
+                result.forEach(function(r) {if (r === false) success = r;});
+                if (success === false) console.log(taobao.map(function(h) {return h.hid;}).join(","));
+                else total1 += taobao.length;
+
+                return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotelid);
+            }).then(function(result) { // think_room
+                var names = {};
+                result.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
+                console.log(names);
+                // return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
+                // })["catch"](function(e) {console.log(e);});
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
@@ -147,16 +158,6 @@ Promise.all([token, hotels]).then(function(result) {
 //             roomtypeids = [];
 //
 
-//             values = values.filter(function(h) {return ids.indexOf(h[0]) < 0;});
-//             inserted = values.map(function(h) {return h[0];});
-//             values = values.map(function(h) {return "(" + h.join(",") + ")";});
-//             if (values.length > 0)
-//                 sqls.push(db("INSERT INTO `think_taobaohotel` (" + fields1 + ") VALUES " + values.join(",")));
-//             return Promise.all(sqls);
-//         }).then(function(result) { // think_taobaohotel
-//             if (inserted.length > 0 && !result.pop()) console.log("HOTEL_ERROR", inserted.join(","));
-
-//             total1 += data.length;
 //             var promises = [];
 //             var model;
 
