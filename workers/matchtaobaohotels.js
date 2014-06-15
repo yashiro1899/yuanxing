@@ -84,22 +84,22 @@ Promise.all([token, hotels]).then(function(result) {
 
     var promises = [];
     pieces.forEach(function(thread) {
-        console.log("thread", thread.length);
         promises.push(thread.reduce(function(sequence, param) {
             return sequence.then(function(result) {
                 param.method = "taobao.hotels.search";
                 return oauth.accessProtectedResource(null, null, param, token);
             }).then(function(result) { // taobao.hotels.search
                 if (result && (result = result["hotels_search_response"])) {
-                    var total = result["total_results"];
-                    var hids = [];
-
-                    if (total > 20) console.log("GREATER THAN 20,", total, params.name);
-                    result.hotel.forEach(function(h) {
-                        if (param.name == h.name) hids.push(h.hid);
-                    });
-                    if (hids.length === 0) throw "NO_MATCHED";
-                    return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
+                    if (result["total_results"] > 20) console.log("GREATER THAN 20,", total, params.name);
+                    if ((result = result.hotels) && (result = result.hotel)) {
+                        var hids = [];
+                        result.hotel.forEach(function(h) {
+                            if (param.name == h.name) hids.push(h.hid);
+                        });
+                        if (hids.length === 0) throw "NO_MATCHED";
+                        return db("SELECT `hid` FROM `think_taobaohotel` WHERE `hid` in (" + hids.join(',') + ")");
+                    }
+                    throw "NO_MATCHED";
                 }
                 throw "NO_MATCHED";
             }).then(function(result) { // think_taobaohotel
