@@ -57,19 +57,22 @@ Promise.all([token, hotels]).then(function(result) {
             params.push({
                 domestic: true,
                 province: state[1],
-                name: hotel.namechn
+                name: hotel.namechn,
+                hotelid: hotel.hotelid
             });
         } else if (country) {
             if (hotel.nameeng.trim() === "") continue;
             params.push({
                 domestic: false,
                 country: country[1],
-                name: hotel.namechn
+                name: hotel.namechn,
+                hotelid: hotel.hotelid
             });
             params.push({
                 domestic: false,
                 country: country[1],
-                name: hotel.nameeng
+                name: hotel.nameeng,
+                hotelid: hotel.hotelid
             });
         }
     }
@@ -86,6 +89,8 @@ Promise.all([token, hotels]).then(function(result) {
     pieces.forEach(function(thread) {
         promises.push(thread.reduce(function(sequence, param) {
             var taobao;
+            var hotelid = param.hotelid;
+            delete param.hotelid;
             return sequence.then(function(result) {
                 param.method = "taobao.hotels.search";
                 return oauth.accessProtectedResource(null, null, param, token);
@@ -114,16 +119,14 @@ Promise.all([token, hotels]).then(function(result) {
                     } else {
                         qs = [];
                         qs.push(h.hid);
-                        qs.push(h.hotelid);
+                        qs.push(hotelid);
                         qs.push(JSON.stringify(JSON.stringify(h)));
                         qs = "(" + qs.join(",") + ")";
                         insertings.push(qs);
                     }
                 });
 
-                updatings = updatings.map(function(qs) {
-                    return db("UPDATE `think_taobaohotel` SET " + qs);
-                });
+                updatings = updatings.map(function(qs) {return db("UPDATE `think_taobaohotel` SET " + qs);});
                 if (insertings.length > 0)
                     updatings.push(db("INSERT INTO `think_taobaohotel` (hid,hotelid,original) VALUES " + insertings.join(",")));
                 return Promise.all(updatings);
