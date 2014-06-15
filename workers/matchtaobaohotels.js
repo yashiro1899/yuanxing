@@ -199,8 +199,10 @@ Promise.all([token, hotels]).then(function(result) {
                     var status1= jielv.filter(function(r) {return !rooms[r.roomtypeid];});
                     status128 = status128.map(function(r) {return r.roomtypeid;});
                     status1 = status1.map(function(r) {return r.roomtypeid;});
-                    status128 = db("UPDATE `think_room` SET `status` = 128 WHERE `roomtypeid` IN (" + status128.join(",") + ")");
-                    status1 = db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` IN (" + status1.join(",") + ")");
+                    if (status128.length > 0)
+                        status128 = db("UPDATE `think_room` SET `status` = 128 WHERE `roomtypeid` IN (" + status128.join(",") + ")");
+                    if (status1.length > 0)
+                        status1 = db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` IN (" + status1.join(",") + ")");
                     return Promise.all([status128, status1]);
                 }
             })["catch"](function(e) {console.log(e);});
