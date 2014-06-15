@@ -146,6 +146,6 @@ for (i = today * 200, length = (today + 1) * 200; i < length; i += 1) {
 
 Promise.all(promises).then(function(result) {
     var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-    console.log(time, "GETALLHOTELS", total1 + "hotels,", total2 + "rooms,", ",time:", (Date.now() - start) + "milliseconds");
+    console.log(time, "GETALLHOTELS", total1 + " hotels,", total2 + " rooms,", (Date.now() - start) + " milliseconds");
     connection.end();
 });
