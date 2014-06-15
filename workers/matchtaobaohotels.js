@@ -62,13 +62,13 @@ Promise.all([token, hotels]).then(function(result) {
                 hotelid: hotel.hotelid
             });
         } else if (country) {
-            if (hotel.nameeng.trim() === "") continue;
             params.push({
                 domestic: false,
                 country: country[1],
                 name: hotel.namechn,
                 hotelid: hotel.hotelid
             });
+            if (hotel.nameeng.trim() === "") continue;
             params.push({
                 domestic: false,
                 country: country[1],
