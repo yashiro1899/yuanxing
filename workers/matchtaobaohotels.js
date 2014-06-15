@@ -84,6 +84,7 @@ Promise.all([token, hotels]).then(function(result) {
 
     var promises = [];
     pieces.forEach(function(thread) {
+        console.log("thread", thread.length);
         promises.push(thread.reduce(function(sequence, param) {
             return sequence.then(function(result) {
                 param.method = "taobao.hotels.search";
@@ -95,13 +96,15 @@ Promise.all([token, hotels]).then(function(result) {
             })["catch"](function(e) {console.log(e);});
         }, Promise.resolve()));
     });
+    Promise.all(promises).then(function(result) {
+        console.log(Date.now() - start, "milliseconds");
+    });
 
     connection.end();
 });
 
 //         }).then(function() {
 //             var now = +(new Date());
-//             console.log("hotel matched:", total1, ",room matched:", total2, ",time:", now - start, "milliseconds");
 //             if (last === p) connection.end();
 //         })["catch"](function(e) {console.log(e);});
 //     }, Promise.resolve());
