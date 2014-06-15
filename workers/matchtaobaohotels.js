@@ -82,7 +82,7 @@ Promise.all([token, hotels]).then(function(result) {
     var today = new Date();
     var block = Math.ceil(params.length / 7);
     today = today.getDay();
-    params = params.slice(i * block, (i + 1) * block);
+    params = params.slice(today * block, (today + 1) * block);
 
     block = Math.ceil(params.length / 5);
     var pieces = [];
@@ -215,7 +215,7 @@ Promise.all([token, hotels]).then(function(result) {
     });
     Promise.all(promises).then(function(result) {
         var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
-        console.log(time, 'hotels:' + total1, 'rooms:' + total2, (Date.now() - start) + "ms");
+        console.log(time, "MATCHTAOBAOHOTELS", total1 + "hotels,", total2 + "rooms,", (Date.now() - start) + "milliseconds");
         connection.end();
     });
 });

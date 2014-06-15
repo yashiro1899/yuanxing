@@ -1,4 +1,5 @@
 var config = require("./auth.conf").mysql;
+var dateformat = require("dateformat");
 var jielvapi = require("./jielv-api.js");
 var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
@@ -32,8 +33,12 @@ var total1 = 0, total2 = 0;
 var start = +(new Date());
 var promises = [];
 var hotelIds;
-var i = 0, j;
-for (; i < 1000; i += 1) {
+
+var today = new Date();
+today = today.getDay();
+
+var i, j, length;
+for (i = today * 200, length = (today + 1) * 200; i < length; i += 1) {
     hotelIds = [];
     for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) hotelIds.push(j);
     hotelIds = hotelIds.join("/");
@@ -134,14 +139,13 @@ for (; i < 1000; i += 1) {
             return Promise.all(sqls);
         }).then(function(result) {
             if (inserted.length > 0 && !result.pop()) console.log("ROOM_ERROR", inserted.join(","));
-            console.log(hids);
-        })["catch"](function(e) {console.log(e);});
+        })["catch"](function(e) {});
         promises.push(promise);
     })(hotelIds);
 }
 
 Promise.all(promises).then(function(result) {
-    var now = +(new Date());
-    console.log("hotel total:", total1, "room total:", total2, ",time:", now - start, "milliseconds");
+    var time = dateformat(new Date(), "[yyyy-mm-dd HH:MM:ss]");
+    console.log(time, "GETALLHOTELS", total1 + "hotels,", total2 + "rooms,", ",time:", (Date.now() - start) + "milliseconds");
     connection.end();
 });
