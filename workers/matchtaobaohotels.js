@@ -79,8 +79,13 @@ Promise.all([token, hotels]).then(function(result) {
     }
     hotels = null;
 
+    var today = new Date();
+    var block = Math.ceil(params.length / 7);
+    today = today.getDay();
+    params = params.slice(i * block, (i + 1) * block);
+
+    block = Math.ceil(params.length / 5);
     var pieces = [];
-    var block = Math.ceil(params.length / 5);
     for (i = 0; i < 5; i += 1) {
         pieces.push(params.slice(i * block, (i + 1) * block));
     }
