@@ -91,7 +91,7 @@ Promise.all([token, hotels]).then(function(result) {
             }).then(function(result) { // taobao.hotels.search
                 if (result && (result = result["hotels_search_response"])) {
                     if (result["total_results"] > 20) console.log("GREATER THAN 20,", total, params.name);
-                    if ((result = result.hotels) && (result = result.hotel)) {
+                    if ((result = result.hotels) && result.hotel) {
                         var hids = [];
                         result.hotel.forEach(function(h) {
                             if (param.name == h.name) hids.push(h.hid);
