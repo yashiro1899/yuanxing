@@ -215,7 +215,7 @@ module.exports = Controller("Home/BaseController", function() {
                     model.pk = "roomtypeid";
                     return model.update({
                         roomtypeid: roomtypeid,
-                        no_price_expires: (Date.now() + 7 * 24 * 60 * 60 * 1000)
+                        no_price_expires: (Date.now() + 24 * 60 * 60 * 1000)
                     });
                 }
                 that.end({
