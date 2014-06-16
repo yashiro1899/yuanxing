@@ -72,7 +72,7 @@ Promise.all([token, hotels]).then(function(result) {
             params.push({
                 domestic: false,
                 country: country[1],
-                name: hotel.nameeng,
+                name: hotel.nameeng.slice(0, 60),
                 hotelid: hotel.hotelid
             });
         }
