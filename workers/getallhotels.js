@@ -27,6 +27,35 @@ var db = function(querystring) {
 };
 connection.connect();
 
+var poisons = {
+    4082: true,
+    4100: true,
+    4101: true,
+    4131: true,
+    4156: true,
+    4175: true,
+    4180: true,
+    4188: true,
+    4199: true,
+    4202: true,
+    4274: true,
+    4285: true,
+    4318: true,
+    4346: true,
+    4401: true,
+    4441: true,
+    4447: true,
+    4457: true,
+    4476: true,
+    4496: true,
+    4514: true,
+    4570: true,
+    4609: true,
+    4697: true,
+    4698: true,
+    4699: true,
+    4700: true
+};
 var fields1 = "`hotelid`,`namechn`,`nameeng`,`country`,`state`,`city`,`website`,`original`";
 var fields2 = "`roomtypeid`,`hotelid`,`namechn`,`original`";
 var total1 = 0, total2 = 0;
@@ -39,8 +68,13 @@ today = today.getDay();
 
 var i, j, length;
 for (i = today * 200, length = (today + 1) * 200; i < length; i += 1) {
+    if (i >= 235 && i <=237) continue; // 4701 ~ 4760
     hotelIds = [];
-    for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) hotelIds.push(j);
+    for (j = (i * 20 + 1); j <= ((i + 1) * 20); j += 1) {
+        if (poisons[j]) continue;
+        hotelIds.push(j);
+    }
+    if (hotelIds.length === 0) continue;
     hotelIds = hotelIds.join("/");
 
     (function(hids) {
