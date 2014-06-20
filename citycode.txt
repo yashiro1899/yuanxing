@@ -1,7 +1,7 @@
 Country:
 70016  Argentina             阿根廷
 70017  United Arab Emirates  阿联酋
-70022
+70022  Egypt                 埃及
 70030  Austria               奥地利
 70031  Australia             澳大利亚
 70039  Panama                巴拿马
@@ -17,24 +17,24 @@ Country:
 70097  Netherlands           荷兰
 70106  Canada                加拿大
 70109  Cambodia              柬埔寨
-70110
-70120
+70110  Czech Rep             捷克
+70120  Kenya                 肯尼亚
 70124  Laos                  老挝
-70134
+70134  Madagascar            马达加斯加
 70136  Maldives              马尔代夫
 70139  Malaysia              马来西亚
-70145
+70145  Mauritius             毛里求斯
 70147  United States         美国
 70154  Myanmar               缅甸
 70159  Mexico                墨西哥
 70161  S.Africa              南非
 70176  Japan                 日本
 70177  Sweden                瑞典
-70178
-70185
-70186
+70178  Switzerland           瑞士
+70185  Seychelles            塞舌尔
+70186  Saudi Arabia          沙特
 70205  Thailand              泰国
-70211
+70211  Tunisia               突尼斯
 70213  Turkey                土耳其
 70222  Sri Lanka             斯里兰卡
 70227  Spain                 西班牙
@@ -45,7 +45,7 @@ Country:
 70241  India                 印度
 70242  Indonesia             印尼
 70243  United Kingdom        英国
-70244
+70244  Jordan                约旦
 70245  Vietnam               越南
 
 
@@ -84,18 +84,3 @@ State:
 70555  710000  台湾
 70001  810000  香港
 70050  820000  澳门
-
-+-------+---------+--------------------------------------+
-| total | country | namechn                              |
-+-------+---------+--------------------------------------+
-|   212 |   70110 | Ametyst                              |
-|    77 |   70145 | Bon Azur Elegant Suites & Penthouses |
-|    58 |   70022 | Beirut Hotel                         |
-|    49 |   70178 | Ambassador                           |
-|    37 |   70120 | Boulevard                            |
-|    30 |   70185 | Savoy Resorts & Spa                  |
-|    29 |   70211 | Caribbean World Dar Naouar           |
-|    11 |   70134 | Colbert Hotel                        |
-|     1 |   70244 | 约旦耶路撒冷国际酒店                 |
-|     1 |   70186 | 利雅得万豪酒店                       |
-+-------+---------+--------------------------------------+
