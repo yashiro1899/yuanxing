@@ -310,6 +310,7 @@ module.exports = Controller("Home/BaseController", function() {
                 if (user.guide) params["guide"] = user.guide;
                 return oauth.accessProtectedResource(req, res, params);
             }).then(function(result) { // taobao.hotel.room.add
+                var copy = result;
                 if (result && (result = result["hotel_room_add_response"]) && (result = result["room"])) {
                     goods = result;
                     return D("Goods").add({
@@ -319,7 +320,7 @@ module.exports = Controller("Home/BaseController", function() {
                         roomtypeid: roomtypeid,
                         iid: result.iid
                     });
-                } else if (result && (result = result["error_response"])) {
+                } else if ((result = copy) && (result = result["error_response"])) {
                     that.end({
                         success: 8,
                         message: (result.sub_msg || result.msg)
