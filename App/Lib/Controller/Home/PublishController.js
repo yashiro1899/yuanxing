@@ -143,7 +143,7 @@ module.exports = Controller("Home/BaseController", function() {
                 result.forEach(function(g) {
                     if (g && g["hotel_rooms_search_response"]) {
                         g = g["hotel_rooms_search_response"]["rooms"];
-                        g = g ? g["room"] : [];
+                        g = g ? (g["room"] || []) : [];
                         g.forEach(function(r) {goods[r.rid] = r.iid;});
                     }
                 });
