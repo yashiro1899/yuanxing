@@ -238,7 +238,7 @@ module.exports = Controller("Home/BaseController", function() {
             var modelroom = D("Room").join("think_hotel on think_room.hotelid = think_hotel.hotelid").field("think_room.original,think_hotel.hotelid,think_hotel.namechn").where({
                 "roomtypeid": roomtypeid
             });
-            var modeltaobao = D("Taobaoroom").where({"roomtypeid": roomtypeid}).order("rid desc");
+            var modeltaobao = D("Taobaoroom").where({"roomtypeid": roomtypeid}).order("hid desc");
             var modeluser = D("User").field("pic_path,guide").where({
                 id: this.userInfo["taobao_user_id"]
             });
