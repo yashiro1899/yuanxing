@@ -253,7 +253,6 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_room_type": true
                 })]);
             }).then(function(result) {
-                console.log(JSON.stringify(result[3], null, 4));
                 var room = result[0][0];
                 var taobao = result[1][0];
                 var user = result[2][0];
