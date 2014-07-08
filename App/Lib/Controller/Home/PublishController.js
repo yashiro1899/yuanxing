@@ -247,7 +247,7 @@ module.exports = Controller("Home/BaseController", function() {
             return Promise.all([modelroom.select(), modeltaobao.select(), modeluser.select()]).then(function(result) {
                 var taobao = result[1][0];
 
-                return Promise.all([result[0], result[1], result[2], oauth.accessProtectedResource({
+                return Promise.all([result[0], result[1], result[2], oauth.accessProtectedResource(req, res, {
                     "hid": taobao.hid,
                     "method": "taobao.hotel.get",
                     "need_room_type": true
