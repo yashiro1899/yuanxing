@@ -245,9 +245,19 @@ module.exports = Controller("Home/BaseController", function() {
 
             var goods, hotelid;
             return Promise.all([modelroom.select(), modeltaobao.select(), modeluser.select()]).then(function(result) {
+                var taobao = result[1][0];
+
+                return Promise.all([result[0], result[1], result[2], oauth.accessProtectedResource({
+                    "hid": taobao.hid,
+                    "method": "taobao.hotel.get",
+                    "need_room_type": true
+                })]);
+            }).then(function(result) {
+                console.log(JSON.stringify(result[3], null, 4));
                 var room = result[0][0];
                 var taobao = result[1][0];
                 var user = result[2][0];
+
                 room.original = JSON.parse(room.original);
                 hotelid = room.hotelid;
 
