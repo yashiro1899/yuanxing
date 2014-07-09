@@ -101,7 +101,7 @@ module.exports = Controller("Home/BaseController", function() {
 
                 if (result[0] && result[0]["hotel_rooms_search_response"]) {
                     temp = result[0]["hotel_rooms_search_response"]["rooms"];
-                    temp = temp ? temp["room"] : [];
+                    temp = temp ? (temp["room"] || []) : [];
                     temp.forEach(function(i) {taobao[i.gid] = i;});
                 }
                 temp = result[1] || [];
