@@ -12,7 +12,7 @@ module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
         title: "发布",
-        listAction: function() {
+        indexAction: function() {
             var that = this;
             var req = this.http.req;
             var res = this.http.res;
@@ -200,170 +200,170 @@ module.exports = Controller("Home/BaseController", function() {
                 var qs = querystring.stringify(formdata);
                 var pagination = that.pagination(total, range, page, qs);
                 that.assign('pagination', pagination);
-                that.display('publish:index');
-            });
-        },
-        indexAction: function() {
-            var that = this;
-            var req = this.http.req;
-            var res = this.http.res;
-
-            var range = 0, total = 0;
-            var page = parseInt(this.param("p"), 10) || 1;
-            var query = this.param("q").trim();
-            var country = this.param("c").trim();
-            var province = this.param("s").trim();
-            var formdata = {};
-
-            var model1 = D("Hotel");
-            var model2 = D("Hotel");
-            if (query.length > 0) {
-                formdata["q"] = query;
-                model1 = model1.where("namechn like '%" + query + "%'");
-                model2 = model2.where("namechn like '%" + query + "%'");
-            }
-            if (country.length > 0) {
-                formdata["c"] = country;
-                model1 = model1.where({country: country});
-                model2 = model2.where({country: country});
-            } else if (province.length > 0) {
-                formdata["s"] = province;
-                model1 = model1.where({state: province});
-                model2 = model2.where({state: province});
-            }
-            this.assign("countries", mapping.country);
-            this.assign("provinces", mapping.province);
-            this.assign("formdata", formdata);
-
-            var rooms = [];
-            var taobaorooms = {};
-            var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
-            promise1 = promise1.then(function(result) { // think_hotel
-                result = result || [];
-                var rids = [];
-                var data = result.map(function(h) {
-                    var original = JSON.parse(h.original);
-                    original["namechn"] = h.namechn;
-                    original["website"] = h.website;
-                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
-                    return original;
-                });
-
-                range = data.length;
-                that.assign("list", data);
-
-                if (rids.length === 0) {
-                    total = 0;
-                    var qs = querystring.stringify(formdata);
-                    var pagination = that.pagination(total, range, page, qs);
-                    that.assign('pagination', pagination);
-                    that.display();
-                    return getDefer().promise;
-                }
-
-                var promises = [],
-                    model;
-                model = D("Room").field("roomtypeid,status,no_price_expires");
-                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
-                promises.push(model);
-
-                model = "userid = " + that.userInfo["taobao_user_id"];
-                model += " and roomtypeid in (" + rids.join(",") + ")";
-                model = D("Goods").field("roomtypeid,status").where(model).select();
-                promises.push(model);
-
-                model = D("Taobaoroom").where("roomtypeid in (" + rids.join(",") + ")").select();
-                promises.push(model);
-
-                return Promise.all(promises);
-            }).then(function(result) { // think_room, think_goods, think_taobaoroom
-                var promises = [];
-
-                var goods = result[1] || [];
-                var temp = {};
-                goods.forEach(function(g) {
-                    if (!temp[g.roomtypeid]) temp[g.roomtypeid] = [];
-                    temp[g.roomtypeid].push(g);
-                });
-                goods = temp;
-
-                taobaorooms = result[2] || [];
-                temp = {};
-                taobaorooms.forEach(function(tr) {
-                    if (!temp[tr.roomtypeid]) temp[tr.roomtypeid] = [];
-                    temp[tr.roomtypeid].push(tr);
-                });
-                taobaorooms = temp;
-
-                var hids = {};
-                rooms = result[0] || [];
-                rooms.forEach(function(r, i) {
-                    var gd = goods[r.roomtypeid];
-                    var tr = taobaorooms[r.roomtypeid];
-
-                    if (gd) {
-                        var connected = gd.some(function(g) {return g.status == 4;});
-                        r["status"] = connected ? 4 : 3;
-                    } else if (tr) {
-                        tr.forEach(function(r) {hids[r.hid] = true;});
-                    }
-
-                });
-
-                temp = [];
-                hids = Object.keys(hids);
-                hids.forEach(function(h) {
-                    temp.push(h);
-                    if (temp.length == 5) {
-                        promises.push(oauth.accessProtectedResource(req, res, {
-                            "method": "taobao.hotel.rooms.search",
-                            "hids": temp.join(",")
-                        }));
-                        temp = [];
-                    }
-                });
-                if (temp.length > 0) {
-                    promises.push(oauth.accessProtectedResource(req, res, {
-                        "method": "taobao.hotel.rooms.search",
-                        "hids": temp.join(",")
-                    }));
-                }
-                return Promise.all(promises);
-            }).then(function(result) { // taobao.hotel.rooms.search
-                var goods = {};
-                result.forEach(function(g) {
-                    if (g && g["hotel_rooms_search_response"]) {
-                        g = g["hotel_rooms_search_response"]["rooms"];
-                        g = g ? (g["room"] || []) : [];
-                        g.forEach(function(r) {goods[r.rid] = r.iid;});
-                    }
-                });
-
-                var roomstatus = {};
-                rooms.forEach(function(r) {
-                    var status = r.status;
-                    var tr = taobaorooms[r.roomtypeid];
-                    roomstatus[r.roomtypeid] = {};
-
-                    if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
-                    if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
-
-                    roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
-                        '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
-                    roomstatus[r.roomtypeid]["status"] = status;
-                });
-                that.assign("roomstatus", roomstatus);
-            });
-
-            var promise2 = model2.count().then(function(result) {total = result || 0;});
-
-            return Promise.all([promise1, promise2]).then(function(result) {
-                var qs = querystring.stringify(formdata);
-                var pagination = that.pagination(total, range, page, qs);
-                that.assign('pagination', pagination);
                 that.display();
             });
         },
+        // indexAction: function() {
+        //     var that = this;
+        //     var req = this.http.req;
+        //     var res = this.http.res;
+
+        //     var range = 0, total = 0;
+        //     var page = parseInt(this.param("p"), 10) || 1;
+        //     var query = this.param("q").trim();
+        //     var country = this.param("c").trim();
+        //     var province = this.param("s").trim();
+        //     var formdata = {};
+
+        //     var model1 = D("Hotel");
+        //     var model2 = D("Hotel");
+        //     if (query.length > 0) {
+        //         formdata["q"] = query;
+        //         model1 = model1.where("namechn like '%" + query + "%'");
+        //         model2 = model2.where("namechn like '%" + query + "%'");
+        //     }
+        //     if (country.length > 0) {
+        //         formdata["c"] = country;
+        //         model1 = model1.where({country: country});
+        //         model2 = model2.where({country: country});
+        //     } else if (province.length > 0) {
+        //         formdata["s"] = province;
+        //         model1 = model1.where({state: province});
+        //         model2 = model2.where({state: province});
+        //     }
+        //     this.assign("countries", mapping.country);
+        //     this.assign("provinces", mapping.province);
+        //     this.assign("formdata", formdata);
+
+        //     var rooms = [];
+        //     var taobaorooms = {};
+        //     var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
+        //     promise1 = promise1.then(function(result) { // think_hotel
+        //         result = result || [];
+        //         var rids = [];
+        //         var data = result.map(function(h) {
+        //             var original = JSON.parse(h.original);
+        //             original["namechn"] = h.namechn;
+        //             original["website"] = h.website;
+        //             original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
+        //             return original;
+        //         });
+
+        //         range = data.length;
+        //         that.assign("list", data);
+
+        //         if (rids.length === 0) {
+        //             total = 0;
+        //             var qs = querystring.stringify(formdata);
+        //             var pagination = that.pagination(total, range, page, qs);
+        //             that.assign('pagination', pagination);
+        //             that.display();
+        //             return getDefer().promise;
+        //         }
+
+        //         var promises = [],
+        //             model;
+        //         model = D("Room").field("roomtypeid,status,no_price_expires");
+        //         model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+        //         promises.push(model);
+
+        //         model = "userid = " + that.userInfo["taobao_user_id"];
+        //         model += " and roomtypeid in (" + rids.join(",") + ")";
+        //         model = D("Goods").field("roomtypeid,status").where(model).select();
+        //         promises.push(model);
+
+        //         model = D("Taobaoroom").where("roomtypeid in (" + rids.join(",") + ")").select();
+        //         promises.push(model);
+
+        //         return Promise.all(promises);
+        //     }).then(function(result) { // think_room, think_goods, think_taobaoroom
+        //         var promises = [];
+
+        //         var goods = result[1] || [];
+        //         var temp = {};
+        //         goods.forEach(function(g) {
+        //             if (!temp[g.roomtypeid]) temp[g.roomtypeid] = [];
+        //             temp[g.roomtypeid].push(g);
+        //         });
+        //         goods = temp;
+
+        //         taobaorooms = result[2] || [];
+        //         temp = {};
+        //         taobaorooms.forEach(function(tr) {
+        //             if (!temp[tr.roomtypeid]) temp[tr.roomtypeid] = [];
+        //             temp[tr.roomtypeid].push(tr);
+        //         });
+        //         taobaorooms = temp;
+
+        //         var hids = {};
+        //         rooms = result[0] || [];
+        //         rooms.forEach(function(r, i) {
+        //             var gd = goods[r.roomtypeid];
+        //             var tr = taobaorooms[r.roomtypeid];
+
+        //             if (gd) {
+        //                 var connected = gd.some(function(g) {return g.status == 4;});
+        //                 r["status"] = connected ? 4 : 3;
+        //             } else if (tr) {
+        //                 tr.forEach(function(r) {hids[r.hid] = true;});
+        //             }
+
+        //         });
+
+        //         temp = [];
+        //         hids = Object.keys(hids);
+        //         hids.forEach(function(h) {
+        //             temp.push(h);
+        //             if (temp.length == 5) {
+        //                 promises.push(oauth.accessProtectedResource(req, res, {
+        //                     "method": "taobao.hotel.rooms.search",
+        //                     "hids": temp.join(",")
+        //                 }));
+        //                 temp = [];
+        //             }
+        //         });
+        //         if (temp.length > 0) {
+        //             promises.push(oauth.accessProtectedResource(req, res, {
+        //                 "method": "taobao.hotel.rooms.search",
+        //                 "hids": temp.join(",")
+        //             }));
+        //         }
+        //         return Promise.all(promises);
+        //     }).then(function(result) { // taobao.hotel.rooms.search
+        //         var goods = {};
+        //         result.forEach(function(g) {
+        //             if (g && g["hotel_rooms_search_response"]) {
+        //                 g = g["hotel_rooms_search_response"]["rooms"];
+        //                 g = g ? (g["room"] || []) : [];
+        //                 g.forEach(function(r) {goods[r.rid] = r.iid;});
+        //             }
+        //         });
+
+        //         var roomstatus = {};
+        //         rooms.forEach(function(r) {
+        //             var status = r.status;
+        //             var tr = taobaorooms[r.roomtypeid];
+        //             roomstatus[r.roomtypeid] = {};
+
+        //             if (tr && tr.some(function(r) {return goods[r.rid];})) status = 2;
+        //             if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
+
+        //             roomstatus[r.roomtypeid]["icon"] = mapping.roomstatus[status] ||
+        //                 '<input class="action-select" type="checkbox" value="' + r.roomtypeid + '" checked />';
+        //             roomstatus[r.roomtypeid]["status"] = status;
+        //         });
+        //         that.assign("roomstatus", roomstatus);
+        //     });
+
+        //     var promise2 = model2.count().then(function(result) {total = result || 0;});
+
+        //     return Promise.all([promise1, promise2]).then(function(result) {
+        //         var qs = querystring.stringify(formdata);
+        //         var pagination = that.pagination(total, range, page, qs);
+        //         that.assign('pagination', pagination);
+        //         that.display();
+        //     });
+        // },
         quotasAction: function() {
             var that = this;
             var roomtypeid = this.param("roomtypeid");
