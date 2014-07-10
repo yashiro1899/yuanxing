@@ -44,9 +44,10 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("provinces", mapping.province);
             this.assign("formdata", formdata);
 
-            var rooms = [];
-            var taobaorooms = {};
-            var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
+            // var rooms = [];
+            // var taobaorooms = {};
+            var hotels = {};
+            var promise1 = model1.order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) { // think_hotel
                 result = result || [];
                 var rids = [];
@@ -70,20 +71,44 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
 
-                var promises = [],
-                    model;
-                model = D("Room").field("roomtypeid,namechn,no_price_expires");
-                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
-                promises.push(model);
+                var promises = [];
+                result.forEach(function(h) {
+                    var state = mapping.province[h.state];
+                    var country = mapping.country[h.country];
+                    if (state) {
+                        promises.push(oauth.accessProtectedResource(req, res, {
+                            domestic: true,
+                            province: state[1],
+                            method: "taobao.hotels.search",
+                            name: h.namechn
+                        }));
+                    } else if (country) {
+                        promises.push(oauth.accessProtectedResource(req, res, {
+                            domestic: false,
+                            country: country[1],
+                            method: "taobao.hotels.search",
+                            name: h.namechn
+                        }));
+                    }
+                    if (!hotels[h.namechn]) hotels[h.namechn] = {};
+                    h.rooms.forEach(function(r) {
+                        hotels[h.namechn][r.namechn] = r.roomtypeid;
+                    });
+                });
 
-                model = "userid = " + that.userInfo["taobao_user_id"];
-                model += " and roomtypeid in (" + rids.join(",") + ")";
-                model = D("Goods").field("roomtypeid,status").where(model).select();
-                promises.push(model);
+                // model = D("Room").field("roomtypeid,namechn,no_price_expires");
+                // model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                // promises.push(model);
+
+                // model = "userid = " + that.userInfo["taobao_user_id"];
+                // model += " and roomtypeid in (" + rids.join(",") + ")";
+                // model = D("Goods").field("roomtypeid,status").where(model).select();
+                // promises.push(model);
 
                 return Promise.all(promises);
             }).then(function(result) {
                 that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+                that.end("<pre>" + JSON.stringify(hotels, null, 4) + "</pre>");
             });
         },
         indexAction: function() {
