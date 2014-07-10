@@ -110,7 +110,27 @@ module.exports = Controller("Home/BaseController", function() {
                 promises.push(result[0]);
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.get
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+                var rooms = result.pop() || [];
+                var goods = result.pop() || [];
+
+                var taobao = {};
+                result.forEach(function(h) {
+                    if (h && (h = h["hotel_get_response"]) && (h = h.hotel)) {
+                        var name = h.name;
+                        if (hotels[name] && (h = h.room_types) && h.room_type) {
+                            h.room_type.forEach(function(room) {
+                                var roomtypeid = hotels[name][room.name];
+                                if (roomtypeid) {
+                                    taobao[roomtypeid] = {
+                                        hid: room.hid,
+                                        rid: room.rid
+                                    };
+                                }
+                            });
+                        }
+                    }
+                });
+                that.end("<pre>" + JSON.stringify(taobao, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
