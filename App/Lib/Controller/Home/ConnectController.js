@@ -225,7 +225,7 @@ module.exports = Controller("Home/BaseController", function() {
             }).then(function(result) { // taobao.hotel.rooms.search
                 if (result && result["hotel_rooms_search_response"]) {
                     result = result["hotel_rooms_search_response"]["rooms"];
-                    result = result ? result["room"] : [];
+                    result = result ? (result["room"] || []) : [];
                 } else {
                     result = [];
                 }
