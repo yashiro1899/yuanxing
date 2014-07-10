@@ -159,7 +159,16 @@ module.exports = Controller("Home/BaseController", function() {
                 promises.push(rooms);
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.rooms.search
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
+                var rooms = result.pop();
+                var exists = {};
+                result.forEach(function(g) {
+                    if (g && g["hotel_rooms_search_response"]) {
+                        g = g["hotel_rooms_search_response"]["rooms"];
+                        g = g ? (g["room"] || []) : [];
+                        g.forEach(function(r) {exists[r.rid] = true;});
+                    }
+                });
+                that.end("<pre>" + JSON.stringify(exists, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
