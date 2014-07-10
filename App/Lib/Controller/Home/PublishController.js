@@ -188,7 +188,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (status == 128) {
                         roomstatus[rtid]['icon'] = '<input class="action-select" type="checkbox" checked />';
                         roomstatus[rtid]['hid'] = r.taobao.hid;
-                        roomstatus[rtid]['rid'] = r.taobao.hid;
+                        roomstatus[rtid]['rid'] = r.taobao.rid;
                     }
                 });
                 that.assign("roomstatus", roomstatus);
