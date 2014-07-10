@@ -44,8 +44,6 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("provinces", mapping.province);
             this.assign("formdata", formdata);
 
-            // var rooms = [];
-            // var taobaorooms = {};
             var hotels = {};
             var promise1 = model1.order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) { // think_hotel
@@ -82,21 +80,27 @@ module.exports = Controller("Home/BaseController", function() {
                 var promises = [],
                     model;
 
-                model = D("Room").field("roomtypeid,namechn,no_price_expires");
+                model = D("Room").field("roomtypeid,namechn,status,no_price_expires");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
-                promises.push(model);
-
-                model = "userid = " + that.userInfo["taobao_user_id"];
-                model += " and roomtypeid in (" + rids.join(",") + ")";
-                model = D("Goods").field("roomtypeid,status").where(model).select();
                 promises.push(model);
 
                 model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").order('hid').select();
                 promises.push(model);
 
                 return Promise.all(promises);
-            }).then(function(result) {
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre><pre>" + JSON.stringify(hotels, null, 4) + "</pre>");
+            }).then(function(result) { // think_room, think_taobaohotel
+                var hids = result[1] || [];
+                var promises = [];
+                hids.forEach(function(h) {
+                    promises.push(oauth.accessProtectedResource(req, res, {
+                        "hid": h.hid,
+                        "method": "taobao.hotel.get",
+                        "need_room_type": true
+                    }));
+                });
+                promises.push(result[0]);
+            }).then(function(result) { // taobao.hotel.get
+                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
