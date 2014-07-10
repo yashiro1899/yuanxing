@@ -96,7 +96,7 @@
                 <td><%-roomstatus[r.roomtypeid]["icon"]%></td>
                 <td>
                 <% if (roomstatus[r.roomtypeid]["status"] == 128) { %>
-                    <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" href="javascript:void(0)">发布</a>
+                    <a class="precisely-publish" data-roomtypeid="<%=r.roomtypeid%>" data-hid="<%=r.hid%>" data-rid="<%=r.rid%>" href="javascript:void(0)">发布</a>
                 <% } %>
                 </td>
                 <% } else { %>
