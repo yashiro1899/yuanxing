@@ -99,6 +99,7 @@ module.exports = Controller("Home/BaseController", function() {
                     }));
                 });
                 promises.push(result[0]);
+                return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.get
                 that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
