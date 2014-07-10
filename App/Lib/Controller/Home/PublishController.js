@@ -107,9 +107,8 @@ module.exports = Controller("Home/BaseController", function() {
 
                 return Promise.all(promises);
             }).then(function(result) {
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
-                that.end("<pre>" + JSON.stringify(hotels, null, 4) + "</pre>");
-            });
+                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre><pre>" + JSON.stringify(hotels, null, 4) + "</pre>");
+            })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
             var that = this;
