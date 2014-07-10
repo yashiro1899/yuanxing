@@ -12,6 +12,45 @@ module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "publish",
         title: "发布",
+        listAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var range = 0, total = 0;
+            var page = parseInt(this.param("p"), 10) || 1;
+            var query = this.param("q").trim();
+            var country = this.param("c").trim();
+            var province = this.param("s").trim();
+            var formdata = {};
+
+            var model1 = D("Hotel");
+            var model2 = D("Hotel");
+            if (query.length > 0) {
+                formdata["q"] = query;
+                model1 = model1.where("namechn like '%" + query + "%'");
+                model2 = model2.where("namechn like '%" + query + "%'");
+            }
+            if (country.length > 0) {
+                formdata["c"] = country;
+                model1 = model1.where({country: country});
+                model2 = model2.where({country: country});
+            } else if (province.length > 0) {
+                formdata["s"] = province;
+                model1 = model1.where({state: province});
+                model2 = model2.where({state: province});
+            }
+            this.assign("countries", mapping.country);
+            this.assign("provinces", mapping.province);
+            this.assign("formdata", formdata);
+
+            var rooms = [];
+            var taobaorooms = {};
+            var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
+            promise1 = promise1.then(function(result) { // think_hotel
+                that.end(result);
+            });
+        },
         indexAction: function() {
             var that = this;
             var req = this.http.req;
