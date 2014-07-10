@@ -201,7 +201,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var qs = querystring.stringify(formdata);
                 var pagination = that.pagination(total, range, page, qs);
                 that.assign('pagination', pagination);
-                that.display();
+                that.display('publish:index');
             });
         },
         indexAction: function() {
