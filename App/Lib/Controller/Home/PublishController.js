@@ -192,7 +192,6 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                 });
                 that.assign("roomstatus", roomstatus);
-                that.display();
             });
 
             var promise2 = model2.count().then(function(result) {total = result || 0;});
