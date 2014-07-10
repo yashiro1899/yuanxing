@@ -426,27 +426,19 @@ module.exports = Controller("Home/BaseController", function() {
             var res = this.http.res;
 
             var roomtypeid = this.post("roomtypeid");
+            var hid = this.post("hid");
+            var rid = this.post("rid");
             var modelroom = D("Room").join("think_hotel on think_room.hotelid = think_hotel.hotelid").field("think_room.original,think_hotel.hotelid,think_hotel.namechn").where({
                 "roomtypeid": roomtypeid
             });
-            var modeltaobao = D("Taobaoroom").where({"roomtypeid": roomtypeid}).order("hid desc");
             var modeluser = D("User").field("pic_path,guide").where({
                 id: this.userInfo["taobao_user_id"]
             });
 
             var goods, hotelid;
-            return Promise.all([modelroom.select(), modeltaobao.select(), modeluser.select()]).then(function(result) {
-                var taobao = result[1][0];
-
-                return Promise.all([result[0], result[1], result[2], oauth.accessProtectedResource(req, res, {
-                    "hid": taobao.hid,
-                    "method": "taobao.hotel.get",
-                    "need_room_type": true
-                })]);
-            }).then(function(result) {
+            return Promise.all([modelroom.select(), modeluser.select()]).then(function(result) {
                 var room = result[0][0];
-                var taobao = result[1][0];
-                var user = result[2][0];
+                var user = result[1][0];
 
                 room.original = JSON.parse(room.original);
                 hotelid = room.hotelid;
@@ -468,8 +460,8 @@ module.exports = Controller("Home/BaseController", function() {
 
                 var params = {
                     "method": "taobao.hotel.room.add",
-                    "hid": taobao.hid,
-                    "rid": taobao.rid,
+                    "hid": hid,
+                    "rid": rid,
                     "title": title,
                     "bed_type": bedtype,
                     "breakfast": "A",
