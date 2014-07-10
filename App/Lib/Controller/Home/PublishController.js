@@ -50,12 +50,20 @@ module.exports = Controller("Home/BaseController", function() {
             var promise1 = model1.order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) { // think_hotel
                 result = result || [];
+                var hids = [];
                 var rids = [];
                 var data = result.map(function(h) {
                     var original = JSON.parse(h.original);
-                    original["namechn"] = h.namechn;
+                    var name = hotel.namechn;
+                    original["namechn"] = name;
                     original["website"] = h.website;
-                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
+
+                    hids.push(h.hotelid);
+                    if (!hotels[name]) hotels[name] = {};
+                    original.rooms.forEach(function(r) {
+                        rids.push(r.roomtypeid);
+                        hotels[name][r.namechn] = r.roomtypeid;
+                    });
                     return original;
                 });
 
@@ -71,36 +79,20 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
 
-                var promises = [];
-                result.forEach(function(h) {
-                    var state = mapping.province[h.state];
-                    var country = mapping.country[h.country];
-                    if (state) {
-                        promises.push(oauth.accessProtectedResource(req, res, {
-                            domestic: true,
-                            province: state[1],
-                            method: "taobao.hotels.search",
-                            name: h.namechn
-                        }));
-                    } else if (country) {
-                        promises.push(oauth.accessProtectedResource(req, res, {
-                            domestic: false,
-                            country: country[1],
-                            method: "taobao.hotels.search",
-                            name: h.namechn
-                        }));
-                    }
-                    hotels[h.namechn] = {};
-                });
+                var promises = [],
+                    model;
 
-                // model = D("Room").field("roomtypeid,namechn,no_price_expires");
-                // model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
-                // promises.push(model);
+                model = D("Room").field("roomtypeid,namechn,no_price_expires");
+                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                promises.push(model);
 
-                // model = "userid = " + that.userInfo["taobao_user_id"];
-                // model += " and roomtypeid in (" + rids.join(",") + ")";
-                // model = D("Goods").field("roomtypeid,status").where(model).select();
-                // promises.push(model);
+                model = "userid = " + that.userInfo["taobao_user_id"];
+                model += " and roomtypeid in (" + rids.join(",") + ")";
+                model = D("Goods").field("roomtypeid,status").where(model).select();
+                promises.push(model);
+
+                model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").select();
+                promises.push(model);
 
                 return Promise.all(promises);
             }).then(function(result) {
