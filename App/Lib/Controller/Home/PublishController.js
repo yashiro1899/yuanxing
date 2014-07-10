@@ -143,10 +143,23 @@ module.exports = Controller("Home/BaseController", function() {
                         r.status = exists[rtid];
                     } else if (taobao[rtid]) {
                         r.status = 128;
+                        r.taobao = taobao[rtid];
                         rids.push(taobao[rtid]["rid"]);
                     }
                 });
-                that.end("<pre>" + JSON.stringify(rids, null, 4) + "</pre>");
+
+                var promises = [];
+                var length = Math.ceil(rids.length / 20);
+                for (var i = 0; i < length; i += 1) {
+                    promises.push(oauth.accessProtectedResource(req, res, {
+                        "method": "taobao.hotel.rooms.search",
+                        "rids": rids.slice(i * 20, (i + 1) * 20).join(",")
+                    }));
+                }
+                promises.push(rooms);
+                return Promise.all(promises);
+            }).then(function(result) { // taobao.hotel.rooms.search
+                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
