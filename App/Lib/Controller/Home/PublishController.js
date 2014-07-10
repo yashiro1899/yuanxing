@@ -91,7 +91,7 @@ module.exports = Controller("Home/BaseController", function() {
                 model = D("Goods").field("roomtypeid,status").where(model).select();
                 promises.push(model);
 
-                model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").select();
+                model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").order('hid').select();
                 promises.push(model);
 
                 return Promise.all(promises);
