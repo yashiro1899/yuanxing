@@ -102,7 +102,7 @@ $(function() {
                         return $.ajax("/publish/quotas/", {
                             type: "post",
                             dataType: "json",
-                            data: {roomtypeid: $(el).val()}
+                            data: {roomtypeid: roomtypeid}
                         }).then(function(result) {
                             if (result["success"] == 8) {
                                 td.html("");
