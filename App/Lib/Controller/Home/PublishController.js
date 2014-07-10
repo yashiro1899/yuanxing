@@ -181,6 +181,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var rtid = r.roomtypeid;
                     if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
 
+                    roomstatus[rtid] = {};
                     roomstatus[rtid]["icon"] = mapping.roomstatus[status];
                     roomstatus[rtid]["status"] = status;
                     if (status == 128) {
