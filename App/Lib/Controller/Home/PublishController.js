@@ -84,20 +84,29 @@ module.exports = Controller("Home/BaseController", function() {
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
 
-                model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").order('hid').select();
+                model = "userid = " + that.userInfo["taobao_user_id"];
+                model += " and roomtypeid in (" + rids.join(",") + ")";
+                model = D("Goods").field("roomtypeid,status").where(model).select();
+                promises.push(model);
+
+                model = D("Taobaohotel").where("hotelid in (" + hids.join(",") + ")").order('hid desc').select();
                 promises.push(model);
 
                 return Promise.all(promises);
             }).then(function(result) { // think_room, think_taobaohotel
-                var hids = result[1] || [];
+                var hids = result[2] || [];
                 var promises = [];
+                var flags = {};
                 hids.forEach(function(h) {
+                    if (flags[h.hotelid]) return null;
                     promises.push(oauth.accessProtectedResource(req, res, {
                         "hid": h.hid,
                         "method": "taobao.hotel.get",
                         "need_room_type": true
                     }));
+                    flags[h.hotelid] = true;
                 });
+                promises.push(result[1]);
                 promises.push(result[0]);
                 return Promise.all(promises);
             }).then(function(result) { // taobao.hotel.get
