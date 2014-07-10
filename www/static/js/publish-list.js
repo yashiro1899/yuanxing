@@ -93,12 +93,13 @@ $(function() {
                 selected.reduce(function(sequence, el) {
                     return sequence.then(function(result) {
                         var td = $(el).parent().next();
-                        td.html("询价中…");
-                        $(window).scrollTop(td.position()["top"]);
-
                         var roomtypeid = $(".precisely-publish", td).data('roomtypeid');
                         var hid = $(".precisely-publish", td).data('hid');
                         var rid = $(".precisely-publish", td).data('rid');
+
+                        td.html("询价中…");
+                        $(window).scrollTop(td.position()["top"]);
+
                         return $.ajax("/publish/quotas/", {
                             type: "post",
                             dataType: "json",
