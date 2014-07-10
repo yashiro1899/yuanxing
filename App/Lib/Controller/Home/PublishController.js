@@ -168,7 +168,29 @@ module.exports = Controller("Home/BaseController", function() {
                         g.forEach(function(r) {exists[r.rid] = true;});
                     }
                 });
-                that.end("<pre>" + JSON.stringify(exists, null, 4) + "</pre>");
+
+                rooms.forEach(function(r) {
+                    if (r.taobao && exists[r.taobao.rid]) {
+                        r.status = 2;
+                    }
+                });
+
+                var roomstatus = {};
+                rooms.forEach(function(r) {
+                    var status = r.status;
+                    var rtid = r.roomtypeid;
+                    if (r.no_price_expires > Date.now()) status = 5; // 暂无价格
+
+                    roomstatus[rtid]["icon"] = mapping.roomstatus[status];
+                    roomstatus[rtid]["status"] = status;
+                    if (status == 128) {
+                        roomstatus[rtid]['icon'] = '<input class="action-select" type="checkbox" checked />';
+                        roomstatus[rtid]['hid'] = r.taobao.hid;
+                        roomstatus[rtid]['rid'] = r.taobao.hid;
+                    }
+                });
+                that.assign("roomstatus", roomstatus);
+                that.end("<pre>" + JSON.stringify(roomstatus, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
