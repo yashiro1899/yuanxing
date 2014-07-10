@@ -80,7 +80,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var promises = [],
                     model;
 
-                model = D("Room").field("roomtypeid,namechn,status,no_price_expires");
+                model = D("Room").field("roomtypeid,status,no_price_expires");
                 model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
                 promises.push(model);
 
@@ -130,7 +130,23 @@ module.exports = Controller("Home/BaseController", function() {
                         }
                     }
                 });
-                that.end("<pre>" + JSON.stringify(taobao, null, 4) + "</pre>");
+
+                var exists = {};
+                goods.forEach(function(g) {
+                    exists[g.roomtypeid] = g.status;
+                });
+
+                var rids = [];
+                rooms.forEach(function(r) {
+                    var rtid = r.roomtypeid;
+                    if (exists[rtid]) {
+                        r.status = exists[rtid];
+                    } else if (taobao[rtid]) {
+                        r.status = 128;
+                        rids.push(taobao[rtid]["rid"]);
+                    }
+                });
+                that.end("<pre>" + JSON.stringify(rids, null, 4) + "</pre>");
             })["catch"](function(e) {console.log(e);});
         },
         indexAction: function() {
