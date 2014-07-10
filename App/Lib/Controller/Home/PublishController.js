@@ -185,7 +185,11 @@ module.exports = Controller("Home/BaseController", function() {
                     roomstatus[rtid] = {};
                     roomstatus[rtid]["icon"] = mapping.roomstatus[status];
                     roomstatus[rtid]["status"] = status;
-                    if (status == 128) roomstatus[rtid]['icon'] = '<input class="action-select" type="checkbox" checked />';
+                    if (status == 128) {
+                        roomstatus[rtid]['icon'] = '<input class="action-select" type="checkbox" checked />';
+                        roomstatus[rtid]['hid'] = r.taobao.hid;
+                        roomstatus[rtid]['rid'] = r.taobao.hid;
+                    }
                 });
                 that.assign("roomstatus", roomstatus);
             });
