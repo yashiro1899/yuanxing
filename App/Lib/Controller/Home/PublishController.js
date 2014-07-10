@@ -48,7 +48,42 @@ module.exports = Controller("Home/BaseController", function() {
             var taobaorooms = {};
             var promise1 = model1.field("hotelid,namechn,website,original").order("hotelid").page(page).select();
             promise1 = promise1.then(function(result) { // think_hotel
-                that.end(result);
+                result = result || [];
+                var rids = [];
+                var data = result.map(function(h) {
+                    var original = JSON.parse(h.original);
+                    original["namechn"] = h.namechn;
+                    original["website"] = h.website;
+                    original.rooms.forEach(function(r) {rids.push(r.roomtypeid);});
+                    return original;
+                });
+
+                range = data.length;
+                that.assign("list", data);
+
+                if (rids.length === 0) {
+                    total = 0;
+                    var qs = querystring.stringify(formdata);
+                    var pagination = that.pagination(total, range, page, qs);
+                    that.assign('pagination', pagination);
+                    that.display();
+                    return getDefer().promise;
+                }
+
+                var promises = [],
+                    model;
+                model = D("Room").field("roomtypeid,namechn,no_price_expires");
+                model = model.where("roomtypeid in (" + rids.join(",") + ")").select();
+                promises.push(model);
+
+                model = "userid = " + that.userInfo["taobao_user_id"];
+                model += " and roomtypeid in (" + rids.join(",") + ")";
+                model = D("Goods").field("roomtypeid,status").where(model).select();
+                promises.push(model);
+
+                return Promise.all(promises);
+            }).then(function(result) {
+                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
             });
         },
         indexAction: function() {
