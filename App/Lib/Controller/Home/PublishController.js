@@ -90,10 +90,7 @@ module.exports = Controller("Home/BaseController", function() {
                             name: h.namechn
                         }));
                     }
-                    if (!hotels[h.namechn]) hotels[h.namechn] = {};
-                    h.rooms.forEach(function(r) {
-                        hotels[h.namechn][r.namechn] = r.roomtypeid;
-                    });
+                    hotels[h.namechn] = {};
                 });
 
                 // model = D("Room").field("roomtypeid,namechn,no_price_expires");
