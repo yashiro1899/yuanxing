@@ -3,6 +3,8 @@ $(function() {
 
     $("#result_list").on("click", ".precisely-publish", function(e) {
         var roomtypeid = $(this).data("roomtypeid");
+        var hid = $(this).data("hid");
+        var rid = $(this).data("rid");
         var td = $(this).parent();
         var quotas;
 
@@ -25,7 +27,11 @@ $(function() {
                 return $.ajax("/publish/create/", {
                     type: "post",
                     dataType: "json",
-                    data: {roomtypeid: roomtypeid}
+                    data: {
+                        roomtypeid: roomtypeid,
+                        hid: hid,
+                        rid: rid
+                    }
                 });
             } else if (response["success"] == 8) {
                 td.html("");
@@ -89,6 +95,10 @@ $(function() {
                         var td = $(el).parent().next();
                         td.html("询价中…");
                         $(window).scrollTop(td.position()["top"]);
+
+                        var roomtypeid = $(".precisely-publish", td).data('roomtypeid');
+                        var hid = $(".precisely-publish", td).data('hid');
+                        var rid = $(".precisely-publish", td).data('rid');
                         return $.ajax("/publish/quotas/", {
                             type: "post",
                             dataType: "json",
@@ -105,7 +115,11 @@ $(function() {
                             return $.ajax("/publish/create/", {
                                 type: "post",
                                 dataType: "json",
-                                data: {roomtypeid: $(el).val()}
+                                data: {
+                                    roomtypeid: roomtypeid,
+                                    hid: hid,
+                                    rid: rid
+                                }
                             });
                         }).then(function(result) {
                             if (result && result["success"] == 1) {
