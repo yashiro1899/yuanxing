@@ -192,8 +192,17 @@ module.exports = Controller("Home/BaseController", function() {
                     }
                 });
                 that.assign("roomstatus", roomstatus);
-                that.end("<pre>" + JSON.stringify(roomstatus, null, 4) + "</pre>");
-            })["catch"](function(e) {console.log(e);});
+                that.display();
+            });
+
+            var promise2 = model2.count().then(function(result) {total = result || 0;});
+
+            return Promise.all([promise1, promise2]).then(function(result) {
+                var qs = querystring.stringify(formdata);
+                var pagination = that.pagination(total, range, page, qs);
+                that.assign('pagination', pagination);
+                that.display();
+            });
         },
         indexAction: function() {
             var that = this;
