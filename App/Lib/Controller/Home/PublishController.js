@@ -54,7 +54,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var rids = [];
                 var data = result.map(function(h) {
                     var original = JSON.parse(h.original);
-                    var name = hotel.namechn;
+                    var name = h.namechn;
                     original["namechn"] = name;
                     original["website"] = h.website;
 
