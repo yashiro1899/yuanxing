@@ -13,6 +13,66 @@ module.exports = Controller("Home/BaseController", function() {
     return {
         navType: "connect",
         title: "关联",
+        listAction: function() {
+            var that = this;
+            var req = this.http.req;
+            var res = this.http.res;
+
+            var message = this.cookie("success.message");
+            this.assign("message", message);
+
+            var cookies = [];
+            cookies.push(cookie.serialize("success.message", "", {
+                path: "/",
+                expires: (new Date())
+            }));
+            cookies.push(cookie.serialize("back.url", req.url, {path: "/"}));
+            res.setHeader("Set-Cookie", cookies);
+
+            var range = 0, total = 0;
+            var page = parseInt(this.param("p"), 10) || 1;
+            var query = this.param("q").trim();
+            var formdata = {};
+            var params = {
+                "cid": 50016161,
+                "fields": "num_iid",
+                "method": "taobao.items.onsale.get",
+                "order_by": "modified:desc",
+                "page_no": page,
+                "page_size": 20
+            };
+            if (query.length > 0) {
+                formdata["q"] = query;
+                params["q"] = query;
+            }
+            this.assign("formdata", formdata);
+            this.assign("tab", "onsale");
+
+            var promise = oauth.accessProtectedResource(req, res, params);
+            promise = promise.then(function(result) { // taobao.items.onsale.get
+                if (result && result["items_onsale_get_response"]) {
+                    total = result["items_onsale_get_response"]["total_results"];
+                    result = result["items_onsale_get_response"]["items"];
+                    result = result ? (result["item"] || []) : [];
+                    result = result.map(function(h) {
+                        return h.num_iid;
+                    });
+                } else {
+                    result = [];
+                }
+                if (result.length === 0) return null;
+
+                return oauth.accessProtectedResource(req, res, {
+                    "item_ids": result.join(','),
+                    "method": "taobao.hotel.rooms.search",
+                    "need_hotel": true,
+                    "need_room_type": true
+                });
+            }).then(function(result) {
+                that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
+            });
+            return promise;
+        },
         indexAction: function() {
             var that = this;
             var req = this.http.req;
