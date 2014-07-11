@@ -122,7 +122,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var exists = {};
                 result = result || [];
                 result.forEach(function(h) {exists[h.hid] = h.hotelid;});
-                goods.forEach(function(g, i) {
+                goods.forEach(function(g) {
                     if (exists[g.hid]) {
                         g["goodstatus"] = 1;
                         g["goodstatusicon"] = mapping.goodstatus[1];
@@ -148,7 +148,17 @@ module.exports = Controller("Home/BaseController", function() {
                         exists[h.hotelid][r.namechn] = r.roomtypeid;
                     });
                 });
-                that.end('<pre>' + JSON.stringify(exists, null, 4) + '</pre>');
+                goods.forEach(function(g) {
+                    var hotelid = g.hotelid;
+                    var name = g.room_type.name;
+                    if (exists[hotelid] && exists[hotelid][name]) {
+                        g["goodstatus"] = 128;
+                        g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
+                        g["roomtypeid"] = exists[hotelid][name];
+                    }
+                });
+                that.assign("list", goods);
+                that.display('connect:index');
             });
             return promise;
         },
