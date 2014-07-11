@@ -350,6 +350,7 @@ module.exports = Controller("Home/BaseController", function() {
                         g["goodstatus"] = 3;
                         g["goodstatusicon"] = mapping.goodstatus[3];
                      }
+                });
                 that.assign("list", goods);
                 that.display("connect:index");
             });
