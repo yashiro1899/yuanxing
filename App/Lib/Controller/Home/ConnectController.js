@@ -69,7 +69,7 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_hotel": true,
                     "need_room_type": true
                 });
-            }).then(function(result) {
+            }).then(function(result) { // taobao.hotel.rooms.search
                 if (result && result["hotel_rooms_search_response"]) {
                     result = result["hotel_rooms_search_response"]["rooms"];
                     result = result ? (result["room"] || []) : [];
@@ -94,7 +94,7 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
                 return D("Goods").field("gid").where("gid in (" + ids.join(",") + ") and status = 4").select();
-            }).then(function(result) {
+            }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
                 result.forEach(function(g) {exists[g.gid] = true;});
@@ -118,6 +118,25 @@ module.exports = Controller("Home/BaseController", function() {
                 ids = Object.keys(temp);
                 ids = "hid in (" + ids.join(",") + ")";
                 return D("Taobaohotel").field("hid,hotelid").where(ids).select();
+            }).then(function(result) { // think_taobaohotel
+                var exists = {};
+                result = result || [];
+                result.forEach(function(h) {exists[h.hid] = h.hotelid;});
+                goods.forEach(function(g, i) {
+                    if (exists[g.hid]) {
+                        g["goodstatus"] = 1;
+                        g["goodstatusicon"] = mapping.goodstatus[1];
+                        g["hotelid"] = exists[g.hid];
+                    }
+                });
+
+                var ids = goods.filter(function(g) {if (g.goodstatus === 1) return true;});
+                ids = ids.map(function(g) {return g.hotelid;});
+                if (ids.length === 0) {
+                    that.assign("list", goods);
+                    that.display();
+                    return getDefer().promise;
+                }
             });
             return promise;
         },
