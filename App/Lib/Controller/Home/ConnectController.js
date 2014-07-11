@@ -137,6 +137,19 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
+                return D("Hotel").field("hotelid,original").where('hotelid in (' + ids.join(',') + ')');
+            }).then(function(result) { // think_hotel
+                var exists = {};
+                result = result || [];
+                result.forEach(function(h) {
+                    var hotel = JSON.parse(h.original);
+                    exists[h.hotelid] = {};
+                    hotel.rooms.forEach(function(r) {
+                        rids.push(r.roomtypeid);
+                        exists[h.hotelid][r.namechn] = r.roomtypeid;
+                    });
+                });
+                that.end('<pre>' + JSON.stringify(exists, null, 4) + '</pre>');
             });
             return promise;
         },
