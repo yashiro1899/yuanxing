@@ -145,7 +145,6 @@ module.exports = Controller("Home/BaseController", function() {
                     var hotel = JSON.parse(h.original);
                     exists[h.hotelid] = {};
                     hotel.rooms.forEach(function(r) {
-                        rids.push(r.roomtypeid);
                         exists[h.hotelid][r.namechn] = r.roomtypeid;
                     });
                 });
