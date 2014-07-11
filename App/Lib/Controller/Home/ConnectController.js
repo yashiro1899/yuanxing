@@ -167,9 +167,18 @@ module.exports = Controller("Home/BaseController", function() {
                 }
                 return D("Room").field("roomtypeid,no_price_expires").where("roomtypeid in (" + ids.join(",") + ")").select();
             }).then(function(result) { // think_room
-                that.end("<pre>" + JSON.stringify(result, null, 4) + "</pre>");
-                // that.assign("list", goods);
-                // that.display('connect:index');
+                var exists = {};
+                result = result || [];
+                result.forEach(function(r) {exists[r.roomtypeid] = r.no_price_expires;});
+                goods.forEach(function(g) {
+                    var roomtypeid = g.roomtypeid;
+                    if (exists[roomtypeid] && exists[roomtypeid] > Date.now()) {
+                        g["goodstatus"] = 3;
+                        g["goodstatusicon"] = mapping.goodstatus[3];
+                    }
+                });
+                that.assign("list", goods);
+                that.display('connect:index');
             });
             return promise;
         },
