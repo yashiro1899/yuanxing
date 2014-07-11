@@ -94,6 +94,8 @@ module.exports = Controller("Home/BaseController", function() {
                     return getDefer().promise;
                 }
                 return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ") and status = 4").select();
+            }).then(function(result) {
+                that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
             });
             return promise;
         },
