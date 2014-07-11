@@ -137,7 +137,7 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                return D("Hotel").field("hotelid,original").where('hotelid in (' + ids.join(',') + ')');
+                return D("Hotel").field("hotelid,original").where('hotelid in (' + ids.join(',') + ')').select();
             }).then(function(result) { // think_hotel
                 var exists = {};
                 result = result || [];
