@@ -36,7 +36,7 @@ module.exports = Controller("Home/BaseController", function() {
             var params = {
                 "cid": 50016161,
                 "fields": "num_iid",
-                "method": "taobao.items.onsale.get",
+                "method": "taobao.items.inventory.get",
                 "order_by": "modified:desc",
                 "page_no": page,
                 "page_size": 20
@@ -48,6 +48,7 @@ module.exports = Controller("Home/BaseController", function() {
             this.assign("formdata", formdata);
             this.assign("tab", "onsale");
 
+            var goods = [];
             var promise = oauth.accessProtectedResource(req, res, params);
             promise = promise.then(function(result) { // taobao.items.onsale.get
                 if (result && result["items_onsale_get_response"]) {
@@ -69,7 +70,30 @@ module.exports = Controller("Home/BaseController", function() {
                     "need_room_type": true
                 });
             }).then(function(result) {
-                that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
+                if (result && result["hotel_rooms_search_response"]) {
+                    result = result["hotel_rooms_search_response"]["rooms"];
+                    result = result ? (result["room"] || []) : [];
+                } else {
+                    result = [];
+                }
+                goods = result;
+                range = result.length;
+
+                var qs = querystring.stringify(formdata);
+                var pagination = that.pagination(total, range, page, qs);
+                that.assign('pagination', pagination);
+
+                var ids = goods.map(function(g, i) {
+                    g["goodstatus"] = 0;
+                    g["goodstatusicon"] = mapping.goodstatus[0];
+                    return g.gid;
+                });
+                if (ids.length === 0) {
+                    that.assign("list", goods);
+                    that.display();
+                    return getDefer().promise;
+                }
+                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ") and status = 4").select();
             });
             return promise;
         },
