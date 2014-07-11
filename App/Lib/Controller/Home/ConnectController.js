@@ -228,7 +228,7 @@ module.exports = Controller("Home/BaseController", function() {
                 if (result && result["items_inventory_get_response"]) {
                     total = result["items_inventory_get_response"]["total_results"];
                     result = result["items_inventory_get_response"]["items"];
-                    result = result ? result["item"] : [];
+                    result = result ? (result["item"] || []) : [];
                     result = result.map(function(h) {
                         return h.num_iid;
                     });
@@ -257,7 +257,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var pagination = that.pagination(total, range, page, qs, 101);
                 that.assign('pagination', pagination);
 
-                var ids = goods.map(function(g, i) {
+                var ids = goods.map(function(g) {
                     g["goodstatus"] = 0;
                     g["goodstatusicon"] = mapping.goodstatus[0];
                     return g.gid;
@@ -267,13 +267,13 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display("connect:index");
                     return getDefer().promise;
                 }
-                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ")").select();
+                return D("Goods").field("gid").where("gid in (" + ids.join(",") + ") and status = 4").select();
             }).then(function(result) { // think_goods
                 var exists = {};
                 result = result || [];
-                result.forEach(function(g) {exists[g.gid] = g.status;});
-                goods.forEach(function(g, i) {
-                    if (exists[g.gid] && exists[g.gid] == 4) {
+                result.forEach(function(g) {exists[g.gid] = true;});
+                goods.forEach(function(g) {
+                    if (exists[g.gid]) {
                         g["goodstatus"] = 2;
                         g["goodstatusicon"] = mapping.goodstatus[2];
                     }
@@ -305,31 +305,51 @@ module.exports = Controller("Home/BaseController", function() {
                 });
 
                 var ids = goods.filter(function(g) {if (g.goodstatus === 1) return true;});
-                ids = ids.map(function(g) {return g.rid;});
+                ids = ids.map(function(g) {return g.hotelid;});
                 if (ids.length === 0) {
                     that.assign("list", goods);
                     that.display("connect:index");
                     return getDefer().promise;
                 }
 
-                ids = "rid in (" + ids.join(",") + ")";
-                return D("Room").join("`think_taobaoroom` on `think_taobaoroom`.`roomtypeid` = `think_room`.`roomtypeid`").field("rid,think_room.roomtypeid,no_price_expires").where(ids).select();
-            }).then(function(result) { // think_room, think_taobaoroom
+                return D("Hotel").field("hotelid,original").where('hotelid in (' + ids.join(',') + ')').select();
+            }).then(function(result) { // think_hotel
                 var exists = {};
                 result = result || [];
-                result.forEach(function(r) {exists[r.rid] = r;});
-                goods.forEach(function(g, i) {
-                    if (exists[g.rid]) {
+                result.forEach(function(h) {
+                    var hotel = JSON.parse(h.original);
+                    exists[h.hotelid] = {};
+                    hotel.rooms.forEach(function(r) {
+                        exists[h.hotelid][r.namechn] = r.roomtypeid;
+                    });
+                });
+                goods.forEach(function(g) {
+                    var hotelid = g.hotelid;
+                    var name = g.room_type.name;
+                    if (exists[hotelid] && exists[hotelid][name]) {
                         g["goodstatus"] = 128;
                         g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
-                        g["roomtypeid"] = exists[g.rid]["roomtypeid"];
-
-                        if (exists[g.rid]["no_price_expires"] > Date.now()) {
-                            g["goodstatus"] = 3;
-                            g["goodstatusicon"] = mapping.goodstatus[3];
-                        }
+                        g["roomtypeid"] = exists[hotelid][name];
                     }
                 });
+                var ids = goods.filter(function(g) {if (g.goodstatus === 128) return true;});
+                ids = ids.map(function(g) {return g.roomtypeid;});
+                if (ids.length === 0) {
+                    that.assign("list", goods);
+                    that.display();
+                    return getDefer().promise;
+                }
+                return D("Room").field("roomtypeid,no_price_expires").where("roomtypeid in (" + ids.join(",") + ")").select();
+            }).then(function(result) { // think_room
+                var exists = {};
+                result = result || [];
+                result.forEach(function(r) {exists[r.roomtypeid] = r.no_price_expires;});
+                goods.forEach(function(g) {
+                    var roomtypeid = g.roomtypeid;
+                    if (exists[roomtypeid] && exists[roomtypeid] > Date.now()) {
+                        g["goodstatus"] = 3;
+                        g["goodstatusicon"] = mapping.goodstatus[3];
+                     }
                 that.assign("list", goods);
                 that.display("connect:index");
             });
