@@ -36,7 +36,7 @@ module.exports = Controller("Home/BaseController", function() {
             var params = {
                 "cid": 50016161,
                 "fields": "num_iid",
-                "method": "taobao.items.inventory.get",
+                "method": "taobao.items.onsale.get",
                 "order_by": "modified:desc",
                 "page_no": page,
                 "page_size": 20
@@ -83,7 +83,7 @@ module.exports = Controller("Home/BaseController", function() {
                 var pagination = that.pagination(total, range, page, qs);
                 that.assign('pagination', pagination);
 
-                var ids = goods.map(function(g, i) {
+                var ids = goods.map(function(g) {
                     g["goodstatus"] = 0;
                     g["goodstatusicon"] = mapping.goodstatus[0];
                     return g.gid;
@@ -93,9 +93,31 @@ module.exports = Controller("Home/BaseController", function() {
                     that.display();
                     return getDefer().promise;
                 }
-                return D("Goods").field("gid,status").where("gid in (" + ids.join(",") + ") and status = 4").select();
+                return D("Goods").field("gid").where("gid in (" + ids.join(",") + ") and status = 4").select();
             }).then(function(result) {
-                that.end('<pre>' + JSON.stringify(result, null, 4) + '</pre>');
+                var exists = {};
+                result = result || [];
+                result.forEach(function(g) {exists[g.gid] = true;});
+                goods.forEach(function(g, i) {
+                    if (exists[g.gid]) {
+                        g["goodstatus"] = 2;
+                        g["goodstatusicon"] = mapping.goodstatus[2];
+                    }
+                });
+
+                var ids = goods.filter(function(g) {if (g.goodstatus === 0) return true;});
+                ids = ids.map(function(g) {return g.hid;});
+                if (ids.length === 0) {
+                    that.assign("list", goods);
+                    that.display();
+                    return getDefer().promise;
+                }
+
+                var temp = {};
+                ids.forEach(function(i) {temp[i] = true;});
+                ids = Object.keys(temp);
+                ids = "hid in (" + ids.join(",") + ")";
+                return D("Taobaohotel").field("hid,hotelid").where(ids).select();
             });
             return promise;
         },
