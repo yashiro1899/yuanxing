@@ -123,6 +123,7 @@ Promise.all([token, hotels]).then(function(result) {
                         qs = "`original` = " + JSON.stringify(JSON.stringify(h)) + " WHERE `hid` = " + h.hid;
                         updatings.push(qs);
                     } else {
+                        if ((/588$/.test(h.hid + "")) && h.hid > 999999) return null;
                         qs = [];
                         qs.push(h.hid);
                         qs.push(hotelid);
