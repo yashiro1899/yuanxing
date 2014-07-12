@@ -142,74 +142,74 @@ Promise.all([token, hotels]).then(function(result) {
                 if (success === false) console.log("HOTEL_ERROR", taobao.map(function(h) {return h.hid;}).join(","));
                 else total1 += taobao.length;
 
-                return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotelid);
-            }).then(function(result) { // think_room
-                jielv = result;
-                var names = {};
-                jielv.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
-                var rooms = [];
-                return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
-                    return sequence.then(function(result) {
-                        return oauth.accessProtectedResource(null, null, {
-                            "hid": hid,
-                            "method": "taobao.hotel.get",
-                            "need_room_type": true
-                        }, token);
-                    }).then(function(result) {
-                        if (result && (result = result["hotel_get_response"]) && (result = result.hotel) && (result = result.room_types) && result.room_type) {
-                            result.room_type.forEach(function(room) {
-                                var roomtypeid = names[room.name];
-                                if (roomtypeid) {
-                                    rooms.push({
-                                        rid: room.rid,
-                                        hid: room.hid,
-                                        roomtypeid: roomtypeid
-                                    });
-                                }
-                            });
-                        }
-                        return rooms;
-                    });
-                }, Promise.resolve());
-            }).then(function(result) { // taobao.hotel.get
-                taobao = result;
-                if (taobao.length === 0) throw "NO_MATCHED";
+                // return db("SELECT `roomtypeid`,`namechn` FROM `think_room` WHERE `hotelid` = " + hotelid);
+            // }).then(function(result) { // think_room
+                // jielv = result;
+                // var names = {};
+                // jielv.forEach(function(r) {names[r.namechn] = r.roomtypeid;});
+                // var rooms = [];
+                // return taobao.map(function(h) {return h.hid;}).reduce(function(sequence, hid) {
+                //     return sequence.then(function(result) {
+                //         return oauth.accessProtectedResource(null, null, {
+                //             "hid": hid,
+                //             "method": "taobao.hotel.get",
+                //             "need_room_type": true
+                //         }, token);
+                //     }).then(function(result) {
+                //         if (result && (result = result["hotel_get_response"]) && (result = result.hotel) && (result = result.room_types) && result.room_type) {
+                //             result.room_type.forEach(function(room) {
+                //                 var roomtypeid = names[room.name];
+                //                 if (roomtypeid) {
+                //                     rooms.push({
+                //                         rid: room.rid,
+                //                         hid: room.hid,
+                //                         roomtypeid: roomtypeid
+                //                     });
+                //                 }
+                //             });
+                //         }
+                //         return rooms;
+                //     });
+                // }, Promise.resolve());
+            // }).then(function(result) { // taobao.hotel.get
+                // taobao = result;
+                // if (taobao.length === 0) throw "NO_MATCHED";
 
-                var rids = taobao.map(function(r) {return r.rid;});
-                return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
-            }).then(function(result) { // think_taobaoroom
-                var ids = result.map(function(r) {return r.rid;});
-                var insertings = [];
-                taobao.forEach(function(r) {
-                    var qs = [];
-                    if (ids.indexOf(r.rid) < 0) {
-                        qs.push(r.rid);
-                        qs.push(r.hid);
-                        qs.push(r.roomtypeid);
-                        qs = "(" + qs.join(",") + ")";
-                        insertings.push(qs);
-                    }
-                });
+                // var rids = taobao.map(function(r) {return r.rid;});
+                // return db("SELECT `rid` FROM `think_taobaoroom` WHERE `rid` IN (" + rids.join(",") + ")");
+            // }).then(function(result) { // think_taobaoroom
+                // var ids = result.map(function(r) {return r.rid;});
+                // var insertings = [];
+                // taobao.forEach(function(r) {
+                //     var qs = [];
+                //     if (ids.indexOf(r.rid) < 0) {
+                //         qs.push(r.rid);
+                //         qs.push(r.hid);
+                //         qs.push(r.roomtypeid);
+                //         qs = "(" + qs.join(",") + ")";
+                //         insertings.push(qs);
+                //     }
+                // });
 
-                if (insertings.length === 0) return true;
-                return db("INSERT INTO `think_taobaoroom` (rid,hid,roomtypeid) VALUES " + insertings.join(","));
-            }).then(function(result) { // think_taobaoroom
-                if (result === false) {
-                    console.log("ROOM_ERROR", taobao.map(function(r) {return r.rid;}).join(","));
-                } else {
-                    total2 += taobao.length;
-                    var rooms = {};
-                    taobao.forEach(function(r) {rooms[r.roomtypeid] = true;});
-                    var status128 = jielv.filter(function(r) {return rooms[r.roomtypeid];});
-                    var status1= jielv.filter(function(r) {return !rooms[r.roomtypeid];});
-                    status128 = status128.map(function(r) {return r.roomtypeid;});
-                    status1 = status1.map(function(r) {return r.roomtypeid;});
-                    if (status128.length > 0)
-                        status128 = db("UPDATE `think_room` SET `status` = 128 WHERE `roomtypeid` IN (" + status128.join(",") + ")");
-                    if (status1.length > 0)
-                        status1 = db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` IN (" + status1.join(",") + ")");
-                    return Promise.all([status128, status1]);
-                }
+                // if (insertings.length === 0) return true;
+                // return db("INSERT INTO `think_taobaoroom` (rid,hid,roomtypeid) VALUES " + insertings.join(","));
+            // }).then(function(result) { // think_taobaoroom
+                // if (result === false) {
+                //     console.log("ROOM_ERROR", taobao.map(function(r) {return r.rid;}).join(","));
+                // } else {
+                //     total2 += taobao.length;
+                //     var rooms = {};
+                //     taobao.forEach(function(r) {rooms[r.roomtypeid] = true;});
+                //     var status128 = jielv.filter(function(r) {return rooms[r.roomtypeid];});
+                //     var status1= jielv.filter(function(r) {return !rooms[r.roomtypeid];});
+                //     status128 = status128.map(function(r) {return r.roomtypeid;});
+                //     status1 = status1.map(function(r) {return r.roomtypeid;});
+                //     if (status128.length > 0)
+                //         status128 = db("UPDATE `think_room` SET `status` = 128 WHERE `roomtypeid` IN (" + status128.join(",") + ")");
+                //     if (status1.length > 0)
+                //         status1 = db("UPDATE `think_room` SET `status` = 1 WHERE `roomtypeid` IN (" + status1.join(",") + ")");
+                //     return Promise.all([status128, status1]);
+                // }
             })["catch"](function(e) {});
         }, Promise.resolve()));
     });
