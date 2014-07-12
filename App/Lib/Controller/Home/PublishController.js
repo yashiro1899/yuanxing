@@ -60,7 +60,7 @@ module.exports = Controller("Home/BaseController", function() {
                     if (!hotels[name]) hotels[name] = {};
                     original.rooms.forEach(function(r) {
                         rids.push(r.roomtypeid);
-                        hotels[name][r.namechn] = r.roomtypeid;
+                        hotels[name][r.namechn.trim()] = r.roomtypeid;
                     });
                     return original;
                 });

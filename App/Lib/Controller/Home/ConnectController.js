@@ -145,7 +145,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var hotel = JSON.parse(h.original);
                     exists[h.hotelid] = {};
                     hotel.rooms.forEach(function(r) {
-                        exists[h.hotelid][r.namechn] = r.roomtypeid;
+                        exists[h.hotelid][r.namechn.trim()] = r.roomtypeid;
                     });
                 });
                 goods.forEach(function(g) {
@@ -320,7 +320,7 @@ module.exports = Controller("Home/BaseController", function() {
                     var hotel = JSON.parse(h.original);
                     exists[h.hotelid] = {};
                     hotel.rooms.forEach(function(r) {
-                        exists[h.hotelid][r.namechn] = r.roomtypeid;
+                        exists[h.hotelid][r.namechn.trim()] = r.roomtypeid;
                     });
                 });
                 goods.forEach(function(g) {
