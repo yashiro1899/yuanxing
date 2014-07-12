@@ -119,7 +119,7 @@ module.exports = Controller("Home/BaseController", function() {
                         var name = h.name;
                         if (hotels[name] && (h = h.room_types) && h.room_type) {
                             h.room_type.forEach(function(room) {
-                                var roomtypeid = hotels[name][room.name];
+                                var roomtypeid = hotels[name][room.name.trim()];
                                 if (roomtypeid) {
                                     taobao[roomtypeid] = {
                                         hid: room.hid,

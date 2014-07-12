@@ -150,7 +150,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 goods.forEach(function(g) {
                     var hotelid = g.hotelid;
-                    var name = g.room_type.name;
+                    var name = g.room_type.name.trim();
                     if (exists[hotelid] && exists[hotelid][name]) {
                         g["goodstatus"] = 128;
                         g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
@@ -325,7 +325,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 goods.forEach(function(g) {
                     var hotelid = g.hotelid;
-                    var name = g.room_type.name;
+                    var name = g.room_type.name.trim();
                     if (exists[hotelid] && exists[hotelid][name]) {
                         g["goodstatus"] = 128;
                         g["goodstatusicon"] = "<img src=\"/static/img/icon-yes.gif\" />";
