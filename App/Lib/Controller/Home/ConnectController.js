@@ -90,7 +90,7 @@ module.exports = Controller("Home/BaseController", function() {
                 });
                 if (ids.length === 0) {
                     that.assign("list", goods);
-                    that.display();
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
                 return D("Goods").field("gid").where("gid in (" + ids.join(",") + ") and status = 4").select();
@@ -336,7 +336,7 @@ module.exports = Controller("Home/BaseController", function() {
                 ids = ids.map(function(g) {return g.roomtypeid;});
                 if (ids.length === 0) {
                     that.assign("list", goods);
-                    that.display();
+                    that.display("connect:index");
                     return getDefer().promise;
                 }
                 return D("Room").field("roomtypeid,no_price_expires").where("roomtypeid in (" + ids.join(",") + ")").select();
