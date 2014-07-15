@@ -596,7 +596,7 @@ module.exports = Controller("Home/BaseController", function() {
 
             var gid = this.param("gid");
             var hotelid = parseInt(this.param("hotelid"), 10);
-            var query = this.param("q").trim();
+            var query = this.param("q").trim().replace("'", "");
             var formdata = {};
 
             if (!gid) {
